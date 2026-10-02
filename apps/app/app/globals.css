@@ -1,0 +1,31 @@
+@import "tailwindcss";
+@import "@repo/ui/styles.css";
+
+/* Scan this app's source as well as the shared UI package */
+@source "../";
+
+/* Prototype motion */
+@theme {
+  --animate-thinking: thinking 1.2s ease-in-out infinite;
+
+  @keyframes thinking {
+    0%,
+    80%,
+    100% {
+      opacity: 0.35;
+      transform: scale(0.8);
+    }
+    40% {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+}
+
+/* A listing field flashes primary-soft for a second when it changes */
+[data-field] {
+  transition: background-color 300ms ease;
+}
+[data-field][data-flash] {
+  background-color: var(--color-primary-soft);
+}

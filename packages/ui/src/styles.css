@@ -1,0 +1,137 @@
+/*
+ * resell.store design system — tokens from the Paper file "Resell.Store / 01 Foundations".
+ * Apps import this after `@import "tailwindcss";` in their globals.css.
+ *
+ * A lemonade-stand theme: clean cards on a pale lemon ground, with yellow doing
+ * the work, green keeping it calm, and pink showing up only for the fun parts.
+ */
+@source "./";
+
+@theme static {
+  /* Ramps */
+  --color-lemon-100: #fff6c2;
+  --color-lemon-300: #ffe873;
+  --color-lemon-400: #ffd934;
+  --color-lemon-500: #f5be0b;
+  --color-leaf-100: #ddf0e3;
+  --color-leaf-300: #8cc9a4;
+  --color-leaf-600: #256b4c;
+  --color-leaf-900: #14261d;
+  --color-pink-100: #ffdceb;
+  --color-pink-400: #ff5fa8;
+  --color-pink-600: #c9246f;
+  --color-berry-500: #d9391b;
+
+  /* Neutrals */
+  --color-background: #fffdf2;
+  --color-surface: #ffffff;
+  --color-surface-muted: #f7f3df;
+  --color-border: #e8e3cc;
+  --color-text-muted: #56675e;
+  --color-on-secondary: #ffffff;
+
+  /* Public marketplace and store pages: plain white so photos do the talking */
+  --color-public-background: #ffffff;
+  --color-public-photo: #f5f5f5;
+  --color-public-border: #e5e5e5;
+  --color-public-text-muted: #5f6661;
+
+  /* Roles */
+  --color-text: var(--color-leaf-900);
+  --color-primary: var(--color-lemon-400);
+  --color-on-primary: var(--color-leaf-900);
+  --color-primary-soft: var(--color-lemon-100);
+  --color-secondary: var(--color-leaf-600);
+  --color-secondary-soft: var(--color-leaf-100);
+  --color-accent: var(--color-pink-400);
+  --color-accent-soft: var(--color-pink-100);
+  --color-accent-text: var(--color-pink-600);
+  --color-danger: var(--color-berry-500);
+
+  /* Type scale (size / line height) */
+  --text-xs: 12px;
+  --text-xs--line-height: 16px;
+  --text-sm: 14px;
+  --text-sm--line-height: 20px;
+  --text-base: 16px;
+  --text-base--line-height: 24px;
+  --text-lg: 18px;
+  --text-lg--line-height: 28px;
+  --text-xl: 22px;
+  --text-xl--line-height: 28px;
+  --text-2xl: 28px;
+  --text-2xl--line-height: 34px;
+  --text-3xl: 36px;
+  --text-3xl--line-height: 40px;
+  --text-4xl: 48px;
+  --text-4xl--line-height: 50px;
+  --text-5xl: 64px;
+  --text-5xl--line-height: 64px;
+
+  --font-weight-regular: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+  --font-weight-extrabold: 800;
+
+  --tracking-tight: -0.03em;
+  --tracking-normal: 0em;
+  --tracking-wide: 0.08em;
+
+  --leading-xs: 16px;
+  --leading-sm: 20px;
+  --leading-base: 24px;
+  --leading-xl: 28px;
+  --leading-2xl: 34px;
+  --leading-3xl: 40px;
+  --leading-4xl: 50px;
+  --leading-5xl: 64px;
+
+  /* Shape: soft everywhere, pills for anything you tap */
+  --radius-sm: 8px;
+  --radius-md: 14px;
+  --radius-lg: 20px;
+  --radius-xl: 28px;
+  --radius-full: 999px;
+
+  /* Containers (spacing is Tailwind's default 4px step) */
+  --container-card: 342px;
+  --container-mobile: 390px;
+  --container-page: 1200px;
+
+  /* Two layouts: under 900px one column + tab bar, 900px and up sidebar + panes */
+  --breakpoint-desk: 56.25rem; /* 900px */
+}
+
+/* Fonts come from next/font variables, so resolve them where they're used */
+@theme inline {
+  --font-display: var(--font-bricolage), system-ui, sans-serif;
+  --font-sans: var(--font-figtree), system-ui, sans-serif;
+  --font-mono: var(--font-jetbrains), ui-monospace, monospace;
+}
+
+:root {
+  --opacity-disabled: 40%;
+  --opacity-muted: 60%;
+}
+
+@layer base {
+  * {
+    border-color: var(--color-border);
+  }
+
+  body {
+    /* Base UI: keeps portalled popups above page content and fixes iOS Safari backdrops */
+    position: relative;
+    background: var(--color-background);
+    color: var(--color-text);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  ::selection {
+    background: var(--color-lemon-300);
+    color: var(--color-text);
+  }
+}
