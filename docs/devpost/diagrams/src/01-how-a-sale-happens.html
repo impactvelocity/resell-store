@@ -1,0 +1,185 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>How a sale happens</title>
+<link rel="stylesheet" href="diagram.css">
+<style>
+  .seq { position: relative; }
+  .lanes {
+    position: sticky;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    margin-bottom: 6px;
+  }
+  .lane-head {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    text-align: center;
+  }
+  .lane-head .who { height: 36px; font-size: 15.5px; padding-right: 14px; }
+  .lane-head .who .face { width: 28px; height: 28px; font-size: 15px; }
+  .lane-head .note { font-size: 13px; line-height: 17px; }
+
+  .body { position: relative; padding-bottom: 8px; }
+  .life {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 0;
+    border-left: 2px dashed #d9d3b6;
+    transform: translateX(-1px);
+  }
+
+  .phase {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 14px 0 6px;
+    padding: 0 14px;
+    height: 40px;
+    border-radius: 14px;
+    background: var(--muted-bg);
+    font-family: var(--display);
+    font-size: 19px;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+  }
+  .phase .num { width: 26px; height: 26px; font-size: 14px; }
+  .phase .note { margin-left: auto; font-family: var(--sans); font-weight: 600; letter-spacing: 0; }
+
+  /* A message from one lane to another: --l is the leftmost lane, --w how many lanes it spans */
+  .msg { position: relative; height: 54px; }
+  .msg .line {
+    position: absolute;
+    left: calc((var(--l) + 0.5) * 25%);
+    width: calc(var(--w) * 25%);
+    top: 38px;
+    height: 0;
+    border-top: 2.5px solid var(--c);
+  }
+  .msg .line::before { /* sender dot */
+    content: "";
+    position: absolute;
+    top: -6.5px;
+    left: -5px;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: var(--c);
+  }
+  .msg .line::after { /* arrowhead */
+    content: "";
+    position: absolute;
+    top: -8.5px;
+    right: 3px;
+    border-left: 11px solid var(--c);
+    border-top: 7px solid transparent;
+    border-bottom: 7px solid transparent;
+  }
+  .msg.back .line::before { left: auto; right: -5px; }
+  .msg.back .line::after {
+    right: auto;
+    left: 3px;
+    border-left: 0;
+    border-right: 11px solid var(--c);
+  }
+  .msg .label {
+    position: absolute;
+    left: calc((var(--l) + 0.5 + var(--w) / 2) * 25%);
+    top: 4px;
+    transform: translateX(-50%);
+    padding: 3px 11px;
+    border-radius: 999px;
+    background: var(--bg);
+    font-size: 15.5px;
+    line-height: 22px;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+
+  /* Something one lane does on its own */
+  .self { position: relative; height: 62px; }
+  .self .box {
+    position: absolute;
+    left: calc((var(--l) + 0.5) * 25%);
+    top: 8px;
+    transform: translateX(-50%);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 16px;
+    border-radius: 14px;
+    font-size: 15.5px;
+    line-height: 22px;
+    font-weight: 700;
+    white-space: nowrap;
+  }
+
+  .seller-c { --c: var(--lemon-500); }
+  .agent-c { --c: var(--leaf-900); }
+  .buyer-c { --c: var(--pink-400); }
+  .paypal-c { --c: var(--paypal); }
+
+  .key { display: flex; flex-wrap: wrap; gap: 8px 18px; margin-top: 18px; }
+  .key span { display: inline-flex; align-items: center; gap: 8px; font-size: 14px; color: var(--muted); font-weight: 600; }
+  .key span::before { content: ""; width: 22px; height: 0; border-top: 2.5px solid var(--c); }
+</style>
+</head>
+<body>
+  <div class="head">
+    <span class="eyebrow">The whole loop</span>
+    <h1>How a sale happens</h1>
+    <p class="lede">Maya sells her yellow dutch oven to Jess. Maya snaps a photo, publishes and ships. Her shop’s agent does the talking and the haggling (never under the lowest she set), and PayPal holds the money until the pot arrives.</p>
+  </div>
+
+  <div class="seq">
+    <div class="lanes">
+      <div class="lane-head"><span class="who seller"><span class="face">M</span>Seller</span><span class="note">Maya</span></div>
+      <div class="lane-head"><span class="who agent"><span class="face"><span class="spark"></span></span>Shop agent</span><span class="note">works for Maya</span></div>
+      <div class="lane-head"><span class="who buyer"><span class="face">J</span>Buyer</span><span class="note">Jess, or her own AI</span></div>
+      <div class="lane-head"><span class="who paypal"><span class="face">P</span>PayPal</span><span class="note">holds the money</span></div>
+    </div>
+
+    <div class="body">
+      <span class="life" style="left:12.5%"></span>
+      <span class="life" style="left:37.5%"></span>
+      <span class="life" style="left:62.5%"></span>
+      <span class="life" style="left:87.5%"></span>
+
+      <div class="phase"><span class="num">1</span>List it <span class="note">about 3 minutes</span></div>
+      <div class="msg seller-c" style="--l:0;--w:1"><span class="line"></span><span class="label">Photo + one line</span></div>
+      <div class="self" style="--l:1"><span class="box card ink">Researches real listings, writes it up</span></div>
+      <div class="msg back agent-c" style="--l:0;--w:1"><span class="line"></span><span class="label">“List it at $185?”</span></div>
+      <div class="self" style="--l:0"><span class="box card lemon" style="transform:translateX(-24%)">Sets her lowest, publishes</span></div>
+
+      <div class="phase"><span class="num">2</span>Sell it <span class="note">any hour, Maya optional</span></div>
+      <div class="msg back buyer-c" style="--l:1;--w:1"><span class="line"></span><span class="label">“Any chips?”</span></div>
+      <div class="msg agent-c" style="--l:1;--w:1"><span class="line"></span><span class="label">Answers from the listing</span></div>
+      <div class="msg back buyer-c" style="--l:1;--w:1"><span class="line"></span><span class="label">Offers $140</span></div>
+      <div class="msg agent-c" style="--l:1;--w:1"><span class="line"></span><span class="label">Counters $165</span></div>
+      <div class="msg back buyer-c" style="--l:1;--w:1"><span class="line"></span><span class="label">Takes $165</span></div>
+
+      <div class="phase"><span class="num">3</span>Get paid <span class="note">money moves only when it arrives</span></div>
+      <div class="msg buyer-c" style="--l:2;--w:1"><span class="line"></span><span class="label">Pays $165</span></div>
+      <div class="self" style="--l:3"><span class="box card sky" style="transform:translateX(-78%)">Holds it</span></div>
+      <div class="msg seller-c" style="--l:0;--w:2"><span class="line"></span><span class="label">Ships within 3 days</span></div>
+      <div class="msg buyer-c" style="--l:2;--w:1"><span class="line"></span><span class="label">“It’s all good”</span></div>
+      <div class="msg back paypal-c" style="--l:0;--w:3"><span class="line"></span><span class="label">Releases the money to Maya</span></div>
+    </div>
+  </div>
+
+  <div class="key">
+    <span class="seller-c">Seller</span>
+    <span class="agent-c">Shop agent</span>
+    <span class="buyer-c">Buyer</span>
+    <span class="paypal-c">PayPal</span>
+  </div>
+
+  <footer><span class="wordmark">resell<i></i>store</span><span>Sell your stuff without doing the selling</span></footer>
+</body>
+</html>

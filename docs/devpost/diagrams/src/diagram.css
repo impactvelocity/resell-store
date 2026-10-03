@@ -1,0 +1,261 @@
+/*
+ * Shared look for the Devpost flow diagrams. Colours and type mirror
+ * packages/ui/src/styles.css: lemon ground, leaf ink, pink for the agent's sparkle.
+ * Laid out 800px wide; render.mjs shoots them at 2x.
+ */
+@import url("https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700;12..96,800&family=Figtree:wght@400;500;600;700;800&display=block");
+
+:root {
+  --lemon-100: #fff6c2;
+  --lemon-300: #ffe873;
+  --lemon-400: #ffd934;
+  --lemon-500: #f5be0b;
+  --leaf-100: #ddf0e3;
+  --leaf-300: #8cc9a4;
+  --leaf-600: #256b4c;
+  --leaf-900: #14261d;
+  --pink-100: #ffdceb;
+  --pink-400: #ff5fa8;
+  --pink-600: #c9246f;
+  --berry-500: #d9391b;
+  --paypal: #003087;
+  --paypal-sky: #e6f0fb;
+
+  --bg: #fffdf2;
+  --surface: #ffffff;
+  --muted-bg: #f7f3df;
+  --border: #e8e3cc;
+  --text: var(--leaf-900);
+  --muted: #56675e;
+
+  --display: "Bricolage Grotesque", system-ui, sans-serif;
+  --sans: "Figtree", system-ui, sans-serif;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { background: var(--bg); }
+
+body {
+  width: 800px;
+  padding: 48px 44px 36px;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--sans);
+  font-size: 17px;
+  line-height: 24px;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ---------- Header and footer ---------- */
+
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 30px;
+  padding: 0 14px;
+  border-radius: 999px;
+  background: var(--lemon-400);
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+h1 {
+  margin-top: 16px;
+  font-family: var(--display);
+  font-size: 44px;
+  line-height: 46px;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+}
+
+.lede {
+  margin-top: 12px;
+  max-width: 640px;
+  font-size: 19px;
+  line-height: 28px;
+  color: var(--muted);
+}
+
+.head { margin-bottom: 32px; }
+
+footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 32px;
+  padding-top: 20px;
+  border-top: 1.5px solid var(--border);
+  font-size: 14px;
+  color: var(--muted);
+}
+
+.wordmark {
+  display: inline-flex;
+  align-items: baseline;
+  font-family: var(--display);
+  font-size: 22px;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  color: var(--text);
+}
+.wordmark i {
+  display: inline-block;
+  width: 0.34em;
+  height: 0.34em;
+  margin: 0 0.06em;
+  border-radius: 50%;
+  background: var(--lemon-400);
+}
+
+/* ---------- Who's who ---------- */
+
+.who {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 30px;
+  padding: 0 12px 0 4px;
+  border-radius: 999px;
+  font-size: 14px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+.who .face {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  font-family: var(--display);
+  font-size: 13px;
+  font-weight: 800;
+}
+.who.seller { background: var(--lemon-100); }
+.who.seller .face { background: var(--lemon-400); }
+.who.buyer { background: var(--pink-100); color: var(--pink-600); }
+.who.buyer .face { background: var(--pink-400); color: #fff; }
+.who.agent { background: var(--leaf-900); color: #fff; }
+.who.agent .face { background: var(--lemon-400); }
+.who.paypal { background: var(--paypal-sky); color: var(--paypal); }
+.who.paypal .face { background: var(--paypal); color: #fff; }
+.who.site { background: var(--leaf-100); color: var(--leaf-600); }
+.who.site .face { background: var(--leaf-600); color: #fff; }
+
+/* The sparkle the site uses for the agent */
+.spark {
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  background: currentColor;
+  clip-path: path("M7 0.9c.44 3.7 2.4 5.7 6.1 6.1-3.7.44-5.7 2.4-6.1 6.1C6.56 9.4 4.6 7.44.9 7 4.6 6.56 6.56 4.6 7 .9Z");
+}
+.face .spark { width: 14px; height: 14px; color: var(--leaf-900); }
+
+/* ---------- Cards ---------- */
+
+.card {
+  position: relative;
+  padding: 18px 20px;
+  border: 1.5px solid var(--border);
+  border-radius: 20px;
+  background: var(--surface);
+}
+.card.lemon { background: var(--lemon-100); border-color: #f4e39a; }
+.card.ink { background: var(--leaf-900); border-color: var(--leaf-900); color: #fff; }
+.card.ink .muted { color: #b9cbbf; }
+.card.pink { background: var(--pink-100); border-color: #f7c3da; }
+.card.leaf { background: var(--leaf-100); border-color: #c4e3cd; }
+.card.sky { background: var(--paypal-sky); border-color: #c9dcf3; }
+.card.muted-bg { background: var(--muted-bg); }
+
+.card h3 {
+  font-family: var(--display);
+  font-size: 21px;
+  line-height: 26px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+.card p { margin-top: 6px; font-size: 16px; line-height: 23px; }
+.card .who + h3, .card .who + p { margin-top: 10px; }
+
+.muted { color: var(--muted); }
+b, strong { font-weight: 700; }
+
+.num {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--leaf-900);
+  color: var(--lemon-400);
+  font-family: var(--display);
+  font-size: 18px;
+  font-weight: 800;
+}
+
+.pill {
+  display: inline-flex;
+  align-items: center;
+  height: 26px;
+  padding: 0 11px;
+  border-radius: 999px;
+  background: var(--muted-bg);
+  color: var(--muted);
+  font-size: 13.5px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+.pill.lemon { background: var(--lemon-400); color: var(--text); }
+.pill.leaf { background: var(--leaf-100); color: var(--leaf-600); }
+.pill.pink { background: var(--pink-100); color: var(--pink-600); }
+.pill.ink { background: var(--leaf-900); color: #fff; }
+.pill.white { background: #fff; color: var(--text); border: 1.5px solid var(--border); }
+.pill.sky { background: var(--paypal-sky); color: var(--paypal); }
+
+.pills { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 12px; }
+
+/* A quoted line, like a chat bubble */
+.say {
+  display: inline-block;
+  margin-top: 10px;
+  padding: 9px 14px;
+  border-radius: 16px 16px 16px 6px;
+  background: var(--muted-bg);
+  font-size: 15.5px;
+  line-height: 22px;
+  font-weight: 500;
+}
+.say.right { border-radius: 16px 16px 6px 16px; }
+.say.ink { background: var(--leaf-900); color: #fff; }
+.say.pink { background: var(--pink-100); color: var(--pink-600); }
+.say.white { background: #fff; }
+
+/* ---------- Connectors ---------- */
+
+.down {
+  display: flex;
+  justify-content: center;
+  height: 34px;
+}
+.down svg { overflow: visible; }
+
+.note {
+  font-size: 14px;
+  line-height: 20px;
+  color: var(--muted);
+}
+
+.tag {
+  font-size: 12.5px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
