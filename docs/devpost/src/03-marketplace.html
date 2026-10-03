@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>The marketplace</title>
+<link rel="stylesheet" href="diagrams.css">
+<style>
+  .search { display: flex; align-items: center; gap: 18px; padding: 30px 28px; }
+  .query { display: flex; align-items: center; gap: 12px; height: 64px; padding: 0 24px; border-radius: 999px; background: #f5f5f5; font-size: 23px; font-weight: 600; white-space: nowrap; }
+  .query svg { width: 24px; height: 24px; flex: none; }
+  .ways { display: flex; flex-direction: column; gap: 10px; }
+  .way { display: flex; flex-direction: column; gap: 2px; padding: 12px 18px; border-radius: 18px; background: var(--muted-bg); }
+  .way b { font-size: 22px; }
+  .way span { font-size: 19px; color: var(--muted); }
+  .result { display: flex; align-items: center; gap: 14px; padding: 14px; border-radius: 20px; border: 2px solid var(--border); background: #fff; }
+  .result img { width: 84px; height: 84px; border-radius: 14px; background: var(--leaf-100); }
+  .hops { display: grid; grid-template-columns: 1fr 34px 1fr 34px 1fr 34px 1fr; align-items: stretch; }
+  .hop { display: flex; flex-direction: column; gap: 10px; padding: 22px 20px; }
+  .hop .mono { font-size: 18px; }
+  .hop p { font-size: 21px; line-height: 1.3; }
+  .hop .zone { font-size: 17px; font-weight: 800; letter-spacing: 0.06em; text-transform: uppercase; }
+  .actions { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+  .action { display: flex; flex-direction: column; gap: 10px; padding: 22px 22px 24px; }
+  .action p { font-size: 21px; line-height: 1.3; }
+  .action .icon { width: 48px; height: 48px; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
+  .action .icon svg { width: 24px; height: 24px; }
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute">
+  <defs>
+    <symbol id="arrow" viewBox="0 0 34 24"><path d="M3 12h24m-8-8 8 8-8 8" fill="none" stroke="#256b4c" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  </defs>
+</svg>
+<div class="page">
+  <div class="head">
+    <div class="head-top">
+      <span class="wordmark">resell<i></i>store</span>
+      <span class="chip pink">For buyers</span>
+    </div>
+    <p class="eyebrow" style="padding-top:18px">The marketplace · resell.store/discover</p>
+    <h1>A marketplace of little shops</h1>
+    <p class="lead">One search across every shop, and every shop on its own address. Checkout, offers and messages stay on resell.store, so buyers sign in once.</p>
+  </div>
+
+  <div class="col" style="gap:16px">
+    <h2>Search by meaning, not just words</h2>
+    <div class="card search">
+      <div class="query"><svg viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="7" fill="none" stroke="#14261d" stroke-width="2.6"/><path d="m16 16 5 5" stroke="#14261d" stroke-width="2.6" stroke-linecap="round"/></svg>yellow cast iron pot</div>
+      <svg class="arrow" width="34" height="24"><use href="#arrow"/></svg>
+      <div class="ways">
+        <div class="way"><b>The words</b><span>Postgres full-text search</span></div>
+        <div class="way"><b>The meaning</b><span>Jina embeddings in pgvector</span></div>
+      </div>
+      <svg class="arrow" width="34" height="24"><use href="#arrow"/></svg>
+      <div class="result grow">
+        <img src="assets/oven.png" alt="">
+        <div class="col" style="gap:4px">
+          <b style="font-size:22px">Round dutch oven, Le Creuset</b>
+          <span class="small muted">Top match, from Maya's closet</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col" style="gap:16px">
+    <h2>Every shop has its own address</h2>
+    <div class="hops">
+      <div class="card hop">
+        <span class="zone" style="color:var(--pink-600)">Marketplace</span>
+        <span class="h3">Discover</span>
+        <span class="mono muted">resell.store<wbr>/discover</span>
+        <p>Search and browse every shop</p>
+      </div>
+      <svg class="arrow" style="align-self:center" width="34" height="24"><use href="#arrow"/></svg>
+      <div class="card hop lemon">
+        <span class="zone" style="color:#8a6a00">The shop</span>
+        <span class="h3">Maya's closet</span>
+        <span class="mono muted">maya.resell.store</span>
+        <p>Her items, reviews and a follow button</p>
+      </div>
+      <svg class="arrow" style="align-self:center" width="34" height="24"><use href="#arrow"/></svg>
+      <div class="card hop lemon">
+        <span class="zone" style="color:#8a6a00">The item</span>
+        <span class="h3">Dutch oven</span>
+        <span class="mono muted">maya.resell.store<wbr>/dutch-oven</span>
+        <p>Photos, details, questions</p>
+      </div>
+      <svg class="arrow" style="align-self:center" width="34" height="24"><use href="#arrow"/></svg>
+      <div class="card hop">
+        <span class="zone" style="color:var(--pink-600)">Marketplace</span>
+        <span class="h3">Checkout</span>
+        <span class="mono muted">resell.store<wbr>/checkout</span>
+        <p>Back home to pay, signed in once</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="col" style="gap:16px">
+    <h2>On every listing</h2>
+    <div class="actions">
+      <div class="card action">
+        <span class="spark"><svg viewBox="0 0 24 24"><path d="M12 0C13 7 17 11 24 12 17 13 13 17 12 24 11 17 7 13 0 12 7 11 11 7 12 0Z" fill="#14261d"/></svg></span>
+        <span class="h3">Ask</span>
+        <p>The shop's agent answers any hour, from the listing's facts</p>
+      </div>
+      <div class="card action">
+        <span class="icon" style="background:var(--lemon-400)"><svg viewBox="0 0 24 24"><path d="M3 12.5 11.5 4H20v8.5L11.5 21Z" fill="none" stroke="#14261d" stroke-width="2.4" stroke-linejoin="round"/><circle cx="15.5" cy="8.5" r="1.8" fill="#14261d"/></svg></span>
+        <span class="h3">Offer</span>
+        <p>Low offers get a counter; good ones go to the seller</p>
+      </div>
+      <div class="card action">
+        <span class="icon" style="background:var(--leaf-100)"><svg viewBox="0 0 24 24"><path d="M12 3 4 6v6c0 4.5 3.4 8 8 9 4.6-1 8-4.5 8-9V6Z" fill="none" stroke="#256b4c" stroke-width="2.4" stroke-linejoin="round"/><path d="m8.5 12 2.5 2.5 4.5-5" fill="none" stroke="#256b4c" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+        <span class="h3 row center" style="gap:12px">Buy <img src="assets/paypal.svg" alt="PayPal" style="height:22px"></span>
+        <p>PayPal or a card; the money waits until it arrives</p>
+      </div>
+      <div class="card action">
+        <span class="icon" style="background:var(--pink-100)"><svg viewBox="0 0 24 24"><path d="M12 20s-7.5-4.6-7.5-10A4.3 4.3 0 0 1 12 7.2 4.3 4.3 0 0 1 19.5 10c0 5.4-7.5 10-7.5 10Z" fill="none" stroke="#c9246f" stroke-width="2.4" stroke-linejoin="round"/></svg></span>
+        <span class="h3">Keep</span>
+        <p>Like it, follow the shop, share a branded card</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="card dark row center" style="gap:24px;padding:26px 30px">
+    <span class="chip lemon mono" style="font-size:20px;font-weight:700">MCP</span>
+    <p style="font-size:23px"><b>Or send your own AI shopping.</b> Add resell.store to Claude or ChatGPT: it searches every shop, makes offers inside your limit and asks before it pays.</p>
+  </div>
+
+  <div class="foot"><span><b>resell.store</b> · the marketplace</span><span>Sell your stuff without doing the selling</span></div>
+</div>
+</body>
+</html>

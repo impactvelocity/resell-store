@@ -1,0 +1,170 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Buyer flow</title>
+<link rel="stylesheet" href="diagram.css">
+<style>
+  .ways { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .ways .card { display: flex; flex-direction: column; }
+  .ways .tag { color: var(--muted); }
+  .ways .ink .tag { color: var(--lemon-400); }
+  .ways h3 { margin-top: 4px; }
+  .chat { display: flex; flex-direction: column; gap: 6px; margin-top: 12px; }
+  .chat .say { margin-top: 0; max-width: 92%; font-size: 15px; line-height: 21px; }
+  .chat .me { align-self: flex-end; background: var(--pink-100); color: var(--pink-600); }
+  .chat .ai { align-self: flex-start; background: rgba(255,255,255,0.1); color: #fff; }
+
+  .tiles { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 14px; }
+  .tiles div { display: flex; flex-direction: column; gap: 4px; }
+  .tiles span { display: flex; align-items: center; justify-content: center; height: 78px; border-radius: 12px; }
+  .tiles b { font-size: 14px; }
+  svg.wire { display: block; overflow: visible; }
+
+  .rail { position: relative; display: flex; flex-direction: column; gap: 14px; }
+  .rail::before {
+    content: "";
+    position: absolute;
+    left: 17px;
+    top: 20px;
+    bottom: 20px;
+    width: 3px;
+    border-radius: 3px;
+    background: var(--border);
+  }
+  .step { position: relative; display: grid; grid-template-columns: 36px 1fr; gap: 16px; }
+  .step .num { margin-top: 18px; position: relative; }
+  .step .card { padding: 16px 20px; }
+  .step .card h3 { display: flex; align-items: center; gap: 10px; }
+  .step .card h3 .pill { margin-left: auto; }
+
+  .two { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 12px; }
+  .two > div { padding: 12px 14px; border-radius: 14px; font-size: 14.5px; line-height: 20px; }
+  .two b { display: block; font-size: 15px; margin-bottom: 2px; }
+  .good { background: var(--leaf-100); }
+  .bad { background: var(--pink-100); }
+  .held { background: var(--paypal-sky); color: var(--paypal); }
+
+  .bubbles { display: flex; flex-direction: column; gap: 6px; margin-top: 12px; }
+  .bubbles .say { margin-top: 0; align-self: flex-start; }
+  .bubbles .ink { align-self: flex-end; }
+
+  .side { display: flex; align-items: center; gap: 16px; margin-top: 16px; }
+  .side .icon {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 52px;
+    height: 52px;
+    border-radius: 16px;
+    background: var(--pink-400);
+    color: #fff;
+  }
+  .side .icon .spark { width: 24px; height: 24px; clip-path: path("M12 1.5c.75 6.3 4.1 9.75 10.5 10.5-6.4.75-9.75 4.1-10.5 10.5C11.25 16.1 7.9 12.75 1.5 12 7.9 11.25 11.25 7.9 12 1.5Z"); }
+</style>
+</head>
+<body>
+  <div class="head">
+    <span class="eyebrow">For buyers</span>
+    <h1>Buy it, haggle, sleep easy</h1>
+    <p class="lede">Find it, ask about it, make an offer if you like, and pay with PayPal. The seller doesn’t get your money until the thing is in your hands.</p>
+  </div>
+
+  <div class="ways">
+    <div class="card pink">
+      <span class="tag">Way in 1</span>
+      <h3>Browse the marketplace</h3>
+      <p>Search everything on resell.store, or wander a shop at its own address. Like things, follow shops you love.</p>
+      <div class="tiles">
+        <div><span style="background:var(--leaf-100)"><svg width="54" height="54" viewBox="0 0 80 80"><rect x="5" y="42" width="12" height="7" rx="3.5" fill="#f5be0b"/><rect x="63" y="42" width="12" height="7" rx="3.5" fill="#f5be0b"/><path d="M14 40h52v18c0 6-5 10-11 10H25c-6 0-11-4-11-10Z" fill="#ffd934"/><path d="M16 38c0-9 11-13 24-13s24 4 24 13Z" fill="#f5be0b"/><circle cx="40" cy="22" r="4.5" fill="#14261d"/></svg></span><b>$185</b></div>
+        <div><span style="background:var(--lemon-100)"><svg width="54" height="54" viewBox="0 0 80 80"><rect x="12" y="26" width="56" height="36" rx="7" fill="#14261d"/><rect x="20" y="20" width="16" height="9" rx="3" fill="#14261d"/><circle cx="42" cy="44" r="12" fill="#8cc9a4"/><circle cx="42" cy="44" r="6" fill="#14261d"/><circle cx="59" cy="33" r="3" fill="#ffd934"/></svg></span><b>$140</b></div>
+        <div><span style="background:#fff"><svg width="54" height="54" viewBox="0 0 80 80"><path d="M32 12h16l-2 14 16 42H18l16-42Z" fill="#ff5fa8"/><path d="M32 12l8 8 8-8" fill="none" stroke="#c9246f" stroke-width="3" stroke-linejoin="round"/></svg></span><b>$95</b></div>
+      </div>
+      <div class="pills"><span class="pill white">resell.store/discover</span><span class="pill white">maya.resell.store</span></div>
+    </div>
+    <div class="card ink">
+      <span class="tag">Way in 2</span>
+      <h3>Send your own AI</h3>
+      <p class="muted">Connect it to the buyer MCP server. It searches, asks shops, makes offers. You still do the paying.</p>
+      <div class="chat">
+        <span class="say me right">Find me a tested 35mm film camera under $150</span>
+        <span class="say ai">Found one at $140. Want me to offer $120?</span>
+      </div>
+    </div>
+  </div>
+
+  <svg class="wire" width="712" height="46" viewBox="0 0 712 46">
+    <path d="M174 0v10q0 8 8 8h166q8 0 8 8v14M538 0v10q0 8-8 8H364q-8 0-8 8" fill="none" stroke="#14261d" stroke-width="2.5" stroke-linecap="round"/>
+    <path d="M350 34l6 7 6-7" fill="none" stroke="#14261d" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+  </svg>
+
+  <div class="rail">
+    <div class="step">
+      <span class="num">1</span>
+      <div class="card">
+        <h3>Ask anything, any hour <span class="who agent"><span class="face"><span class="spark"></span></span>Shop agent</span></h3>
+        <p class="muted">It answers from the listing and what the seller has said before. If it doesn’t know, it asks the seller and says so.</p>
+        <div class="bubbles">
+          <span class="say pink">Does it work on an induction hob?</span>
+          <span class="say ink right">Yes, enamelled cast iron works on induction.</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="step">
+      <span class="num">2</span>
+      <div class="card">
+        <h3>Buy it now, or make an offer</h3>
+        <p class="muted">Under the asking price? The shop’s agent may counter straight away. Take it and it’s yours to check out for 48 hours.</p>
+        <div class="pills"><span class="pill lemon">Buy at $185</span><span class="pill white">Offer $140</span><span class="pill pink">Counter: $165</span></div>
+      </div>
+    </div>
+
+    <div class="step">
+      <span class="num">3</span>
+      <div class="card sky">
+        <h3>Pay with PayPal <span class="who paypal" style="background:#fff"><span class="face">P</span>PayPal</span></h3>
+        <p>PayPal or a card. The money is held at PayPal, not sent to the seller yet.</p>
+      </div>
+    </div>
+
+    <div class="step">
+      <span class="num">4</span>
+      <div class="card">
+        <h3>It ships within 3 days</h3>
+        <div class="two">
+          <div class="good"><b>Shipped</b>You get the tracking number.</div>
+          <div class="bad"><b>Not shipped?</b>Cancel for a refund. After 7 days it’s cancelled for you.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="step">
+      <span class="num">5</span>
+      <div class="card">
+        <h3>It arrives</h3>
+        <div class="two">
+          <div class="good"><b>“It’s all good”</b>One tap and the seller is paid. Say nothing and they’re paid 3 days after delivery.</div>
+          <div class="bad"><b>Something’s wrong?</b>Report it. Refund, part refund, or resell.store steps in. Money stays held.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="step">
+      <span class="num">6</span>
+      <div class="card lemon">
+        <h3>Leave a review</h3>
+        <p>It shows on the shop and the listing, and the seller can reply.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="card side">
+    <span class="icon"><span class="spark"></span></span>
+    <p style="margin:0"><b>Shopping somewhere else?</b> <span class="muted">The shopping sidekick checks what a thing sells on for second-hand, so you know it’s a good buy before you pay.</span></p>
+  </div>
+
+  <footer><span class="wordmark">resell<i></i>store</span><span>Sell your stuff without doing the selling</span></footer>
+</body>
+</html>

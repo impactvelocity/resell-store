@@ -1,0 +1,505 @@
+<!doctype html>
+<!--
+  How-it-works diagrams for the Devpost page. Each .board renders to its own
+  PNG (render.mjs). Boards are 1200px wide and render at 2x, so text stays
+  readable when Devpost shrinks them to its ~750px column: nothing under 19px.
+  Tokens come from packages/ui/styles.css. Only name sponsors whose
+  integration is in the code today (see components/landing/sponsors.tsx).
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>resell.store diagrams</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700;12..96,800&family=Figtree:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600&display=block" rel="stylesheet">
+<style>
+  :root {
+    --lemon-100: #fff6c2; --lemon-300: #ffe873; --lemon-400: #ffd934; --lemon-500: #f5be0b;
+    --leaf-100: #ddf0e3; --leaf-300: #8cc9a4; --leaf-600: #256b4c; --leaf-900: #14261d;
+    --pink-100: #ffdceb; --pink-400: #ff5fa8; --pink-600: #c9246f;
+    --bg: #fffdf2; --surface: #ffffff; --surface-muted: #f7f3df; --border: #e8e3cc;
+    --muted: #56675e; --paypal: #002991;
+    --display: "Bricolage Grotesque", system-ui, sans-serif;
+    --sans: "Figtree", system-ui, sans-serif;
+    --mono: "JetBrains Mono", ui-monospace, monospace;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; padding: 40px 0; background: var(--bg); font-family: var(--sans); color: var(--leaf-900);
+         -webkit-font-smoothing: antialiased; }
+  p, h1, h2, h3 { margin: 0; }
+
+  .board { position: relative; width: 1200px; margin: 0 auto 40px; display: flow-root; padding: 60px 64px 44px;
+           background: var(--bg); overflow: hidden; }
+  .board > * { position: relative; }
+  .blob { position: absolute !important; border-radius: 50%; background: var(--lemon-300); opacity: .55; }
+
+  /* Header and footer */
+  .eyebrow { display: inline-flex; align-items: center; gap: 10px; padding: 8px 16px; border-radius: 999px;
+             background: var(--surface); border: 1.5px solid var(--border); font: 600 19px/1 var(--mono);
+             letter-spacing: .04em; text-transform: uppercase; color: var(--muted); }
+  .eyebrow b { width: 10px; height: 10px; border-radius: 50%; background: var(--lemon-400); }
+  h1 { margin-top: 20px; font: 800 58px/1 var(--display); letter-spacing: -0.03em; }
+  .sub { margin-top: 14px; max-width: 900px; font-size: 25px; line-height: 34px; color: var(--muted); }
+  .foot { margin-top: 40px; padding-top: 24px; border-top: 1.5px solid var(--border);
+          display: flex; align-items: center; justify-content: space-between; }
+  .wordmark { font: 800 30px/1 var(--display); letter-spacing: -0.03em; }
+  .wordmark i { display: inline-block; width: .27em; height: .27em; margin: 0 .03em; border-radius: 50%;
+                background: var(--lemon-400); }
+  .built { display: flex; align-items: center; gap: 12px; font-size: 20px; font-weight: 600; color: var(--leaf-600); }
+  .built svg { height: 22px; width: 66px; color: var(--paypal); }
+
+  /* Cards and chips */
+  .card { background: var(--surface); border: 1.5px solid var(--border); border-radius: 20px; padding: 24px 26px; }
+  .card h3 { font: 700 27px/1.15 var(--display); letter-spacing: -0.02em; }
+  .card p { margin-top: 8px; font-size: 21px; line-height: 29px; color: var(--muted); }
+  .card p strong { color: var(--leaf-900); font-weight: 600; }
+  .tag { font: 600 19px/1 var(--mono); letter-spacing: .05em; text-transform: uppercase; color: var(--muted); }
+  .row { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+  .between { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+
+  .chip { display: inline-flex; align-items: center; gap: 8px; height: 38px; padding: 0 14px 0 6px;
+          border-radius: 999px; font-size: 20px; font-weight: 600; white-space: nowrap; }
+  .ai { background: var(--pink-100); color: var(--pink-600); }
+  .spark { display: grid; place-items: center; width: 28px; height: 28px; border-radius: 50%; background: var(--pink-400); }
+  .spark svg { width: 16px; height: 16px; fill: #fff; }
+  .code { background: var(--leaf-900); color: var(--lemon-300); padding: 0 14px; font: 600 19px/1 var(--mono); }
+  .yes { background: var(--leaf-600); color: #fff; padding: 0 16px 0 8px; }
+  .yes .tick { display: grid; place-items: center; width: 26px; height: 26px; border-radius: 50%; background: var(--lemon-400); }
+  .yes .tick svg { width: 14px; height: 14px; stroke: var(--leaf-900); stroke-width: 3.2; fill: none; }
+  .soft { background: var(--surface-muted); color: var(--leaf-900); padding: 0 14px; font-weight: 500; }
+
+  /* Sponsor marks */
+  .by { display: flex; flex-direction: column; align-items: flex-start; gap: 14px; }
+  .by-label { font: 600 16px/1 var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+  .logo { display: block; width: auto; }
+  .logo.channel3 { height: 30px; } .logo.kernel { height: 26px; } .logo.render { height: 30px; }
+  .pp { display: block; height: 32px; width: 95px; flex: none; color: var(--paypal); }
+  .logo-head { display: flex; align-items: center; justify-content: space-between; gap: 12px;
+               min-height: 58px; padding-bottom: 18px; margin-bottom: 18px; border-bottom: 1.5px dashed var(--border); }
+
+  /* Connectors */
+  .down { display: flex; justify-content: center; height: 46px; }
+  .down svg { width: 24px; height: 46px; }
+  .wire { stroke: var(--leaf-600); stroke-width: 3; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+  .head-fill { fill: var(--leaf-600); }
+  .fan { display: block; width: 100%; height: 56px; }
+
+  .bubble { display: inline-block; padding: 18px 24px; border-radius: 24px 24px 6px 24px; background: var(--leaf-900);
+            color: #fff; font-size: 23px; line-height: 31px; }
+  .bubble.buyer { border-radius: 24px 24px 24px 6px; background: var(--surface); color: var(--leaf-900);
+                  border: 1.5px solid var(--border); }
+  .band { margin-top: 28px; border-radius: 20px; padding: 22px 28px; display: flex; align-items: center; gap: 24px; }
+  .band.dark { background: var(--leaf-900); color: #fff; }
+  .band.dark strong { color: var(--lemon-300); }
+  .band.lemon { background: var(--lemon-100); border: 1.5px solid var(--lemon-300); }
+  .band p { font-size: 22px; line-height: 31px; }
+  .band .muted { color: var(--muted); }
+
+  /* 1 · Overview */
+  .steps { position: relative; display: flex; flex-direction: column; gap: 20px; margin-top: 40px; }
+  .steps::before { content: ""; position: absolute; left: 58px; top: 40px; bottom: 40px; width: 3px;
+                   background: var(--leaf-300); border-radius: 3px; }
+  .step { position: relative; display: grid; grid-template-columns: 64px 1fr 260px; gap: 26px; align-items: center; }
+  .num { display: grid; place-items: center; width: 64px; height: 64px; border-radius: 50%; background: var(--lemon-400);
+         font: 800 30px/1 var(--display); }
+  .step .by { padding-left: 26px; border-left: 1.5px dashed var(--border); align-self: stretch; justify-content: center; }
+  .step.money { border-color: var(--lemon-500); box-shadow: 0 0 0 4px var(--lemon-100); }
+  .extras { margin-top: 24px; display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+  .extras .card { background: var(--surface-muted); border-style: dashed; }
+
+  /* 2 · Research */
+  .input { display: flex; align-items: center; justify-content: center; gap: 20px; margin-top: 36px; }
+  .photo { display: grid; place-items: center; width: 108px; height: 108px; border-radius: 22px; background: var(--leaf-100); flex: none; }
+  .center { width: 720px; margin: 0 auto; }
+  .tri { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+  .tri .card p { font-size: 20px; line-height: 28px; }
+  .outs { margin-top: 16px; display: flex; flex-wrap: wrap; gap: 10px; }
+  .done { display: flex; align-items: center; justify-content: center; gap: 14px; padding: 20px 28px; border-radius: 999px;
+          background: var(--leaf-600); color: #fff; font: 700 26px/1 var(--display); width: fit-content; margin: 0 auto; }
+  .done .tick { display: grid; place-items: center; width: 34px; height: 34px; border-radius: 50%; background: var(--lemon-400); }
+  .done .tick svg { width: 18px; height: 18px; stroke: var(--leaf-900); stroke-width: 3.2; fill: none; }
+  .sites { display: flex; gap: 8px; margin-top: 14px; flex-wrap: wrap; }
+  .sites .chip { height: 34px; padding: 0 12px; font-size: 19px; }
+
+  /* 3 · Agents */
+  .lanes { margin-top: 36px; display: grid; grid-template-columns: 1fr 1fr; gap: 32px; }
+  .lane-title { display: flex; align-items: center; gap: 12px; margin-bottom: 18px; font: 700 22px/1 var(--display); }
+  .lane-title .n { display: grid; place-items: center; width: 40px; height: 40px; border-radius: 50%; background: var(--lemon-400); font-size: 21px; }
+  .split { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  .out { border-radius: 16px; padding: 18px 18px; font-size: 20px; line-height: 27px; }
+  .out b { display: block; font: 700 22px/1.2 var(--display); margin-bottom: 6px; }
+  .out.good { background: var(--leaf-100); }
+  .out.hand { background: var(--pink-100); }
+  .rules { margin: 14px 0 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 12px; }
+  .rules li { display: grid; grid-template-columns: 30px 1fr; gap: 10px; font-size: 21px; line-height: 28px; color: var(--muted); }
+  .rules li::before { content: ""; width: 12px; height: 12px; margin: 8px 0 0 8px; border-radius: 50%; background: var(--lemon-500); }
+  .rules li strong { color: var(--leaf-900); font-weight: 600; }
+  .note { margin-top: 12px; font-size: 19px; line-height: 26px; color: var(--muted); }
+
+  /* 4 · PayPal */
+  .timeline { margin-top: 36px; display: grid; grid-template-columns: 116px 1fr 320px; column-gap: 22px; row-gap: 18px; position: relative; }
+  .when { justify-self: end; align-self: center; text-align: right; font: 600 19px/1.3 var(--mono); color: var(--muted); }
+  .when b { display: block; font: 800 26px/1.1 var(--display); color: var(--leaf-900); letter-spacing: -0.02em; }
+  .tl-card { position: relative; display: grid; grid-template-columns: 54px 1fr; gap: 18px; align-items: start; }
+  .tl-card .num { width: 54px; height: 54px; font-size: 26px; }
+  .branch { align-self: center; position: relative; border-radius: 18px; padding: 18px 20px; background: var(--pink-100);
+            font-size: 20px; line-height: 27px; }
+  .branch b { display: block; font: 700 22px/1.2 var(--display); color: var(--pink-600); margin-bottom: 4px; }
+  .branch::before { content: ""; position: absolute; left: -22px; top: 50%; width: 22px; border-top: 3px dashed var(--pink-400); }
+  .held { background: var(--lemon-100); border-color: var(--lemon-300); }
+  .api { align-self: center; position: relative; border-radius: 18px; padding: 18px 20px; background: #eef2ff; border: 1.5px solid #c9d4f5; }
+  .api .pp { height: 24px; width: 72px; }
+  .api b { display: block; margin-top: 10px; font: 700 22px/1.2 var(--display); color: var(--paypal); }
+  .api span { display: block; margin-top: 4px; font-size: 19px; line-height: 25px; color: var(--muted); }
+  .api::before { content: ""; position: absolute; left: -22px; top: 50%; width: 22px; border-top: 3px dashed #8fa6e8; }
+  .inline-code { display: inline-block; margin-top: 12px; padding: 6px 12px; border-radius: 10px; background: var(--leaf-900); color: var(--lemon-300); font: 600 19px/1.2 var(--mono); }
+  .tl-logo { margin-top: 14px; }
+
+  /* 5 · Sidekick */
+  .flow3 { margin-top: 30px; display: grid; grid-template-columns: 1fr 40px 1fr 40px 1fr; align-items: stretch; }
+  .flow3 .arrow { display: grid; place-items: center; }
+  .flow3 .arrow svg { width: 40px; height: 24px; }
+  .formula { margin: 0 auto; width: fit-content; padding: 24px 36px;
+             border-radius: 999px; background: var(--leaf-900); color: #fff; font: 700 30px/1 var(--display); letter-spacing: -0.02em; }
+  .formula em { font-style: normal; color: var(--lemon-300); }
+  .vs { margin-top: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+  .pick { display: grid; grid-template-columns: 1fr auto; gap: 6px 16px; align-items: center; }
+  .pick .pct { grid-row: span 2; font: 800 54px/1 var(--display); letter-spacing: -0.03em; }
+  .pick.best { border: 3px solid var(--leaf-600); box-shadow: 0 0 0 5px var(--leaf-100); }
+  .pick.meh .pct { color: var(--muted); }
+  .badge { display: inline-flex; align-items: center; height: 34px; padding: 0 14px; border-radius: 999px; font-size: 19px; font-weight: 700; }
+  .badge.win { background: var(--lemon-400); }
+  .badge.lose { background: var(--surface-muted); color: var(--muted); }
+
+  /* 6 · MCP */
+  .three { margin-top: 36px; display: grid; grid-template-columns: 1fr 44px 1fr 44px 1fr; align-items: stretch; }
+  .three .arrow { display: grid; place-items: center; }
+  .three .arrow svg { width: 44px; height: 24px; }
+  .mono { font: 600 20px/1.3 var(--mono); color: var(--leaf-600); }
+  .guards { margin-top: 28px; display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+  .guard { border-radius: 18px; padding: 20px; background: var(--leaf-100); }
+  .guard b { display: block; font: 700 23px/1.2 var(--display); }
+  .guard span { display: block; margin-top: 8px; font-size: 19px; line-height: 26px; color: var(--leaf-900); opacity: .82; }
+</style>
+</head>
+<body>
+
+<!-- Shared bits, copied into the boards by the script at the bottom -->
+<template id="spark"><span class="spark"><svg viewBox="0 0 24 24"><path d="M12 1.5c.9 5.6 3.9 8.6 10.5 10.5-6.6 1.9-9.6 4.9-10.5 10.5C11.1 16.9 8.1 13.9 1.5 12 8.1 10.1 11.1 7.1 12 1.5Z"/></svg></span></template>
+<template id="tick"><span class="tick"><svg viewBox="0 0 16 16"><path d="M3 8.5l3.2 3L13 4.8"/></svg></span></template>
+<template id="paypal"><svg class="pp" viewBox="0 0 1310 439.6" role="img" aria-label="PayPal"><path fill="currentColor" d="M1309.9993,0v328.2999h-74.7V0h74.7ZM1207.7994,110.7999v218.0999h-66.4v-18.8c-8.4,8.2-18,14.4-28.6,18.8-10.7,4.6-22.3,7-34.7,7-15.6,0-30.1-2.9-43.3999-8.7-13.3-6.1-24.9-14.4-34.7-24.8-9.9-10.5-17.7-22.7-23.5-36.6-5.5-14.2-8.2-29.5-8.2-45.8s2.7-31.4,8.2-45.3c5.8-14.2,13.6-26.6,23.5-37.1,9.7768-10.4201,21.5868-18.7245,34.7-24.4,13.3-6.1,27.8-9.2,43.3999-9.2,12.4,0,24,2.3,34.7,7,10.7,4.4,20.3,10.6,28.6,18.8v-18.8h66.4v-.2ZM1090.0994,269.4999c13.6,0,24.7-4.6,33.3999-14,9-9.3,13.5-21.2,13.5-35.7s-4.5-26.5-13.5-35.7c-8.7-9.3-19.9-14-33.3999-14s-24.9,4.6-33.9,14c-8.7,9.3-13,21.2-13,35.7s4.4,26.5,13,35.7c9,9.3,20.3,14,33.9,14ZM861.6996,0c19.7,0,36.5,2.8,50.4,8.3s25.6,13.2,35.1999,23.1c9.8,10.2,17.5,21.8,23,34.9s8.2,27.2,8.2,42.3-2.7,29.2-8.2,42.3c-5.3982,12.9791-13.202,24.8205-23,34.9-9.5,9.9-21.3,17.6-35.1999,23.1s-30.7,8.3-50.4,8.3h-36v111.6h-75.9999V0h111.9999ZM850.7996,149.5999c10.2,0,17.9-1,23.5-3.1,5.8-2.3,10.6-5.3,14.3-8.7,7.8-7.3,11.7-17,11.7-29.2s-3.9-21.9-11.7-29.2c-3.8-3.5-8.5-6.3-14.3-8.3-5.5-2.3-13.3-3.5-23.5-3.5h-25.2v82h25.2ZM469.6998,110.7999h82.5l56,104.6h.9l49.9-104.6h76.4l-163.6999,328.7998h-75.9999l74.7-150.3999-100.6999-178.3999ZM454.9998,110.7999v218.0999h-66.4v-18.8c-8.4,8.2-18,14.4-28.6,18.8-10.7,4.6-22.3,7-34.7,7-15.6,0-30.1-2.9-43.4-8.7-13.3-6.1-24.9-14.4-34.7-24.8-9.8-10.5-17.7-22.7-23.5-36.6-5.5-14.2-8.2-29.5-8.2-45.8s2.7-31.4,8.2-45.3c5.8-14.2,13.6-26.6,23.5-37.1,9.758-10.4418,21.5728-18.7496,34.7-24.4,13.3-6.1,27.8-9.2,43.4-9.2,12.4,0,24,2.3,34.7,7,10.7,4.4,20.3,10.6,28.6,18.8v-18.8h66.4v-.2ZM337.2998,269.4999c13.6,0,24.7-4.6,33.5-14,9-9.3,13.5-21.2,13.5-35.7s-4.5-26.5-13.5-35.7c-8.7-9.3-19.9-14-33.5-14s-24.9,4.6-33.9,14c-8.7,9.3-13,21.2-13,35.7s4.4,26.5,13,35.7c9,9.3,20.3,14,33.9,14ZM111.9999,0c19.7,0,36.5,2.8,50.4,8.3s25.6,13.2,35.2,23.1c9.8,10.2,17.5,21.8,23,34.9s8.2,27.2,8.2,42.3-2.7,29.2-8.2,42.3c-5.3982,12.9791-13.2019,24.8205-23,34.9-9.5,9.9-21.3,17.6-35.2,23.1-13.9,5.5-30.7,8.3-50.4,8.3h-36v111.6H0V0h111.9999ZM101.1999,149.5999c10.2,0,17.9-1,23.5-3.1,5.8-2.3,10.6-5.3,14.3-8.7,7.8-7.3,11.7-17,11.7-29.2s-3.9-21.9-11.7-29.2c-3.8-3.5-8.5-6.3-14.3-8.3-5.5-2.3-13.3-3.5-23.5-3.5h-25.2v82s25.2,0,25.2,0Z"/></svg></template>
+<template id="down"><div class="down"><svg viewBox="0 0 24 46"><path class="wire" d="M12 2v32"/><path class="head-fill" d="M4 32h16l-8 12z"/></svg></div></template>
+<template id="right"><svg viewBox="0 0 44 24"><path class="wire" d="M4 12h26"/><path class="head-fill" d="M28 4v16l12-8z"/></svg></template>
+<template id="foot"><footer class="foot"><div class="wordmark">resell<i></i>store</div><div class="built">Built for the <span data-pp-slot></span> AI Hackathon</div></footer></template>
+
+<!-- ============ 1 · OVERVIEW ============ -->
+<section class="board" id="01-overview">
+  <div class="blob" style="width:520px;height:520px;right:-200px;top:-260px"></div>
+  <div class="eyebrow"><b></b>How it works</div>
+  <h1>From one photo to paid</h1>
+  <p class="sub">AI does the legwork, the seller makes the calls, and PayPal moves the money. Every logo below is wired into the app today.</p>
+
+  <div class="steps">
+    <div class="card step">
+      <div class="num">1</div>
+      <div><h3>Snap it</h3><p>Take a photo or say what it is. The agent works out exactly what it's looking at: brand, model, colour, size.</p></div>
+      <div class="by"><div class="by-label">Powered by</div><span class="chip ai" data-spark>AI vision</span></div>
+    </div>
+    <div class="card step">
+      <div class="num">2</div>
+      <div><h3>Price it</h3><p>Finds it among 100M products, what it costs new, and what the same item is listed for on <strong>eBay, Poshmark and Depop</strong> right now.</p></div>
+      <div class="by"><div class="by-label">Powered by</div><img class="logo channel3" src="../../../apps/app/public/sponsors/channel3.png" alt="Channel3"><img class="logo kernel" src="../../../apps/app/public/sponsors/kernel.png" alt="Kernel"></div>
+    </div>
+    <div class="card step">
+      <div class="num">3</div>
+      <div><h3>List it</h3><p>Writes the title and description in the seller's tone, then puts it live on their own shop address, searchable by meaning.</p></div>
+      <div class="by"><div class="by-label">Powered by</div><span class="chip ai" data-spark>AI writer</span><img class="logo render" src="../../../apps/app/public/sponsors/render.png" alt="Render"></div>
+    </div>
+    <div class="card step">
+      <div class="num">4</div>
+      <div><h3>Sell it</h3><p>The shop agent answers buyers from the listing's facts and counters low offers inside the seller's limits.</p>
+        <div class="row" style="margin-top:14px"><span class="chip yes" data-tick>Good offers wait for the seller's yes</span></div></div>
+      <div class="by"><div class="by-label">Powered by</div><span class="chip ai" data-spark>Shop agent</span></div>
+    </div>
+    <div class="card step money">
+      <div class="num">5</div>
+      <div><h3>Get paid</h3><p>Buyer pays with PayPal or a card. The money waits at PayPal until the item arrives, then lands in the seller's own PayPal automatically.</p></div>
+      <div class="by"><div class="by-label">Powered by</div><span data-paypal></span><img class="logo render" src="../../../apps/app/public/sponsors/render.png" alt="Render"></div>
+    </div>
+  </div>
+
+  <div class="extras">
+    <div class="card"><div class="between"><h3>Shopping sidekick</h3><span class="chip ai" data-spark>AI</span></div><p>Paste a link before you buy: is it worth it to resell?</p></div>
+    <div class="card"><div class="between"><h3>Bring your own agent</h3><span class="chip code">MCP</span></div><p>Any AI assistant can run a shop or buy, with guardrails.</p></div>
+  </div>
+  <div data-foot></div>
+</section>
+
+<!-- ============ 2 · RESEARCH ============ -->
+<section class="board" id="02-research">
+  <div class="blob" style="width:460px;height:460px;right:-200px;top:-220px"></div>
+  <div class="eyebrow"><b></b>AI flow · Research</div>
+  <h1>How the agent prices an item</h1>
+  <p class="sub">One photo starts five steps. The three lookups run side by side, so the slow one never holds up the rest.</p>
+
+  <div class="input">
+    <div class="photo"><svg width="68" height="56" viewBox="0 0 68 56"><circle cx="34" cy="6" r="4.5" fill="#14261d"/><path d="M12 18c0-5 4-8 9-8h26c5 0 9 3 9 8v4H12z" fill="#f5be0b"/><rect x="2" y="22" width="10" height="6" rx="3" fill="#f5be0b"/><rect x="56" y="22" width="10" height="6" rx="3" fill="#f5be0b"/><path d="M10 22h48v20c0 7-5 12-12 12H22c-7 0-12-5-12-12z" fill="#ffd934"/><path d="M10 30h48" stroke="#fff6c2" stroke-width="3"/></svg></div>
+    <div class="bubble">Le Creuset dutch oven, the yellow one.<br>It was a wedding gift.</div>
+  </div>
+  <div data-down></div>
+
+  <div class="card center">
+    <div class="between"><span class="tag">Step 1 · Identify</span><span class="chip ai" data-spark>AI vision</span></div>
+    <h3 style="margin-top:12px">What is it, exactly?</h3>
+    <div class="outs"><span class="chip soft">Round dutch oven</span><span class="chip soft">Le Creuset</span><span class="chip soft">Yellow</span><span class="chip soft">About 5.5 qt</span></div>
+  </div>
+
+  <svg class="fan" viewBox="0 0 1072 56" preserveAspectRatio="none"><path class="wire" d="M536 0v20M170.7 20H901.3M170.7 20v22M536 20v22M901.3 20v22"/><path class="head-fill" d="M162.7 40h16l-8 12zM528 40h16l-8 12zM893.3 40h16l-8 12z"/></svg>
+
+  <div class="tri">
+    <div class="card">
+      <div class="logo-head"><img class="logo channel3" src="../../../apps/app/public/sponsors/channel3.png" alt="Channel3"></div>
+      <span class="tag">Step 2 · Catalog</span>
+      <h3 style="margin-top:10px">Find the product</h3>
+      <p>Matched among <strong>100M products</strong>. The maker's own photos and what it costs new.</p>
+      <div class="sites"><span class="chip soft">Maker photos</span><span class="chip soft">New price</span></div>
+    </div>
+    <div class="card">
+      <div class="logo-head"><img class="logo channel3" src="../../../apps/app/public/sponsors/channel3.png" alt="Channel3"></div>
+      <span class="tag">Step 3 · Resale</span>
+      <h3 style="margin-top:10px">Second-hand offers</h3>
+      <p>What the same product is going for used, from stores that sell second hand.</p>
+      <div class="sites"><span class="chip soft">Used prices</span></div>
+    </div>
+    <div class="card">
+      <div class="logo-head"><img class="logo kernel" src="../../../apps/app/public/sponsors/kernel.png" alt="Kernel"><span class="chip ai" data-spark>AI</span></div>
+      <span class="tag">Step 4 · Listings</span>
+      <h3 style="margin-top:10px">Listed right now</h3>
+      <p>Cloud browsers search three sites at once. AI checks every card is the <strong>same item</strong>, not a look-alike.</p>
+      <div class="sites"><span class="chip soft">eBay</span><span class="chip soft">Poshmark</span><span class="chip soft">Depop</span></div>
+    </div>
+  </div>
+
+  <svg class="fan" viewBox="0 0 1072 56" preserveAspectRatio="none"><path class="wire" d="M170.7 0v20M536 0v20M901.3 0v20M170.7 20H901.3M536 20v22"/><path class="head-fill" d="M528 40h16l-8 12z"/></svg>
+
+  <div class="card center">
+    <div class="between"><span class="tag">Step 5 · Price</span><div class="row"><span class="chip code">code</span><span class="chip ai" data-spark>AI</span></div></div>
+    <h3 style="margin-top:12px">A fair range and a suggested price</h3>
+    <p>Up to 10 matching listings. Things sell a little under list, so <strong>sells for = 85–100% of the listed median</strong>. Anything it can't see, it asks the seller.</p>
+  </div>
+  <div data-down></div>
+  <div class="done" data-tick>The listing fills in live, card by card</div>
+
+  <div class="band lemon">
+    <img class="logo render" src="../../../apps/app/public/sponsors/render.png" alt="Render" style="flex:none">
+    <p class="muted">Runs off the request on Render. Each step saves its progress to Postgres, so the page shows every tool card as it finishes.</p>
+  </div>
+  <div data-foot></div>
+</section>
+
+<!-- ============ 3 · SHOP AGENTS ============ -->
+<section class="board" id="03-agents">
+  <div class="blob" style="width:460px;height:460px;right:-200px;top:-220px"></div>
+  <div class="eyebrow"><b></b>AI flow · Selling</div>
+  <h1>The shop agent sells while you're busy</h1>
+  <p class="sub">Two agents work every listing. They talk and haggle inside the seller's limits, and never accept an offer on their own.</p>
+
+  <div class="lanes">
+    <div>
+      <div class="lane-title"><span class="n">A</span>A buyer asks a question</div>
+      <div class="bubble buyer">Does it work on an induction hob?</div>
+      <div data-down></div>
+      <div class="card">
+        <div class="between"><h3>Q&amp;A agent</h3><span class="chip ai" data-spark>AI</span></div>
+        <p>Answers only from what the shop has said:</p>
+        <ul class="rules">
+          <li><span><strong>The listing</strong> and its details</span></li>
+          <li><span><strong>Research facts</strong>, flagged as general</span></li>
+          <li><span>The seller's <strong>earlier answers</strong> on this item</span></li>
+        </ul>
+      </div>
+      <div data-down></div>
+      <div class="split">
+        <div class="out good"><b>Knows it</b>Replies to the buyer right away.</div>
+        <div class="out hand"><b>Doesn't</b>Says so kindly and flags the thread <strong>“Needs you”</strong>.</div>
+      </div>
+      <p class="note">Stays quiet while the seller is in the chat.</p>
+    </div>
+
+    <div>
+      <div class="lane-title"><span class="n">B</span>A buyer makes an offer</div>
+      <div class="bubble buyer">Would you take <strong>$140</strong>? (listed at $185)</div>
+      <div data-down></div>
+      <div class="card">
+        <div class="between"><h3>Negotiator</h3><span class="chip code">code does the maths</span></div>
+        <ul class="rules">
+          <li><span><strong>At or above the lowest:</strong> leaves it for the seller with “I'd take it”</span></li>
+          <li><span><strong>Below:</strong> counters halfway, never under the seller's lowest. Here, <strong>$165</strong></span></li>
+          <li><span><strong>Never</strong> accepts on its own</span></li>
+        </ul>
+      </div>
+      <div data-down></div>
+      <div class="card" style="padding:20px 24px">
+        <div class="between"><h3 style="font-size:24px">Words the counter</h3><span class="chip ai" data-spark>AI</span></div>
+        <p style="font-size:20px;line-height:27px">Must carry the exact number, or a template is sent.</p>
+      </div>
+      <div data-down></div>
+      <div class="split">
+        <div class="out good"><b>Buyer takes the counter</b>Already approved: it's never under the seller's lowest.</div>
+        <div class="out" style="background:var(--lemon-100)"><b>At or over the lowest</b>Waits for the seller's yes.</div>
+      </div>
+      <div data-down></div>
+      <div class="between" style="justify-content:center;gap:14px">
+        <span style="font:700 24px/1 var(--display)">Checkout with</span><span data-paypal></span>
+      </div>
+    </div>
+  </div>
+
+  <div class="band dark">
+    <span class="spark" style="width:44px;height:44px;flex:none"><svg viewBox="0 0 24 24" style="width:24px;height:24px"><path d="M12 1.5c.9 5.6 3.9 8.6 10.5 10.5-6.6 1.9-9.6 4.9-10.5 10.5C11.1 16.9 8.1 13.9 1.5 12 8.1 10.1 11.1 7.1 12 1.5Z"/></svg></span>
+    <p><strong>Money decisions live in code, not the model.</strong> The AI picks the words. The seller's lowest price is never shown to a buyer.</p>
+  </div>
+  <div data-foot></div>
+</section>
+
+<!-- ============ 4 · PAYPAL ============ -->
+<section class="board" id="04-paypal">
+  <div class="blob" style="width:460px;height:460px;right:-200px;top:-220px"></div>
+  <div class="eyebrow"><b></b>Money flow · PayPal</div>
+  <h1>Buyers only pay for what arrives</h1>
+  <p class="sub">Every sale is one PayPal order paid to the seller's own account, with our fee split out and the money held until the item arrives.</p>
+
+  <div class="timeline">
+    <div class="when"><b>Once</b>sign-up</div>
+    <div class="card tl-card"><div class="num">1</div><div><h3>Seller connects PayPal</h3><p>A one-time PayPal sign-up. Sales go straight to the seller's own account.</p></div></div>
+    <div class="api"><span data-paypal></span><b>Partner Referrals</b><span>Seller onboarding, with permission to hold and refund</span></div>
+
+    <div class="when"><b>Day 0</b>checkout</div>
+    <div class="card tl-card"><div class="num">2</div><div><h3>Buyer pays</h3><p>PayPal or a card, no account needed. Item plus shipping, with the <strong>10% platform fee</strong> split out in the same payment.</p></div></div>
+    <div class="api"><span data-paypal></span><b>Orders API</b><span>Checkout with <strong>platform_fees</strong> in the same order</span></div>
+
+    <div class="when"><b>Held</b>until arrival</div>
+    <div class="card tl-card held"><div class="num">3</div><div><h3>The money waits at PayPal</h3><p>Captured with <strong>delayed disbursement</strong>, so it sits with PayPal, not with us.</p><span class="inline-code">disbursement_mode: "DELAYED"</span></div></div>
+    <div class="branch"><b>Never ships?</b>After 7 days it's called off and the buyer refunded.</div>
+
+    <div class="when"><b>+7 days</b>after shipping</div>
+    <div class="card tl-card"><div class="num">4</div><div><h3>“Did it arrive?”</h3><p>The buyer is asked, then gets <strong>3 days</strong> to report a problem.</p></div></div>
+    <div class="branch"><b>Problem?</b>A dispute, then a full or partial refund through the PayPal Refunds API.</div>
+
+    <div class="when"><b>Paid</b>automatically</div>
+    <div class="card tl-card"><div class="num">5</div><div><h3>Released to the seller</h3><p>Lands in the seller's PayPal. Nobody has to press a button.</p></div></div>
+    <div class="api"><span data-paypal></span><b>Referenced Payouts</b><span>Releases the held capture, safe to retry</span></div>
+  </div>
+
+  <div class="band lemon" style="align-items:flex-start">
+    <img class="logo render" src="../../../apps/app/public/sponsors/render.png" alt="Render" style="flex:none;margin-top:2px">
+    <p class="muted"><strong style="color:var(--leaf-900)">Render Workflows</strong> run the clock every 15 minutes: releases, refunds, offer expiry, webhook retries. Each one re-checks the order first, so a retry never pays twice. PayPal webhooks keep every order in sync.</p>
+  </div>
+  <div data-foot></div>
+</section>
+
+<!-- ============ 5 · SIDEKICK ============ -->
+<section class="board" id="05-sidekick">
+  <div class="blob" style="width:460px;height:460px;right:-200px;top:-220px"></div>
+  <div class="eyebrow"><b></b>AI flow · Buying</div>
+  <h1>Is it worth buying to resell?</h1>
+  <p class="sub">The shopping sidekick checks something before you buy it. Paste a link, or just say what you're eyeing.</p>
+
+  <div class="input" style="justify-content:flex-start"><div class="bubble">Black Reformation wrap dress, $120</div></div>
+
+  <div class="flow3">
+    <div class="card">
+      <div class="logo-head"><img class="logo kernel" src="../../../apps/app/public/sponsors/kernel.png" alt="Kernel"><span class="chip ai" data-spark>AI</span></div>
+      <span class="tag">1 · Read</span>
+      <h3 style="margin-top:10px">What it is, what it costs</h3>
+      <p>Reads the product page you pasted, or what you said.</p>
+    </div>
+    <div class="arrow" data-right></div>
+    <div class="card">
+      <div class="logo-head"><img class="logo channel3" src="../../../apps/app/public/sponsors/channel3.png" alt="Channel3"></div>
+      <span class="tag">2 · New price</span>
+      <h3 style="margin-top:10px">What it costs new</h3>
+      <p>Looked up when you didn't give a price.</p>
+    </div>
+    <div class="arrow" data-right></div>
+    <div class="card">
+      <div class="logo-head"><img class="logo kernel" src="../../../apps/app/public/sponsors/kernel.png" alt="Kernel"><span class="chip ai" data-spark>AI</span></div>
+      <span class="tag">3 · Comps</span>
+      <h3 style="margin-top:10px">Listed second hand</h3>
+      <p>The same item on eBay, Poshmark and Depop today.</p>
+    </div>
+  </div>
+  <div data-down></div>
+  <div class="formula">Score = <em>likely sells for</em> ÷ what it costs</div>
+  <div data-down></div>
+
+  <div class="vs">
+    <div class="card pick best">
+      <div><span class="tag">Dress A · $120</span><h3 style="margin-top:8px">Sells for about $96</h3></div>
+      <div class="pct">80%</div>
+      <div><span class="badge win">Better buy</span></div>
+    </div>
+    <div class="card pick meh">
+      <div><span class="tag">Dress B · $120</span><h3 style="margin-top:8px">Sells for about $60</h3></div>
+      <div class="pct">50%</div>
+      <div><span class="badge lose">Keeps half its value</span></div>
+    </div>
+  </div>
+  <p class="note" style="text-align:center;margin-top:16px">Example: same price, very different resale. Runs in the background in about a minute.</p>
+  <div data-foot></div>
+</section>
+
+<!-- ============ 6 · MCP ============ -->
+<section class="board" id="06-mcp">
+  <div class="blob" style="width:460px;height:460px;right:-200px;top:-220px"></div>
+  <div class="eyebrow"><b></b>AI flow · Your own agent</div>
+  <h1>Bring your own agent</h1>
+  <p class="sub">Everything in the app is also an API and an MCP server, so any AI assistant can run a shop or go shopping.</p>
+
+  <div class="three">
+    <div class="card">
+      <span class="chip ai" data-spark>Your assistant</span>
+      <h3 style="margin-top:16px">Any MCP client</h3>
+      <p>Chat apps, coding agents, or your own code.</p>
+    </div>
+    <div class="arrow" data-right></div>
+    <div class="card">
+      <span class="chip code">MCP</span>
+      <h3 style="margin-top:16px">resell.store MCP</h3>
+      <p><strong>Seller:</strong> list, reply, answer offers.<br><strong>Buyer:</strong> search, ask, offer.</p>
+    </div>
+    <div class="arrow" data-right></div>
+    <div class="card">
+      <span class="chip code">REST</span>
+      <h3 style="margin-top:16px">Public API</h3>
+      <p>The same <span class="mono">/v1</span> API, with docs and an OpenAPI file.</p>
+    </div>
+  </div>
+
+  <div class="guards">
+    <div class="guard"><b>Scoped keys</b><span>Pick what an agent may touch.</span></div>
+    <div class="guard"><b>Ask me first</b><span>It checks with you before chosen actions.</span></div>
+    <div class="guard"><b>Spending cap</b><span>Buyer agents start at $200.</span></div>
+    <div class="guard"><b>Activity log</b><span>Every change, in plain words.</span></div>
+  </div>
+
+  <div class="band lemon">
+    <img class="logo render" src="../../../apps/app/public/sponsors/render.png" alt="Render" style="flex:none">
+    <p class="muted">The hosted MCP servers run in the same Render app and call the API in-process. Sales still check out and pay out through PayPal.</p>
+  </div>
+  <div data-foot></div>
+</section>
+
+<script>
+  const tpl = (id) => document.getElementById(id).content.firstElementChild;
+  document.querySelectorAll("[data-spark]").forEach((el) => el.prepend(tpl("spark").cloneNode(true)));
+  document.querySelectorAll("[data-tick]").forEach((el) => el.prepend(tpl("tick").cloneNode(true)));
+  document.querySelectorAll("[data-paypal]").forEach((el) => el.replaceWith(tpl("paypal").cloneNode(true)));
+  document.querySelectorAll("[data-down]").forEach((el) => el.replaceWith(tpl("down").cloneNode(true)));
+  document.querySelectorAll("[data-right]").forEach((el) => el.append(tpl("right").cloneNode(true)));
+  document.querySelectorAll("[data-foot]").forEach((el) => el.replaceWith(tpl("foot").cloneNode(true)));
+  document.querySelectorAll("[data-pp-slot]").forEach((el) => el.replaceWith(tpl("paypal").cloneNode(true)));
+</script>
+</body>
+</html>

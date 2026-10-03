@@ -1,0 +1,154 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Seller flow</title>
+<link rel="stylesheet" href="diagram.css">
+<style>
+  .cols, .grid {
+    display: grid;
+    grid-template-columns: 1fr 36px 1fr;
+  }
+  .cols { margin-bottom: 12px; }
+  .cols .who { height: 36px; font-size: 15.5px; padding-right: 14px; justify-self: start; }
+  .cols .who .face { width: 28px; height: 28px; font-size: 15px; }
+  .grid { row-gap: 0; }
+  .grid .card { display: flex; flex-direction: column; }
+  .grid .card .top { display: flex; align-items: center; gap: 12px; }
+  .grid .card .top .num { width: 32px; height: 32px; font-size: 16px; }
+  .card.ink .num, .card.sky .num { background: var(--lemon-400); color: var(--leaf-900); }
+  .photo {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 132px;
+    margin-top: 14px;
+    border-radius: 16px;
+    background: var(--leaf-100);
+    transform: rotate(-2deg);
+  }
+  .photo .pill { position: absolute; left: 10px; bottom: 10px; height: 22px; font-size: 12px; }
+  .photo + .say { align-self: flex-end; margin-top: 12px; background: var(--leaf-900); color: #fff; }
+  .gut { display: flex; align-items: center; justify-content: center; }
+  .gut svg { display: block; }
+  .turn { grid-column: 1 / -1; height: 34px; position: relative; }
+  .turn svg { position: absolute; inset: 0; overflow: visible; }
+  .src { display: flex; flex-direction: column; gap: 7px; margin-top: 12px; }
+  .src div { display: flex; align-items: center; gap: 9px; font-size: 14.5px; line-height: 20px; color: #dbe7df; }
+  .src .pill { height: 24px; font-size: 12.5px; flex-shrink: 0; }
+  .result {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 14px;
+    padding: 10px 12px;
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.08);
+    font-size: 15px;
+    font-weight: 600;
+  }
+  .result big { font-family: var(--display); font-size: 26px; line-height: 26px; font-weight: 800; color: var(--lemon-400); }
+
+  .range { position: relative; height: 8px; margin: 12px 2px 4px; border-radius: 8px; background: rgba(255, 255, 255, 0.14); }
+  .range span { position: absolute; left: 22%; right: 26%; top: 0; bottom: 0; border-radius: 8px; background: var(--leaf-300); }
+  .range i { position: absolute; left: 47%; top: -4px; width: 16px; height: 16px; border-radius: 50%; background: var(--lemon-400); border: 3px solid var(--leaf-900); }
+
+  ul.ticks { list-style: none; margin-top: 10px; display: flex; flex-direction: column; gap: 7px; }
+  ul.ticks li { display: flex; gap: 9px; font-size: 15px; line-height: 21px; }
+  ul.ticks li::before {
+    content: "";
+    flex-shrink: 0;
+    width: 18px;
+    height: 18px;
+    margin-top: 2px;
+    border-radius: 50%;
+    background: var(--leaf-300) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 18 18'%3E%3Cpath d='M5 9.4l2.6 2.6L13 6.6' fill='none' stroke='%2314261d' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center / 18px no-repeat;
+  }
+
+  .paid {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    margin-top: 16px;
+  }
+  .paid .big {
+    flex-shrink: 0;
+    font-family: var(--display);
+    font-size: 44px;
+    line-height: 44px;
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    color: var(--paypal);
+  }
+  .own { display: flex; align-items: center; gap: 14px; margin-top: 16px; }
+</style>
+</head>
+<body>
+  <div class="head">
+    <span class="eyebrow">For sellers</span>
+    <h1>From cupboard to cash</h1>
+    <p class="lede">Your part is on the left. Everything on the right is your shop’s agent, working while you get on with your day.</p>
+  </div>
+
+  <div class="cols">
+    <span class="who seller"><span class="face">M</span>You</span>
+    <span></span>
+    <span class="who agent"><span class="face"><span class="spark"></span></span>Your shop’s agent</span>
+  </div>
+
+  <div class="grid">
+    <div class="card lemon">
+      <div class="top"><span class="num">1</span><h3>Snap a photo</h3></div>
+      <p>Add one line about what it is. That’s the whole job.</p>
+      <div class="photo"><svg width="84" height="84" viewBox="0 0 80 80"><rect x="5" y="42" width="12" height="7" rx="3.5" fill="#f5be0b"/><rect x="63" y="42" width="12" height="7" rx="3.5" fill="#f5be0b"/><path d="M14 40h52v18c0 6-5 10-11 10H25c-6 0-11-4-11-10Z" fill="#ffd934"/><path d="M16 38c0-9 11-13 24-13s24 4 24 13Z" fill="#f5be0b"/><circle cx="40" cy="22" r="4.5" fill="#14261d"/></svg><span class="pill white">photo.jpg</span></div>
+      <span class="say white right">Le Creuset dutch oven, the yellow one. It was a wedding gift.</span>
+    </div>
+    <div class="gut"><svg width="30" height="16" viewBox="0 0 30 16"><path d="M2 8h22M18 2l7 6-7 6" fill="none" stroke="#14261d" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+    <div class="card ink">
+      <div class="top"><span class="num">2</span><h3>Prices it, writes it</h3></div>
+      <div class="src">
+        <div><span class="pill lemon">AI vision</span>Works out what it is</div>
+        <div><span class="pill lemon">Channel3</span>Product, photos, price new</div>
+        <div><span class="pill lemon">Kernel</span>eBay, Poshmark, Depop now</div>
+      </div>
+      <div class="range"><span></span><i></i></div>
+      <div class="result"><span class="muted">Used: $160–$210</span><span style="margin-left:auto">Suggests</span> <big>$185</big></div>
+      <p class="muted" style="margin-top:12px">Then the title, description, details and photo order.</p>
+    </div>
+    <div class="turn"><svg width="712" height="34" viewBox="0 0 712 34"><path d="M550 2v6q0 9-9 9H180q-9 0-9 9v2" fill="none" stroke="#c9c2a2" stroke-width="2.5" stroke-dasharray="2 6" stroke-linecap="round"/><path d="M165 25l6 7 6-7" fill="none" stroke="#c9c2a2" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+    <div class="card lemon">
+      <div class="top"><span class="num">3</span><h3>Check it, publish</h3></div>
+      <p>Pick the lowest you’d take. Buyers never see it. Share the link anywhere.</p>
+      <div class="pills"><span class="pill white">maya.resell.store</span><span class="pill ink">Lowest $160</span></div>
+    </div>
+    <div class="gut"><svg width="30" height="16" viewBox="0 0 30 16"><path d="M2 8h22M18 2l7 6-7 6" fill="none" stroke="#14261d" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+    <div class="card ink">
+      <div class="top"><span class="num">4</span><h3>Runs the shop</h3></div>
+      <ul class="ticks">
+        <li>Answers buyers’ questions, any hour</li>
+        <li>Counters low offers, never under your lowest</li>
+        <li>Flags good ones: “I’d take it”</li>
+        <li>Sends you an evening summary</li>
+      </ul>
+    </div>
+    <div class="turn"><svg width="712" height="34" viewBox="0 0 712 34"><path d="M550 2v6q0 9-9 9H180q-9 0-9 9v2" fill="none" stroke="#c9c2a2" stroke-width="2.5" stroke-dasharray="2 6" stroke-linecap="round"/><path d="M165 25l6 7 6-7" fill="none" stroke="#c9c2a2" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+    <div class="card lemon">
+      <div class="top"><span class="num">5</span><h3>Say yes, ship it</h3></div>
+      <p>Good offers wait for your yes. Then ship within 3 days of the sale.</p>
+    </div>
+    <div class="gut"><svg width="30" height="16" viewBox="0 0 30 16"><path d="M2 8h22M18 2l7 6-7 6" fill="none" stroke="#14261d" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+    <div class="card sky">
+      <div class="top"><span class="num">6</span><h3>Paid when it arrives</h3></div>
+      <p>PayPal holds the buyer’s money and sends it to your PayPal once they say it’s all good, or 3 days after delivery.</p>
+    </div>
+  </div>
+
+  <div class="card own" style="margin-top:16px">
+    <span class="pill leaf">MCP + API</span>
+    <p style="margin:0" class="note"><b style="color:var(--text)">Rather run it from your own AI?</b> The seller MCP server and the public API can do every step above.</p>
+  </div>
+
+  <footer><span class="wordmark">resell<i></i>store</span><span>Sell your stuff without doing the selling</span></footer>
+</body>
+</html>

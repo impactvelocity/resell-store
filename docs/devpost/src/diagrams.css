@@ -1,0 +1,100 @@
+/*
+ * Shared look for the Devpost diagrams: the resell.store tokens from
+ * packages/ui/src/styles.css, sized so the PNGs stay readable when Devpost
+ * shrinks a 1200px-wide page to its ~700px story column (keep text >= 22px).
+ */
+@import url("https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600..800&family=Figtree:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap");
+
+:root {
+  --lemon-100: #fff6c2;
+  --lemon-300: #ffe873;
+  --lemon-400: #ffd934;
+  --lemon-500: #f5be0b;
+  --leaf-100: #ddf0e3;
+  --leaf-300: #8cc9a4;
+  --leaf-600: #256b4c;
+  --leaf-900: #14261d;
+  --pink-100: #ffdceb;
+  --pink-400: #ff5fa8;
+  --pink-600: #c9246f;
+  --berry-500: #d9391b;
+  --bg: #fffdf2;
+  --surface: #ffffff;
+  --muted-bg: #f7f3df;
+  --border: #e8e3cc;
+  --muted: #56675e;
+  --text: var(--leaf-900);
+  --display: "Bricolage Grotesque", system-ui, sans-serif;
+  --sans: "Figtree", system-ui, sans-serif;
+  --mono: "JetBrains Mono", ui-monospace, monospace;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body {
+  width: 1200px;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--sans);
+  font-size: 24px;
+  line-height: 1.35;
+  -webkit-font-smoothing: antialiased;
+}
+
+.page { padding: 60px 64px 52px; display: flex; flex-direction: column; gap: 36px; }
+
+/* Header */
+.head { display: flex; flex-direction: column; gap: 14px; }
+.head-top { display: flex; align-items: center; justify-content: space-between; }
+.eyebrow { font-weight: 800; font-size: 22px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--pink-600); }
+h1 { font-family: var(--display); font-weight: 800; font-size: 64px; line-height: 1; letter-spacing: -0.03em; font-variation-settings: "opsz" 96; }
+.lead { font-size: 27px; line-height: 1.4; color: var(--muted); max-width: 980px; }
+
+.wordmark { display: inline-flex; align-items: baseline; font-family: var(--display); font-weight: 800; font-size: 32px; letter-spacing: -0.03em; font-variation-settings: "opsz" 96; }
+.wordmark i { display: inline-block; width: 0.34em; height: 0.34em; margin: 0 0.06em; border-radius: 50%; background: var(--lemon-400); }
+
+h2, .h2 { font-family: var(--display); font-weight: 800; font-size: 34px; line-height: 1.1; letter-spacing: -0.02em; font-variation-settings: "opsz" 72; }
+h3, .h3 { font-family: var(--display); font-weight: 800; font-size: 28px; line-height: 1.15; letter-spacing: -0.02em; font-variation-settings: "opsz" 48; }
+
+/* Surfaces */
+.card { background: var(--surface); border: 2px solid var(--border); border-radius: 28px; padding: 28px; }
+.card.lemon { background: var(--lemon-100); border-color: #f4e49a; }
+.card.leaf { background: var(--leaf-100); border-color: #c3e2cd; }
+.card.pink { background: var(--pink-100); border-color: #f9c2da; }
+.card.dark { background: var(--leaf-900); border-color: var(--leaf-900); color: #fff; }
+.card.green { background: var(--leaf-600); border-color: var(--leaf-600); color: #fff; }
+.card.muted { background: var(--muted-bg); }
+
+.small { font-size: 22px; line-height: 1.35; }
+.muted { color: var(--muted); }
+.bold { font-weight: 700; }
+.mono { font-family: var(--mono); font-size: 21px; font-weight: 500; }
+
+/* Pills and markers */
+.chip { display: inline-flex; align-items: center; gap: 8px; height: 40px; padding: 0 16px; border-radius: 999px; font-size: 21px; font-weight: 700; white-space: nowrap; background: var(--muted-bg); color: var(--text); }
+.chip.lemon { background: var(--lemon-300); }
+.chip.leaf { background: var(--leaf-100); color: var(--leaf-600); }
+.chip.pink { background: var(--pink-100); color: var(--pink-600); }
+.chip.dark { background: var(--leaf-900); color: #fff; }
+.chip.white { background: #fff; border: 2px solid var(--border); }
+
+.num { flex: none; display: inline-flex; align-items: center; justify-content: center; width: 48px; height: 48px; border-radius: 50%; background: var(--lemon-400); font-weight: 800; font-size: 24px; color: var(--leaf-900); }
+
+/* The agent's mark: a pink dot with a four-point spark, like the app */
+.spark { flex: none; display: inline-flex; align-items: center; justify-content: center; width: 48px; height: 48px; border-radius: 50%; background: var(--pink-400); }
+.spark svg { width: 24px; height: 24px; }
+
+.row { display: flex; gap: 20px; }
+.col { display: flex; flex-direction: column; gap: 14px; }
+.center { align-items: center; }
+.wrap { flex-wrap: wrap; }
+.grow { flex: 1; min-width: 0; }
+
+.logo { display: block; width: auto; }
+.by { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+.by .label { font-size: 20px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; }
+
+.arrow { flex: none; display: flex; align-items: center; justify-content: center; color: var(--leaf-600); }
+
+.foot { display: flex; align-items: center; justify-content: space-between; padding-top: 6px; border-top: 2px solid var(--border); font-size: 21px; color: var(--muted); }
+.foot b { color: var(--text); }

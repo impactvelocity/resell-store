@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Under the hood</title>
+<link rel="stylesheet" href="diagrams.css">
+<style>
+  .hosts { display: flex; flex-wrap: wrap; gap: 10px; }
+  .hosts .chip { height: 44px; font-family: var(--mono); font-size: 19px; font-weight: 700; }
+  .down { display: flex; justify-content: center; }
+  .render { position: relative; border: 3px dashed #b9c7bd; border-radius: 34px; padding: 34px 28px 28px; display: flex; flex-direction: column; gap: 20px; }
+  .render .badge { position: absolute; top: -26px; left: 28px; display: flex; align-items: center; gap: 14px; padding: 8px 18px; background: var(--bg); }
+  .render .badge img { height: 30px; }
+  .render .badge span { font-size: 21px; font-weight: 700; color: var(--muted); }
+  .zones { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+  .zone { display: flex; flex-direction: column; gap: 2px; padding: 12px 16px; border-radius: 16px; background: var(--muted-bg); }
+  .zone b { font-size: 22px; }
+  .zone span { font-family: var(--mono); font-size: 18px; color: var(--muted); }
+  .server { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+  .mod { display: flex; flex-direction: column; gap: 4px; padding: 14px 16px; border-radius: 16px; border: 2px solid var(--border); }
+  .mod b { font-size: 22px; }
+  .mod span { font-size: 20px; line-height: 1.3; color: var(--muted); }
+  .base { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .jobs { display: flex; flex-wrap: wrap; gap: 8px; }
+  .jobs .chip { height: 36px; font-family: var(--mono); font-size: 18px; padding: 0 12px; }
+  .svcs { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
+  .svc { display: flex; flex-direction: column; gap: 10px; padding: 20px 20px 22px; }
+  .svc .mark { height: 34px; display: flex; align-items: center; }
+  .svc .mark img { height: 26px; }
+  .svc p { font-size: 21px; line-height: 1.3; color: var(--muted); }
+  .svc .name { font-family: var(--display); font-weight: 800; font-size: 25px; letter-spacing: -0.02em; }
+</style>
+</head>
+<body>
+<div class="page">
+  <div class="head">
+    <div class="head-top">
+      <span class="wordmark">resell<i></i>store</span>
+      <span class="chip white">Open source · MIT</span>
+    </div>
+    <p class="eyebrow" style="padding-top:18px">Under the hood</p>
+    <h1>One app, one database, one job runner</h1>
+    <p class="lead">Every address lands on the same Next.js app, which picks the right part by host name. Each rule lives in one server file that the screens, the API, the MCP servers and the timed jobs all share.</p>
+  </div>
+
+  <div class="col" style="gap:12px">
+    <span class="by"><span class="label">Who comes in</span></span>
+    <div class="hosts">
+      <span class="chip white">resell.store</span>
+      <span class="chip lemon">maya.resell.store</span>
+      <span class="chip white">api.resell.store</span>
+      <span class="chip white">mcp.resell.store</span>
+      <span class="chip white">docs.resell.store</span>
+      <span class="chip leaf" style="font-family:var(--sans)">PayPal webhooks</span>
+    </div>
+  </div>
+
+  <div class="render">
+    <div class="badge"><img src="assets/render.png" alt="Render"><span>hosts all of it</span></div>
+
+    <div class="card" style="padding:24px;display:flex;flex-direction:column;gap:16px">
+      <div class="row center" style="justify-content:space-between">
+        <h3>One Next.js app</h3>
+        <span class="mono muted">proxy.ts routes by host</span>
+      </div>
+      <div class="zones">
+        <div class="zone"><b>Marketplace</b><span>/discover</span></div>
+        <div class="zone" style="background:var(--lemon-100)"><b>Every shop</b><span>{shop}.resell.store</span></div>
+        <div class="zone"><b>Seller app</b><span>/home</span></div>
+        <div class="zone"><b>Listing workspace</b><span>/list/[id]</span></div>
+        <div class="zone"><b>Checkout</b><span>/checkout</span></div>
+        <div class="zone"><b>Public API</b><span>/v1</span></div>
+        <div class="zone"><b>MCP servers</b><span>/u · /buy</span></div>
+        <div class="zone"><b>Docs</b><span>/docs</span></div>
+      </div>
+      <div class="row center" style="justify-content:space-between;padding-top:6px">
+        <h3>lib/server: every rule, once</h3>
+      </div>
+      <div class="server">
+        <div class="mod"><b>Research and agents</b><span>pricing, listing chat, Q&amp;A, counters</span></div>
+        <div class="mod"><b>Money</b><span>checkout, holds, releases, refunds</span></div>
+        <div class="mod"><b>Marketplace</b><span>search, follows, likes, stats</span></div>
+        <div class="mod"><b>Messages and email</b><span>threads, notices, digests</span></div>
+      </div>
+    </div>
+
+    <div class="base">
+      <div class="card col" style="gap:10px">
+        <h3>Postgres + pgvector</h3>
+        <p class="small muted">Every table, plus listing embeddings for search by meaning. Money is kept in cents.</p>
+      </div>
+      <div class="card col" style="gap:10px">
+        <h3>Workflow + Cron, every 15 min</h3>
+        <div class="jobs"><span class="chip">offerSweep</span><span class="chip">orderSweep</span><span class="chip">digestSweep</span><span class="chip">webhookSweep</span></div>
+        <p class="small muted">Each payout or refund is its own task, retried until PayPal says yes.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="col" style="gap:14px">
+    <h2>What it talks to</h2>
+    <div class="svcs">
+      <div class="card svc"><div class="mark"><img src="assets/paypal.svg" alt="PayPal" style="height:30px"></div><p>Seller onboarding, checkout, fee split, held money, payouts, refunds</p></div>
+      <div class="card svc"><div class="mark"><img src="assets/channel3.png" alt="Channel3"></div><p>What the item is, its new price, the maker's photos</p></div>
+      <div class="card svc"><div class="mark"><img src="assets/kernel.png" alt="Kernel" style="height:23px"></div><p>Cloud browsers reading live eBay, Poshmark and Depop listings</p></div>
+      <div class="card svc"><div class="mark"><span class="chip pink" style="font-size:19px">✦ AI model</span></div><p>Names items, writes listings, answers buyers, words counters</p></div>
+      <div class="card svc"><div class="mark"><span class="name">Jina</span></div><p>Embeddings for search by meaning</p></div>
+      <div class="card svc"><div class="mark"><span class="name">Cloudflare R2</span></div><p>Photo and video uploads</p></div>
+      <div class="card svc"><div class="mark"><span class="name">Resend</span></div><p>Sign-in links and every email</p></div>
+      <div class="card svc"><div class="mark"><span class="name">Better Auth</span></div><p>One sign-in across every shop's address</p></div>
+    </div>
+    <p class="small muted">Only Postgres and an auth secret are required. Every other service switches a feature on, with a fallback without it.</p>
+  </div>
+
+  <div class="foot"><span><b>resell.store</b> · Turborepo · Next.js · Drizzle</span><span>Sell your stuff without doing the selling</span></div>
+</div>
+</body>
+</html>

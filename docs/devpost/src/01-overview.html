@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>resell.store overview</title>
+<link rel="stylesheet" href="diagrams.css">
+<style>
+  .sides { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+  .side { padding: 0; overflow: hidden; display: flex; flex-direction: column; }
+  .shot { height: 210px; background: var(--muted-bg); border-bottom: 2px solid var(--border); overflow: hidden; }
+  .shot { position: relative; }
+  .shot img { position: absolute; width: 200%; height: auto; }
+  .side .body { padding: 22px 24px 26px; display: flex; flex-direction: column; gap: 12px; }
+  .who { font-size: 20px; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; }
+  .side ul { list-style: none; display: flex; flex-direction: column; gap: 10px; padding-top: 4px; }
+  .side li { display: flex; gap: 10px; font-size: 22px; line-height: 1.3; }
+  .side li::before { content: ""; flex: none; width: 12px; height: 12px; margin-top: 9px; border-radius: 50%; background: var(--lemon-400); }
+  .agentband { display: flex; align-items: center; gap: 24px; padding: 26px 30px; }
+  .agentband .spark { width: 64px; height: 64px; }
+  .agentband .spark svg { width: 32px; height: 32px; }
+  .paypal { display: flex; flex-direction: column; gap: 22px; padding: 30px 34px; }
+  .paypal img { height: 52px; }
+  .tools { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+  .tool { display: flex; flex-direction: column; gap: 14px; padding: 24px 26px; }
+  .tool .logo { height: 32px; }
+</style>
+</head>
+<body>
+<div class="page">
+  <div class="head">
+    <div class="head-top">
+      <span class="wordmark">resell<i></i>store</span>
+      <span class="chip white">Built for the PayPal AI Hackathon</span>
+    </div>
+    <p class="eyebrow" style="padding-top:18px">The whole app on one page</p>
+    <h1>One app, three ways in</h1>
+    <p class="lead">Sellers list with an agent, buyers shop a marketplace of little stores, and anyone's own AI can do both through the API. PayPal sits under every sale.</p>
+  </div>
+
+  <div class="sides">
+    <div class="card side">
+      <div class="shot"><img src="assets/screens/c2-research.png" style="left:-2%; top:-34%"></div>
+      <div class="body">
+        <span class="who" style="color: var(--leaf-600)">For sellers</span>
+        <h3>The seller app</h3>
+        <span class="mono muted">resell.store/home</span>
+        <ul>
+          <li>Snap a photo; the agent researches the price and writes the listing</li>
+          <li>Your own shop at maya.resell.store</li>
+          <li>Offers, sales and payouts in one place</li>
+        </ul>
+      </div>
+    </div>
+    <div class="card side">
+      <div class="shot"><img src="assets/screens/p2-store.png" style="left:-18%; top:-26%"></div>
+      <div class="body">
+        <span class="who" style="color: var(--pink-600)">For buyers</span>
+        <h3>The marketplace</h3>
+        <span class="mono muted">resell.store/discover</span>
+        <ul>
+          <li>Search every shop by meaning, not just words</li>
+          <li>Ask a question or make an offer, any time</li>
+          <li>Pay with PayPal or a card, held until it arrives</li>
+        </ul>
+      </div>
+    </div>
+    <div class="card side">
+      <div class="shot"><img src="assets/screens/p7-buyer-agent.png" style="left:-112%; top:-30%"></div>
+      <div class="body">
+        <span class="who" style="color: #8a6a00">For agents</span>
+        <h3>API and MCP</h3>
+        <span class="mono muted">mcp.resell.store</span>
+        <ul>
+          <li>An MCP server to run your shops, one to go shopping</li>
+          <li>A public API with signed webhooks</li>
+          <li>Asks you first, inside your spending limit</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="card pink agentband">
+    <span class="spark"><svg viewBox="0 0 24 24"><path d="M12 0C13 7 17 11 24 12 17 13 13 17 12 24 11 17 7 13 0 12 7 11 11 7 12 0Z" fill="#14261d"/></svg></span>
+    <div class="col" style="gap:6px">
+      <h3>Every shop has an agent</h3>
+      <p class="small">It prices, writes, answers buyers and counters low offers. Money decisions stay in code, and good offers wait for the seller's yes.</p>
+    </div>
+  </div>
+
+  <div class="card dark paypal">
+    <div class="row center" style="gap:36px">
+      <img src="assets/paypal-white.svg" alt="PayPal">
+      <p style="font-size:26px;font-weight:600">Under every sale. Paid to the seller's own PayPal and held there until the buyer has it.</p>
+    </div>
+    <div class="row" style="gap:10px">
+      <span class="chip lemon">Seller onboarding</span>
+      <span class="chip lemon">Checkout</span>
+      <span class="chip lemon">Fee split</span>
+      <span class="chip lemon">Held money</span>
+      <span class="chip lemon">Payouts</span>
+      <span class="chip lemon">Refunds</span>
+    </div>
+  </div>
+
+  <div class="col" style="gap:16px">
+    <p class="h3">Also working in the app today</p>
+    <div class="tools">
+      <div class="card tool"><img class="logo" src="assets/channel3.png" alt="Channel3"><p class="small">Names the item, its new price and the maker's photos</p></div>
+      <div class="card tool"><img class="logo" src="assets/kernel.png" alt="Kernel" style="height:28px"><p class="small">Cloud browsers check live prices on the big resale sites</p></div>
+      <div class="card tool"><img class="logo" src="assets/render.png" alt="Render"><p class="small">Hosts the app, Postgres and the jobs that move money on time</p></div>
+    </div>
+  </div>
+
+  <div class="foot"><span><b>resell.store</b> · open source, MIT</span><span>Sell your stuff without doing the selling</span></div>
+</div>
+</body>
+</html>

@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>The seller app</title>
+<link rel="stylesheet" href="diagrams.css">
+<style>
+  .steps { display: flex; align-items: stretch; gap: 0; }
+  .step { flex: 1; display: flex; flex-direction: column; gap: 10px; padding: 0 6px; }
+  .step .top { display: flex; align-items: center; gap: 12px; }
+  .step .line { flex: 1; height: 3px; background: #e9d77a; border-radius: 2px; }
+  .step:last-child .line { visibility: hidden; }
+  .step p { font-size: 21px; line-height: 1.3; padding-right: 18px; }
+  .step .logos { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; min-height: 26px; }
+  .step .logos img { height: 22px; }
+  .chat { display: flex; align-items: center; gap: 16px; padding-top: 22px; margin-top: 22px; border-top: 2px dashed #ecdb86; }
+  .groups { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+  .group { display: flex; flex-direction: column; gap: 0; padding: 26px 26px 10px; }
+  .group h3 { padding-bottom: 6px; }
+  .item { display: flex; flex-direction: column; gap: 4px; padding: 16px 0; border-top: 2px solid var(--border); }
+  .item:first-of-type { border-top: 0; }
+  .item .name { display: flex; align-items: center; justify-content: space-between; gap: 10px; font-weight: 800; font-size: 24px; }
+  .item .name img { height: 20px; }
+  .item p { font-size: 21px; line-height: 1.3; color: var(--muted); }
+  .tag { font-size: 18px; font-weight: 800; letter-spacing: 0.06em; text-transform: uppercase; }
+</style>
+</head>
+<body>
+<div class="page">
+  <div class="head">
+    <div class="head-top">
+      <span class="wordmark">resell<i></i>store</span>
+      <span class="chip leaf">For sellers</span>
+    </div>
+    <p class="eyebrow" style="padding-top:18px">The seller app · resell.store/home</p>
+    <h1>Where sellers say yes</h1>
+    <p class="lead">The agent does the legwork. Each screen shows what it did and what's waiting on you: a price to confirm, an offer to take, a parcel to ship.</p>
+  </div>
+
+  <div class="card lemon" style="padding:30px 28px">
+    <div class="row center" style="justify-content:space-between;padding-bottom:22px">
+      <h2>List something new</h2>
+      <span class="mono muted">/list/[id]/…</span>
+    </div>
+    <div class="steps">
+      <div class="step">
+        <div class="top"><span class="num">1</span><span class="line"></span></div>
+        <span class="h3">Research</span>
+        <p>Names the item and finds a fair price</p>
+        <div class="logos"><img src="assets/channel3.png" alt="Channel3"><img src="assets/kernel.png" alt="Kernel" style="height:19px"></div>
+      </div>
+      <div class="step">
+        <div class="top"><span class="num">2</span><span class="line"></span></div>
+        <span class="h3">Details</span>
+        <p>Asks only what a photo can't tell: condition, size, box</p>
+        <div class="logos"></div>
+      </div>
+      <div class="step">
+        <div class="top"><span class="num">3</span><span class="line"></span></div>
+        <span class="h3">Photos</span>
+        <p>Yours, plus the maker's own shots</p>
+        <div class="logos"><img src="assets/channel3.png" alt="Channel3"></div>
+      </div>
+      <div class="step">
+        <div class="top"><span class="num">4</span><span class="line"></span></div>
+        <span class="h3">Words</span>
+        <p>Title, one-liner and description, written for you</p>
+        <div class="logos"></div>
+      </div>
+      <div class="step">
+        <div class="top"><span class="num">5</span><span class="line"></span></div>
+        <span class="h3">Publish</span>
+        <p>Price, lowest offer, live in your shop</p>
+        <div class="logos"></div>
+      </div>
+    </div>
+    <div class="chat">
+      <span class="spark"><svg viewBox="0 0 24 24"><path d="M12 0C13 7 17 11 24 12 17 13 13 17 12 24 11 17 7 13 0 12 7 11 11 7 12 0Z" fill="#14261d"/></svg></span>
+      <p style="font-size:23px"><b>The agent chats beside every step.</b> Tell it "it was a wedding gift" or "drop it $10" and the listing updates.</p>
+    </div>
+  </div>
+
+  <div class="groups">
+    <div class="card group">
+      <span class="tag" style="color:var(--leaf-600)">Run your shops</span>
+      <h3>Day to day</h3>
+      <div class="item"><span class="name">Home</span><p>What you made this week and what's waiting on you</p></div>
+      <div class="item"><span class="name">Shops</span><p>As many as you like, each on its own address, public, link-only or private</p></div>
+      <div class="item"><span class="name">Stats</span><p>Views, shares, likes and sales, per shop and per item</p></div>
+    </div>
+    <div class="card group">
+      <span class="tag" style="color:var(--pink-600)">Buyers</span>
+      <h3>Talk and deal</h3>
+      <div class="item"><span class="name">Inbox</span><p>The agent answers from the listing and flags "Needs you" when it can't</p></div>
+      <div class="item"><span class="name">Offers</span><p>Low ones get a counter; good ones wait with a note: "I'd take it"</p></div>
+      <div class="item"><span class="name">Sales <img src="assets/paypal.svg" alt="PayPal"></span><p>Ship-by dates, payouts, refunds and problems</p></div>
+    </div>
+    <div class="card group">
+      <span class="tag" style="color:#8a6a00">Tools</span>
+      <h3>Plug things in</h3>
+      <div class="item"><span class="name">Connections <img src="assets/paypal.svg" alt="PayPal"></span><p>Connect your PayPal once; payouts land there</p></div>
+      <div class="item"><span class="name">Your agent</span><p>A private MCP link for Claude or ChatGPT, with "ask me first"</p></div>
+      <div class="item"><span class="name">API</span><p>Keys, webhooks and a log of every change</p></div>
+      <div class="item"><span class="name">Sidekick <img src="assets/kernel.png" alt="Kernel" style="height:17px"></span><p>Paste a link: what will it resell for?</p></div>
+    </div>
+  </div>
+
+  <div class="foot"><span><b>resell.store</b> · the seller app</span><span>Sell your stuff without doing the selling</span></div>
+</div>
+</body>
+</html>

@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>The emails</title>
+<link rel="stylesheet" href="diagrams.css">
+<style>
+  .lane { display: flex; flex-direction: column; gap: 16px; }
+  .lane-head { display: flex; align-items: center; gap: 14px; }
+  .who { display: inline-flex; align-items: center; justify-content: center; width: 44px; height: 44px; border-radius: 50%; font-weight: 800; font-size: 22px; }
+  .mails { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+  .mail { padding: 0; overflow: hidden; display: flex; flex-direction: column; }
+  .thumb { height: 300px; overflow: hidden; background: var(--bg); border-bottom: 2px solid var(--border); }
+  .thumb img { display: block; width: 124%; height: auto; margin: -6% 0 0 -12%; }
+  .mail .body { padding: 16px 18px 20px; display: flex; flex-direction: column; gap: 4px; }
+  .mail b { font-size: 22px; line-height: 1.2; }
+  .mail span { font-size: 19px; line-height: 1.3; color: var(--muted); }
+  .order { display: flex; align-items: center; gap: 12px; font-size: 20px; font-weight: 700; color: var(--muted); }
+  .order i { flex: 1; height: 3px; border-radius: 2px; background: var(--border); }
+  .wide { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .wide .mail { flex-direction: row; }
+  .wide .thumb { width: 220px; height: 236px; flex: none; border-bottom: 0; border-right: 2px solid var(--border); }
+  .wide .body { justify-content: center; gap: 8px; padding: 20px 22px; }
+  .wide .chips { display: flex; flex-wrap: wrap; gap: 8px; padding-top: 4px; }
+  .wide .chips .chip { height: 34px; font-size: 18px; padding: 0 12px; }
+  .how { display: flex; align-items: center; gap: 26px; padding: 26px 30px; }
+  .how img { height: 30px; }
+</style>
+</head>
+<body>
+<div class="page">
+  <div class="head">
+    <div class="head-top">
+      <span class="wordmark">resell<i></i>store</span>
+      <span class="chip white">10 templates</span>
+    </div>
+    <p class="eyebrow" style="padding-top:18px">The emails</p>
+    <h1>The right email at each step</h1>
+    <p class="lead">Every email looks like the app, says one thing, and has one button to deal with it. Here they are, left to right in the order a sale sends them.</p>
+  </div>
+
+  <div class="lane">
+    <div class="lane-head"><span class="who" style="background:var(--lemon-400)">M</span><h2>To the seller</h2></div>
+    <div class="mails">
+      <div class="card mail"><div class="thumb"><img src="assets/emails/offer-received.png" alt=""></div><div class="body"><b>New offer</b><span>A buyer offers, with the agent's take: "I'd take it"</span></div></div>
+      <div class="card mail"><div class="thumb"><img src="assets/emails/sold.png" alt=""></div><div class="body"><b>Sold</b><span>What you get after fees, and when to ship by</span></div></div>
+      <div class="card mail"><div class="thumb"><img src="assets/emails/paid-out.png" alt=""></div><div class="body"><b>Paid out</b><span>The held money just landed in your PayPal</span></div></div>
+      <div class="card mail"><div class="thumb"><img src="assets/emails/agent-summary.png" alt=""></div><div class="body"><b>Evening summary</b><span>What the agent handled today, and what needs you</span></div></div>
+    </div>
+  </div>
+
+  <div class="lane">
+    <div class="lane-head"><span class="who" style="background:var(--pink-400);color:#fff">J</span><h2>To the buyer</h2></div>
+    <div class="mails">
+      <div class="card mail"><div class="thumb"><img src="assets/emails/offer-update.png" alt=""></div><div class="body"><b>Offer answered</b><span>Accepted, countered or declined, with a link to act</span></div></div>
+      <div class="card mail"><div class="thumb"><img src="assets/emails/order-placed.png" alt=""></div><div class="body"><b>Receipt</b><span>What you paid, and that it's held until it arrives</span></div></div>
+      <div class="card mail"><div class="thumb"><img src="assets/emails/shipped.png" alt=""></div><div class="body"><b>On its way</b><span>Tracking, and what to do when it lands</span></div></div>
+      <div class="card mail"><div class="thumb"><img src="assets/emails/new-from-shop.png" alt=""></div><div class="body"><b>New from a shop</b><span>Fresh items from shops you follow, if you opt in</span></div></div>
+    </div>
+  </div>
+
+  <div class="lane">
+    <div class="lane-head"><span class="who" style="background:var(--leaf-600);color:#fff">✓</span><h2>To everyone</h2></div>
+    <div class="wide">
+      <div class="card mail"><div class="thumb"><img src="assets/emails/sign-in.png" alt=""></div><div class="body"><b>Sign-in link</b><span>No passwords. One link, and you're in on every shop's address.</span></div></div>
+      <div class="card mail"><div class="thumb"><img src="assets/emails/notice.png" alt=""></div><div class="body"><b>Notices</b><span>One plain template for the rest:</span>
+        <div class="chips"><span class="chip">Reminders</span><span class="chip">Did it arrive?</span><span class="chip">Cancelled</span><span class="chip">Problems</span><span class="chip">Refunds</span><span class="chip">Reviews</span></div></div></div>
+    </div>
+  </div>
+
+  <div class="card leaf how">
+    <img src="assets/render.png" alt="Render">
+    <p style="font-size:22px"><b>Timed emails go out on a Render Workflow.</b> Every 15 minutes it sends reminders, arrival checks and summaries, and claims each one first so nobody gets it twice.</p>
+  </div>
+
+  <div class="foot"><span><b>resell.store</b> · built with React Email</span><span>Sell your stuff without doing the selling</span></div>
+</div>
+</body>
+</html>
