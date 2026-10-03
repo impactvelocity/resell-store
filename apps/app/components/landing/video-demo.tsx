@@ -12,7 +12,7 @@ import { Container, githubUrl, hackathonUrl } from "./parts";
  * or a direct .mp4 URL into DEMO_VIDEO_URL. Until then the frame shows a
  * placeholder. YouTube only loads once someone presses play.
  */
-const DEMO_VIDEO_URL = "";
+const DEMO_VIDEO_URL = "https://www.youtube.com/watch?v=Nus5lpO5wL0";
 
 function youtubeId(url: string) {
   const m = url.match(
