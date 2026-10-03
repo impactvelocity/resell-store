@@ -14,7 +14,7 @@ import {
   TagIcon,
   TruckIcon,
 } from "@repo/ui/icons";
-import { CardGrid, DocPage, H2, LinkCard, P } from "../../components/docs/page";
+import { A, CardGrid, DocPage, H2, LinkCard, P } from "../../components/docs/page";
 import { docsBase } from "../../lib/docs/base";
 
 export const metadata: Metadata = { title: { absolute: "resell.store docs" } };
@@ -97,7 +97,12 @@ export default async function DocsHome() {
       </CardGrid>
 
       <H2 id="developers">Work on resell.store</H2>
-      <P>resell.store is one Next.js app and a few packages. These pages are for running it, changing it and deploying your own copy.</P>
+      <P>
+        resell.store is one Next.js app and a few packages, built for the{" "}
+        <A href="https://paypalaihackathon.devpost.com/">PayPal AI Hackathon</A> and open source under the MIT license on{" "}
+        <A href="https://github.com/impactvelocity/resell-store">GitHub</A>. These pages are for running it, changing it and deploying
+        your own copy.
+      </P>
       <CardGrid>
         <LinkCard href={href("/dev")} title="Developer overview" icon={<SettingsIcon size={18} strokeWidth={2.2} />}>
           The moving parts, how a request finds its page, and where the code for each feature lives.

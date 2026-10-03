@@ -1,8 +1,0 @@
-file '/Users/dylanjones/apps/resell-store/docs/video/brag-output/work/segments/00.mp4'
-file '/Users/dylanjones/apps/resell-store/docs/video/brag-output/work/segments/01.mp4'
-file '/Users/dylanjones/apps/resell-store/docs/video/brag-output/work/segments/02.mp4'
-file '/Users/dylanjones/apps/resell-store/docs/video/brag-output/work/segments/03.mp4'
-file '/Users/dylanjones/apps/resell-store/docs/video/brag-output/work/segments/04.mp4'
-file '/Users/dylanjones/apps/resell-store/docs/video/brag-output/work/segments/05.mp4'
-file '/Users/dylanjones/apps/resell-store/docs/video/brag-output/work/segments/06.mp4'
-file '/Users/dylanjones/apps/resell-store/docs/video/brag-output/work/segments/07.mp4'

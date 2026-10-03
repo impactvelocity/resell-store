@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { ArrowUpRightIcon, CodeIcon, LinkIcon, ListIcon, PlugIcon, SettingsIcon, ShieldCheckIcon, SparkleIcon, StatsIcon, TagIcon, TruckIcon, HomeIcon } from "@repo/ui/icons";
-import { C, CardGrid, DocPage, H2, LinkCard, P, Table, UL } from "../../../components/docs/page";
+import { A, C, CardGrid, DocPage, H2, LinkCard, P, Table, UL } from "../../../components/docs/page";
 import { docsBase } from "../../../lib/docs/base";
 
 export const metadata: Metadata = { title: "Overview · Developers" };
@@ -30,6 +30,10 @@ export default async function DevOverview() {
         resell.store is a marketplace where every seller gets their own shop on a subdomain, like <C>maya.resell.store</C>, and an AI
         agent that researches prices, writes listings, answers buyers and haggles within limits the seller sets. Buyers pay through
         PayPal, the money is held until the item arrives, and then it&apos;s released to the seller.
+      </P>
+      <P>
+        It was built for the <A href="https://paypalaihackathon.devpost.com/">PayPal AI Hackathon</A>, and it&apos;s open source under
+        the MIT license. The code is on <A href="https://github.com/impactvelocity/resell-store">GitHub</A>.
       </P>
 
       <H2 id="parts">The moving parts</H2>

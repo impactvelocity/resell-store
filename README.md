@@ -1,5 +1,11 @@
 # Resell Store
 
+Sell your stuff without doing the selling. Snap a photo, and an agent prices it, lists it in your own shop, answers buyers and haggles with their agents. PayPal holds the money until the item arrives.
+
+- Live site: [resell.store](https://resell.store)
+- Built for the [PayPal AI Hackathon](https://paypalaihackathon.devpost.com/)
+- Open source under the [MIT license](LICENSE)
+
 Turborepo monorepo (pnpm).
 
 ## Docs
@@ -57,3 +63,7 @@ pnpm db:migrate
 pnpm db:studio
 pnpm email        # preview the email templates at http://localhost:5690
 ```
+
+## License
+
+[MIT](LICENSE) © 2026 Dylan Jones

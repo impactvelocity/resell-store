@@ -39,3 +39,9 @@ yarn-error.log*
 
 # React Email preview build
 .react-email
+*.log
+*.tsbuildinfo
+
+# Video render outputs (regenerate locally; too large for git)
+docs/video/brag-output/work/
+docs/video/brag-output/*.mp4

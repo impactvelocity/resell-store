@@ -5,7 +5,7 @@ import { Wordmark } from "@repo/ui/logo";
 import { BerriesMark, SliceMark } from "@repo/ui/whimsy";
 import { cn } from "@repo/ui/lib/utils";
 import { Float, Pop, Reveal } from "./motion";
-import { bigButton, Container, githubUrl } from "./parts";
+import { bigButton, Container, githubUrl, hackathonUrl } from "./parts";
 
 /* The closing lemon panel and the dark footer. */
 
@@ -92,7 +92,8 @@ const columns = [
       { label: "MCP link", href: "/tools/agent" },
       { label: "API", href: "/tools/api" },
       { label: "GitHub", href: githubUrl },
-      { label: "PayPal AI Hackathon", href: "/#sponsors" },
+      { label: "PayPal AI Hackathon", href: hackathonUrl },
+      { label: "MIT license", href: `${githubUrl}/blob/main/LICENSE` },
     ],
   },
 ];
@@ -159,7 +160,11 @@ export function LandingFooter() {
             </a>
           </p>
           <p className="text-sm text-white/80">
-            Built for the PayPal AI Hackathon, 2026.
+            Built for the{" "}
+            <a href={hackathonUrl} className="underline hover:text-white">
+              PayPal AI Hackathon
+            </a>
+            , 2026. Open source under the MIT license.
           </p>
         </div>
       </Container>
