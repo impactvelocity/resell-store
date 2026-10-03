@@ -3,10 +3,9 @@
 import { useRouter } from "next/navigation";
 import { Button } from "@repo/ui/button";
 import { ChevronLeftIcon, PhotoCameraIcon } from "@repo/ui/icons";
-import { useToast } from "@repo/ui/toast";
 import { cn } from "@repo/ui/lib/utils";
 import { IconLink } from "../shell/page";
-import { useProfileDraft } from "./profile-context";
+import { useProfile, useProfileDraft } from "./profile-context";
 import {
   AboutField,
   InterestChips,
@@ -14,14 +13,16 @@ import {
   NameField,
   NotifyRows,
   ProfileAvatar,
+  useAvatarPicker,
 } from "./profile-fields";
 
 /* A7 Edit profile, phone only. Save shows a toast and goes back to Me. */
 
 export function EditProfile({ className }: { className?: string }) {
   const router = useRouter();
-  const toast = useToast();
-  const { draft, set, save } = useProfileDraft();
+  const { account } = useProfile();
+  const { draft, set, save, saving } = useProfileDraft();
+  const avatar = useAvatarPicker();
 
   return (
     <div className={cn("w-full flex-col", className)}>
@@ -33,10 +34,9 @@ export function EditProfile({ className }: { className?: string }) {
         <Button
           size="md"
           className="h-10 px-[18px]"
-          onClick={() => {
-            save();
-            toast.add({ title: "Profile saved" });
-            router.push("/me");
+          disabled={saving}
+          onClick={async () => {
+            if (await save()) router.push("/me");
           }}
         >
           Save
@@ -45,11 +45,12 @@ export function EditProfile({ className }: { className?: string }) {
 
       <div className="flex w-full flex-col items-center gap-[10px] px-4 pt-6">
         <div className="relative size-24 shrink-0">
-          <ProfileAvatar name={draft.name} className="size-24 text-4xl" />
+          <ProfileAvatar name={draft.name} image={account.image} className="size-24 text-4xl" />
           <button
             type="button"
             aria-label="Change photo"
-            onClick={() => toast.add({ title: "Photo picker opens here" })}
+            disabled={avatar.busy}
+            onClick={avatar.pick}
             className="absolute -right-1 bottom-[-2px] flex size-9 cursor-pointer items-center justify-center rounded-full border-[3px] border-background bg-text text-background"
           >
             <PhotoCameraIcon size={16} strokeWidth={2.2} />
@@ -57,11 +58,13 @@ export function EditProfile({ className }: { className?: string }) {
         </div>
         <button
           type="button"
-          onClick={() => toast.add({ title: "Photo picker opens here" })}
+          disabled={avatar.busy}
+          onClick={avatar.pick}
           className="cursor-pointer text-sm font-bold text-secondary"
         >
-          Change photo
+          {avatar.busy ? "Uploading…" : "Change photo"}
         </button>
+        {avatar.input}
       </div>
 
       <div className="flex w-full flex-col gap-[18px] px-4 pt-6">
@@ -79,14 +82,9 @@ export function EditProfile({ className }: { className?: string }) {
           <h2 className="font-display text-xl font-extrabold tracking-[-0.02em] text-text">
             What you&apos;re into
           </h2>
-          <p className="text-sm text-text-muted">
-            Shapes what you see when you&apos;re buying.
-          </p>
+          <p className="text-sm text-text-muted">Shapes what you see when you&apos;re buying.</p>
         </div>
-        <InterestChips
-          value={draft.interests}
-          onChange={(v) => set("interests", v)}
-        />
+        <InterestChips value={draft.interests} onChange={(v) => set("interests", v)} />
       </section>
 
       <section

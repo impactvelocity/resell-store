@@ -151,6 +151,24 @@ export const stores: Store[] = [
   },
 ];
 
+/** What a store's reputation adds. Mock stores have it all; live stores don't yet. */
+type StoreReputation = "rating" | "ratings" | "shipsIn" | "repliesIn";
+
+/**
+ * A store as the public pages render it: a mock `Store`, or a live shop from
+ * lib/server/market.ts. Live shops have no reviews, habits or bio yet, so those
+ * are optional and the pages hide what's missing rather than make it up.
+ */
+export type PublicStore = Omit<Store, StoreReputation | "location" | "bio"> &
+  Partial<Pick<Store, StoreReputation | "location" | "bio">> & {
+    /** From the database rather than this file. Turns off prototype-only extras. */
+    live?: boolean;
+    /** The seller has paused the shop: reachable by link, not listed, can't sell. */
+    paused?: boolean;
+    /** The shop's picture, shown instead of the initial. */
+    picture?: string;
+  };
+
 export function getStore(slug: string) {
   return stores.find((s) => s.slug === slug);
 }
@@ -196,6 +214,25 @@ export type Listing = {
   section?: string;
   openToOffers?: boolean;
   justListed?: boolean;
+  /** Live data: it's gone. The page stays up, read-only. */
+  sold?: boolean;
+};
+
+/**
+ * A listing as the public pages render it: a mock `Listing`, or a live one with a
+ * real photo instead of a drawing and any category the seller's research chose.
+ */
+export type PublicListing = Omit<Listing, "art" | "category" | "shipping"> & {
+  /** Database id. Live checkout and offer links use it, since slugs repeat across stores. */
+  id?: string;
+  art?: ArtKey;
+  /** Cover photo URL. Shown instead of `art` when present. */
+  photo?: string;
+  category: string;
+  /** Null when the seller hasn't set shipping yet. */
+  shipping: number | null;
+  /** The store's face, so cards don't look it up in the mock catalog. */
+  seller?: Pick<PublicStore, "name" | "initial" | "tone" | "picture">;
 };
 
 export const listings: Listing[] = [
@@ -252,7 +289,9 @@ export type SoldItem = {
   title: string;
   price: number;
   when: string;
-  art: ArtKey;
+  art?: ArtKey;
+  /** Live sold listings show their cover photo instead of a drawing. */
+  photo?: string;
 };
 
 /** "Went to new homes" — what a store sold lately. */

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { useToast } from "@repo/ui/toast";
 import { cn } from "@repo/ui/lib/utils";
 import {
@@ -10,27 +11,42 @@ import {
   type OrderStatus,
 } from "../../../lib/mock-buyer";
 import { getStore } from "../../../lib/mock-market";
-import { ItemArt } from "../art";
+import { signOut } from "../../../lib/auth-client";
+import { type ArtKey } from "../art";
 import { SiteLink } from "../links";
+import { ListingImage } from "../parts";
 
 const focusRing =
   "outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-secondary";
 
-const navItems = [
+const navItems: { id: string; label: string; count?: number }[] = [
   { id: "overview", label: "Overview" },
   { id: "orders", label: "Orders", count: accountCounts.orders },
   { id: "offers", label: "Offers", count: accountCounts.offers },
   { id: "favourites", label: "Favourites", count: accountCounts.favourites },
   { id: "following", label: "Following", count: accountCounts.following },
-] as const;
+];
 
 /**
  * The account's left nav. Sections jump within the page; on a phone it turns
- * into a row of chips you scroll sideways.
+ * into a row of chips you scroll sideways. With `live` counts it's a real
+ * account: orders, offers, saved things and follows, and a real sign out.
  */
-export function AccountNav() {
+export function AccountNav({
+  live,
+}: { live?: { orders: number; offers: number; saved?: number; following?: number } } = {}) {
   const toast = useToast();
+  const router = useRouter();
   const [active, setActive] = useState("overview");
+  const items = live
+    ? [
+        { id: "overview", label: "Overview" },
+        { id: "orders", label: "Orders", count: live.orders },
+        { id: "offers", label: "Offers", count: live.offers },
+        ...(live.saved != null ? [{ id: "saved", label: "Saved", count: live.saved }] : []),
+        ...(live.following != null ? [{ id: "following", label: "Following", count: live.following }] : []),
+      ]
+    : navItems;
   const item = (on: boolean) =>
     cn(
       "flex h-11 shrink-0 items-center justify-between gap-3 rounded-full px-4 text-base whitespace-nowrap",
@@ -45,7 +61,7 @@ export function AccountNav() {
       aria-label="Account"
       className="-mx-4 flex gap-2 overflow-x-auto px-4 [scrollbar-width:none] desk:sticky desk:top-8 desk:mx-0 desk:w-[228px] desk:shrink-0 desk:flex-col desk:gap-1 desk:overflow-visible desk:px-0"
     >
-      {navItems.map((n) => (
+      {items.map((n) => (
         <a
           key={n.id}
           href={`#${n.id}`}
@@ -54,7 +70,7 @@ export function AccountNav() {
           className={item(active === n.id)}
         >
           {n.label}
-          {"count" in n && (
+          {n.count != null && (
             <span className="text-sm font-normal text-public-text-muted">{n.count}</span>
           )}
         </a>
@@ -65,45 +81,86 @@ export function AccountNav() {
       <button
         type="button"
         onClick={() =>
-          toast.add({ title: "2418 Alder Street and PayPal. Change them at checkout for now." })
+          toast.add({
+            title: live
+              ? "Your last address fills in at checkout. Change it there for now."
+              : "2418 Alder Street and PayPal. Change them at checkout for now.",
+          })
         }
         className={cn(item(false), "cursor-pointer text-left")}
       >
         Addresses and payment
       </button>
-      <SiteLink href="/discover" className={cn(item(false), "text-public-text-muted")}>
-        Sign out
-      </SiteLink>
+      {live ? (
+        <button
+          type="button"
+          onClick={async () => {
+            await signOut().catch(() => {});
+            router.push("/discover");
+            router.refresh();
+          }}
+          className={cn(item(false), "cursor-pointer text-left text-public-text-muted")}
+        >
+          Sign out
+        </button>
+      ) : (
+        <SiteLink href="/discover" className={cn(item(false), "text-public-text-muted")}>
+          Sign out
+        </SiteLink>
+      )}
     </nav>
   );
 }
 
 /** Thumb, title, status and action, in four lanes on desktop and stacked on a phone. */
-function Row({
+export function Row({
   art,
+  photo,
   title,
   line,
   status,
+  fresh = false,
   children,
 }: {
-  art: BuyerOrder["art"];
+  art?: ArtKey;
+  /** A live listing's cover, shown instead of the drawing */
+  photo?: string | null;
   title: string;
   line: string;
-  status: OrderStatus;
-  children: React.ReactNode;
+  /** `muted` greys out things that are over (declined, ran out) */
+  status: OrderStatus & { muted?: boolean };
+  /** Changed since their last visit: a small "New" tag by the status */
+  fresh?: boolean;
+  children?: React.ReactNode;
 }) {
   return (
     <li className="grid grid-cols-[56px_minmax(0,1fr)] items-center gap-x-4 gap-y-3 border-b border-public-border py-5 last:border-b-0 sm:grid-cols-[72px_minmax(0,1fr)_172px] sm:gap-x-5 xl:grid-cols-[72px_minmax(0,1fr)_320px_172px]">
-      <span className="row-span-2 flex size-14 items-center justify-center self-start rounded-[12px] bg-public-photo sm:size-[72px] sm:self-center xl:row-span-1">
-        <ItemArt art={art} size={46} className="max-sm:size-9" />
+      <span className="row-span-2 flex size-14 items-center justify-center self-start overflow-hidden rounded-[12px] bg-public-photo sm:size-[72px] sm:self-center xl:row-span-1">
+        <ListingImage
+          photo={photo ?? undefined}
+          art={art}
+          artSize={46}
+          artClassName={art ? "max-sm:size-9" : undefined}
+        />
       </span>
       <span className="col-start-2 flex flex-col gap-0.5">
         <span className="text-base font-bold">{title}</span>
         <span className="text-sm text-public-text-muted">{line}</span>
       </span>
       <span className="col-start-2 flex flex-col gap-0.5 xl:col-start-3 xl:row-start-1">
-        <span className={cn("text-base font-bold", status.done && "text-leaf-600")}>
+        <span
+          className={cn(
+            "text-base font-bold",
+            status.done && "text-leaf-600",
+            status.muted && "text-public-text-muted",
+          )}
+        >
           {status.title}
+          {fresh && (
+            <span className="ml-2 inline-flex h-5 items-center rounded-full bg-pink-100 px-2 align-middle text-xs font-bold text-pink-600">
+              New
+            </span>
+          )}
         </span>
         <span className="text-sm text-public-text-muted">{status.detail}</span>
       </span>

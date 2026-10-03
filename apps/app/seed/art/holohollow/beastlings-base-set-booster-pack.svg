@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400">
+  <rect width="400" height="400" fill="#ffdceb"/>
+  <!-- foil pack -->
+  <rect x="122" y="80" width="156" height="240" fill="#ff5fa8"/>
+  <!-- crimped top and bottom -->
+  <path d="M122 88 V72 l6.5 -8 l6.5 8 l6.5 -8 l6.5 8 l6.5 -8 l6.5 8 l6.5 -8 l6.5 8 l6.5 -8 l6.5 8 l6.5 -8 l6.5 8 l6.5 -8 l6.5 8 l6.5 -8 l6.5 8 l6.5 -8 l6.5 8 l6.5 -8 l6.5 8 l6.5 -8 l6.5 8 l6.5 -8 l6.5 8 V88 Z" fill="#c9246f"/>
+  <path d="M122 312 V328 l6.5 8 l6.5 -8 l6.5 8 l6.5 -8 l6.5 8 l6.5 -8 l6.5 8 l6.5 -8 l6.5 8 l6.5 -8 l6.5 8 l6.5 -8 l6.5 8 l6.5 -8 l6.5 8 l6.5 -8 l6.5 8 l6.5 -8 l6.5 8 l6.5 -8 l6.5 8 l6.5 -8 l6.5 8 l6.5 -8 V312 Z" fill="#c9246f"/>
+  <!-- logo bars -->
+  <rect x="150" y="102" width="100" height="12" rx="6" fill="#ffffff"/>
+  <rect x="170" y="120" width="60" height="8" rx="4" fill="#ffffff"/>
+  <!-- star burst -->
+  <path d="M200 136 L213 156 L235 145 L237 169 L261 171 L250 193 L270 206 L250 219 L261 241 L237 243 L235 267 L213 256 L200 276 L187 256 L165 267 L163 243 L139 241 L150 219 L130 206 L150 193 L139 171 L163 169 L165 145 L187 156 Z" fill="#ffd934"/>
+  <!-- Emberpup face: flame ears, head -->
+  <path d="M172 196 C158 184 156 162 164 150 C166 164 174 166 176 158 C182 170 186 182 182 192 Z" fill="#d9391b"/>
+  <path d="M228 196 C242 184 244 162 236 150 C234 164 226 166 224 158 C218 170 214 182 218 192 Z" fill="#d9391b"/>
+  <circle cx="200" cy="214" r="38" fill="#f5be0b"/>
+  <circle cx="186" cy="208" r="5" fill="#14261d"/>
+  <circle cx="214" cy="208" r="5" fill="#14261d"/>
+  <ellipse cx="200" cy="222" rx="7" ry="5" fill="#14261d"/>
+  <path d="M192 233 Q200 239 208 233" fill="none" stroke="#14261d" stroke-width="3.5" stroke-linecap="round"/>
+  <!-- small bar near the bottom -->
+  <rect x="166" y="290" width="68" height="8" rx="4" fill="#ffffff"/>
+</svg>

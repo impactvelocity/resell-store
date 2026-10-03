@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useState, useTransition } from "react";
 import { Button } from "@repo/ui/button";
 import { CheckIcon, ChevronLeftIcon, HeartIcon } from "@repo/ui/icons";
 import { Sticker } from "@repo/ui/sticker";
@@ -112,13 +112,20 @@ function OptionCard({
   );
 }
 
-export function ChooseModeScreen() {
+export function ChooseModeScreen({
+  onChoose,
+}: {
+  /** Saves the choice on the account (live). Without it, the prototype just routes. */
+  onChoose?: (mode: HomeMode) => Promise<void>;
+} = {}) {
   const router = useRouter();
   const [choice, setChoice] = useState<HomeMode>("selling");
+  const [pending, startTransition] = useTransition();
 
   function go(mode: HomeMode) {
     storeMode(mode);
-    router.push(homeHref(mode));
+    if (onChoose) startTransition(() => onChoose(mode));
+    else router.push(homeHref(mode));
   }
 
   return (
@@ -135,7 +142,7 @@ export function ChooseModeScreen() {
       </div>
       {/* Desktop header */}
       <div className="hidden items-center justify-between px-12 py-7 desk:flex">
-        <WelcomeWordmark markSize={36} />
+        <WelcomeWordmark />
         <span className="text-sm font-medium text-text-muted">
           One quick question
         </span>
@@ -171,13 +178,15 @@ export function ChooseModeScreen() {
           <Button
             className="h-[60px] w-full desk:w-[360px] desk:text-lg"
             onClick={() => go(choice)}
+            disabled={pending}
           >
-            {ctaLabel[choice]}
+            {pending ? "One moment…" : ctaLabel[choice]}
           </Button>
           <Button
             variant="ghost"
             className="h-12 desk:h-auto desk:px-0 desk:hover:bg-transparent desk:hover:underline"
             onClick={() => go("buying")}
+            disabled={pending}
           >
             Just look around first
           </Button>

@@ -4,10 +4,52 @@ import { useRef, useState, type KeyboardEvent, type ReactNode } from "react";
 import { ChevronLeftIcon, ChevronRightIcon } from "@repo/ui/icons";
 import { cn } from "@repo/ui/lib/utils";
 import type { PhotoView } from "../../../lib/mock-listing-detail";
-import { ItemArt } from "../art";
+import { ListingImage } from "../parts";
 
 const focusRing =
   "outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-secondary";
+
+/** A photo, a video, or the prototype's drawing, filling a gallery frame. */
+function Media({
+  photo,
+  artSize,
+  artClassName,
+  fit,
+  thumb,
+}: {
+  photo: PhotoView;
+  artSize: number;
+  artClassName: string;
+  fit: "cover" | "contain";
+  /** Thumbnails show a still frame, not a player. */
+  thumb?: boolean;
+}) {
+  if (photo.video && photo.url) {
+    return (
+      <video
+        src={photo.url}
+        muted
+        playsInline
+        preload="metadata"
+        controls={!thumb}
+        className={cn("size-full", fit === "cover" ? "object-cover" : "object-contain")}
+      />
+    );
+  }
+  return (
+    <ListingImage
+      photo={photo.url}
+      art={photo.art}
+      alt={photo.caption}
+      artSize={artSize}
+      artClassName={artClassName}
+      fit={fit}
+    />
+  );
+}
+
+/** A stable key: photos repeat neither URL nor drawing within one listing. */
+const photoKey = (p: PhotoView, i: number) => `${p.url ?? p.art ?? "none"}-${i}`;
 
 /** White pill that sits on a photo: caption, "1 of 6". */
 function PhotoChip({ className, children }: { className?: string; children: ReactNode }) {
@@ -50,20 +92,20 @@ export function Gallery({ photos, title }: { photos: PhotoView[]; title: string 
           >
             {photos.map((p, i) => (
               <button
-                key={p.art + i}
+                key={photoKey(p, i)}
                 type="button"
                 onClick={() => setIndex(i)}
-                aria-label={`Photo ${i + 1}: ${p.caption}`}
+                aria-label={p.caption ? `Photo ${i + 1}: ${p.caption}` : `Photo ${i + 1}`}
                 aria-current={i === index ? "true" : undefined}
                 className={cn(
-                  "flex size-[72px] shrink-0 cursor-pointer items-center justify-center rounded-[12px] border-2 bg-public-photo transition-colors xl:size-[88px]",
+                  "flex size-[72px] shrink-0 cursor-pointer items-center justify-center overflow-hidden rounded-[12px] border-2 bg-public-photo transition-colors xl:size-[88px]",
                   i === index
                     ? "border-leaf-900"
                     : "border-transparent hover:border-public-border",
                   focusRing,
                 )}
               >
-                <ItemArt art={p.art} size={52} className="h-auto w-[59%]" />
+                <Media photo={p} artSize={52} artClassName="h-auto w-[59%]" fit="cover" thumb />
               </button>
             ))}
           </div>
@@ -77,18 +119,19 @@ export function Gallery({ photos, title }: { photos: PhotoView[]; title: string 
         tabIndex={0}
         onKeyDown={onKeyDown}
         className={cn(
-          "relative flex aspect-square max-h-[672px] w-full min-w-0 items-center justify-center rounded-lg bg-public-photo",
+          "relative flex aspect-square max-h-[672px] w-full min-w-0 items-center justify-center overflow-hidden rounded-lg bg-public-photo",
           focusRing,
         )}
       >
-        <ItemArt
+        <Media
           key={index}
-          art={photo.art}
-          size={380}
-          className="h-auto w-[56%]"
+          photo={photo}
+          artSize={380}
+          artClassName="h-auto w-[56%]"
+          fit="contain"
         />
         <span className="sr-only" aria-live="polite">
-          Photo {index + 1} of {count}: {photo.caption}
+          Photo {index + 1} of {count}{photo.caption ? `: ${photo.caption}` : ""}
         </span>
 
         {count > 1 && (
@@ -100,7 +143,9 @@ export function Gallery({ photos, title }: { photos: PhotoView[]; title: string 
             </PhotoChip>
           </>
         )}
-        <PhotoChip className="bottom-4 left-4 font-medium">{photo.caption}</PhotoChip>
+        {photo.caption && (
+          <PhotoChip className="bottom-4 left-4 font-medium">{photo.caption}</PhotoChip>
+        )}
       </div>
     </div>
   );
@@ -168,13 +213,18 @@ export function PhotoSlider({
       >
         {photos.map((p, i) => (
           <div
-            key={p.art + i}
+            key={photoKey(p, i)}
             role="group"
             aria-roledescription="slide"
-            aria-label={`${i + 1} of ${count}: ${p.caption}`}
-            className="flex aspect-square max-h-[560px] w-full shrink-0 snap-center items-center justify-center"
+            aria-label={p.caption ? `${i + 1} of ${count}: ${p.caption}` : `${i + 1} of ${count}`}
+            className="flex aspect-square max-h-[560px] w-full shrink-0 snap-center items-center justify-center overflow-hidden"
           >
-            <ItemArt art={p.art} size={230} className="h-auto w-[59%] max-w-[330px]" />
+            <Media
+              photo={p}
+              artSize={230}
+              artClassName="h-auto w-[59%] max-w-[330px]"
+              fit="contain"
+            />
           </div>
         ))}
       </div>
@@ -186,7 +236,7 @@ export function PhotoSlider({
           <div className="absolute bottom-4 left-1/2 flex -translate-x-1/2 items-center gap-1.5">
             {photos.map((p, i) => (
               <button
-                key={p.art + i}
+                key={photoKey(p, i)}
                 type="button"
                 onClick={() => goTo(i)}
                 aria-label={`Show photo ${i + 1}`}

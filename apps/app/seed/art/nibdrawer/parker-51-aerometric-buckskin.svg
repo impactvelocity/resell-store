@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400">
+  <rect width="400" height="400" fill="#ddf0e3"/>
+  <!-- the pen, capped, lying corner to corner -->
+  <g transform="rotate(-40 200 210)">
+    <!-- barrel, tapering to the blind cap -->
+    <path d="M196 186 H300 C326 186 346 198 352 210 C346 222 326 234 300 234 H196 Z" fill="#f5be0b"/>
+    <rect x="186" y="186" width="12" height="48" fill="#14261d"/>
+    <!-- cap -->
+    <path d="M70 196 C70 190 76 186 84 186 H190 V234 H84 C76 234 70 230 70 224 Z" fill="#ffffff"/>
+    <rect x="62" y="196" width="14" height="28" rx="6" fill="#ffd934"/>
+    <path d="M100 196 H176 M100 206 H176 M100 216 H176 M100 226 H176" fill="none" stroke="#fff6c2" stroke-width="3" stroke-linecap="round"/>
+    <rect x="176" y="186" width="10" height="48" fill="#ffd934"/>
+    <!-- arrow clip, lying on the cap -->
+    <rect x="104" y="180" width="80" height="10" rx="5" fill="#ffd934"/>
+    <path d="M90 185 L110 175 L106 185 L110 195 Z" fill="#ffd934" stroke="#ffd934" stroke-width="4" stroke-linejoin="round"/>
+  </g>
+</svg>

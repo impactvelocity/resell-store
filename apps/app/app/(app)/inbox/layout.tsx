@@ -1,16 +1,13 @@
-import { InboxView } from "../../../components/inbox/inbox-view";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = { title: "Inbox · resell.store" };
 
 /*
- * A5 Inbox. The view lives in the layout so /inbox and /inbox/<id> share one
- * list (filter, read dots, sent messages). The pages only pick the thread.
+ * A5 Inbox, live: conversations with buyers, offers to answer and sales to
+ * ship. The designed inbox (components/inbox) is still served from app/mock.
  */
 export default function InboxLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
-  return (
-    <>
-      <InboxView />
-      {children}
-    </>
-  );
+  return children;
 }

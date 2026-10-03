@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400">
+  <rect width="400" height="400" fill="#ffdceb"/>
+  <!-- two long handles -->
+  <path d="M130 146 C130 66 166 58 200 58 C234 58 270 66 270 146" fill="none" stroke="#f5be0b" stroke-width="12" stroke-linecap="round"/>
+  <path d="M146 146 C146 90 172 82 200 82 C228 82 254 90 254 146" fill="none" stroke="#f5be0b" stroke-width="12" stroke-linecap="round"/>
+  <!-- trapezoid nylon body -->
+  <path d="M96 140 H304 Q314 140 312 150 L282 324 Q280 336 268 336 H132 Q120 336 118 324 L88 150 Q86 140 96 140 Z" fill="#ff5fa8"/>
+  <!-- folded side gussets -->
+  <path d="M118 300 L134 326 M282 300 L266 326" fill="none" stroke="#c9246f" stroke-width="5" stroke-linecap="round"/>
+  <!-- zip along the top -->
+  <path d="M104 156 H296" fill="none" stroke="#14261d" stroke-width="4" stroke-linecap="round"/>
+  <!-- leather handle tabs -->
+  <rect x="122" y="134" width="30" height="22" rx="6" fill="#f5be0b"/>
+  <rect x="248" y="134" width="30" height="22" rx="6" fill="#f5be0b"/>
+  <!-- small rounded flap with its snap -->
+  <path d="M174 134 H226 Q232 134 232 140 V178 Q232 202 200 202 Q168 202 168 178 V140 Q168 134 174 134 Z" fill="#f5be0b"/>
+  <circle cx="200" cy="180" r="7" fill="#14261d"/>
+</svg>

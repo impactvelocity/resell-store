@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, type ReactNode } from "react";
 import { CheckIcon, SparkleIcon } from "@repo/ui/icons";
 import { useToast } from "@repo/ui/toast";
 import { cn } from "@repo/ui/lib/utils";
@@ -8,12 +8,21 @@ import { ItemArt } from "../art";
 import { SiteLink, StoreLink } from "../links";
 import { useCopyMcpLink } from "./parts";
 
+const sampleCard =
+  "flex items-center gap-3 rounded-[16px] bg-public-photo p-3 transition-colors outline-none hover:bg-[#ededed] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-leaf-600 sm:gap-4 sm:p-[14px]";
+
 const chip =
   "inline-flex h-10 shrink-0 cursor-pointer items-center gap-1.5 rounded-full px-[18px] text-sm font-semibold transition-colors outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-leaf-600";
 
-/** P7 hero: the pitch on the left, a sample assistant exchange on the right. */
-export function AgentHero() {
+/**
+ * P7 hero: the pitch on the left, a sample assistant exchange on the right.
+ * `actions` (live): the real way to connect, in place of the prototype's
+ * buttons; the sample is then plainly an example rather than links into the
+ * prototype's stores.
+ */
+export function AgentHero({ actions }: { actions?: ReactNode }) {
   const { copy, copied } = useCopyMcpLink();
+  const live = actions !== undefined;
 
   return (
     <section className="flex flex-col gap-12 pt-10 pb-14 desk:pt-20 desk:pb-[88px] xl:flex-row xl:items-center xl:gap-20">
@@ -25,41 +34,70 @@ export function AgentHero() {
           Send your agent shopping.
         </h1>
         <p className="max-w-[560px] text-lg text-public-text-muted desk:text-[20px] desk:leading-[30px]">
-          Add resell.store to the assistant you already use. It browses every
-          store, watches for the thing you want, makes offers inside your limit,
-          and asks you before it pays.
+          {live
+            ? "Add resell.store to the assistant you already use. It searches every store, asks sellers your questions, makes offers inside your limit, and leaves paying to you."
+            : "Add resell.store to the assistant you already use. It browses every store, watches for the thing you want, makes offers inside your limit, and asks you before it pays."}
         </p>
-        <div className="flex flex-col gap-3 pt-2 sm:flex-row sm:items-center">
-          <a
-            href="#assistants"
-            className="flex h-14 items-center justify-center rounded-full bg-leaf-600 px-8 text-lg font-bold text-white transition-colors outline-none hover:bg-leaf-900 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-leaf-600"
-          >
-            Connect an assistant
-          </a>
-          <button
-            type="button"
-            onClick={() => copy("hero")}
-            className="flex h-14 cursor-pointer items-center justify-center gap-2 rounded-full border border-leaf-900 px-7 text-lg font-bold text-text transition-colors outline-none hover:bg-public-photo focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-leaf-600"
-          >
-            {copied === "hero" && <CheckIcon size={18} strokeWidth={2.4} />}
-            {copied === "hero" ? "Copied" : "Copy the MCP link"}
-          </button>
-        </div>
+        {live ? (
+          actions
+        ) : (
+          <div className="flex flex-col gap-3 pt-2 sm:flex-row sm:items-center">
+            <a
+              href="#assistants"
+              className="flex h-14 items-center justify-center rounded-full bg-leaf-600 px-8 text-lg font-bold text-white transition-colors outline-none hover:bg-leaf-900 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-leaf-600"
+            >
+              Connect an assistant
+            </a>
+            <button
+              type="button"
+              onClick={() => copy("hero")}
+              className="flex h-14 cursor-pointer items-center justify-center gap-2 rounded-full border border-leaf-900 px-7 text-lg font-bold text-text transition-colors outline-none hover:bg-public-photo focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-leaf-600"
+            >
+              {copied === "hero" && <CheckIcon size={18} strokeWidth={2.4} />}
+              {copied === "hero" ? "Copied" : "Copy the MCP link"}
+            </button>
+          </div>
+        )}
       </div>
-      <SampleExchange />
+      <SampleExchange live={live} />
     </section>
   );
 }
 
 /** The tilted-sticker card showing an assistant finding the film camera. */
-function SampleExchange() {
+function SampleExchange({ live }: { live: boolean }) {
   const toast = useToast();
   const [watching, setWatching] = useState(false);
+  // Live: the camera and its store are made up, so nothing here links anywhere
+  const example = () =>
+    toast.add({
+      title:
+        "That's just an example. Ask your own assistant something like it.",
+    });
+
+  const sample = (
+    <>
+      <span className="flex size-14 shrink-0 items-center justify-center rounded-[12px] bg-white sm:size-[72px]">
+        <ItemArt art="camera" size={46} />
+      </span>
+      <span className="flex min-w-0 flex-1 flex-col gap-0.5">
+        <span className="text-base font-bold text-text">
+          35mm film camera with 50mm lens
+        </span>
+        <span className="text-sm text-public-text-muted">
+          Excellent, tested last week. Arrives Oct 8 to 10.
+        </span>
+      </span>
+      <span className="shrink-0 font-display text-xl font-extrabold tracking-tight text-text">
+        $140
+      </span>
+    </>
+  );
 
   return (
     <div className="relative flex w-full shrink-0 flex-col gap-[18px] rounded-xl border border-public-border max-w-[540px] px-5 pt-11 pb-6 desk:px-7 desk:pb-7 xl:w-[540px]">
       <div className="absolute -top-4 right-5 origin-top-left rotate-[4deg] rounded-full bg-lemon-400 px-4 py-[5px] font-display text-base font-extrabold text-leaf-900 desk:right-7">
-        Free for buyers
+        {live ? "An example" : "Free for buyers"}
       </div>
 
       <div className="flex justify-end">
@@ -79,47 +117,69 @@ function SampleExchange() {
         </p>
       </div>
 
-      <StoreLink
-        store="secondshutter"
-        href="/35mm-film-camera"
-        className="flex items-center gap-3 rounded-[16px] bg-public-photo p-3 transition-colors outline-none hover:bg-[#ededed] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-leaf-600 sm:gap-4 sm:p-[14px]"
-      >
-        <span className="flex size-14 shrink-0 items-center justify-center rounded-[12px] bg-white sm:size-[72px]">
-          <ItemArt art="camera" size={46} />
-        </span>
-        <span className="flex min-w-0 flex-1 flex-col gap-0.5">
-          <span className="text-base font-bold text-text">
-            35mm film camera with 50mm lens
-          </span>
-          <span className="text-sm text-public-text-muted">
-            Excellent, tested last week. Arrives Oct 8 to 10.
-          </span>
-        </span>
-        <span className="shrink-0 font-display text-xl font-extrabold tracking-tight text-text">
-          $140
-        </span>
-      </StoreLink>
+      {live ? (
+        <button
+          type="button"
+          onClick={example}
+          className={cn(sampleCard, "cursor-pointer text-left")}
+        >
+          {sample}
+        </button>
+      ) : (
+        <StoreLink
+          store="secondshutter"
+          href="/35mm-film-camera"
+          className={sampleCard}
+        >
+          {sample}
+        </StoreLink>
+      )}
 
       <div className="flex flex-wrap gap-2">
-        <SiteLink
-          href="/offer/35mm-film-camera"
-          className={cn(chip, "bg-leaf-900 text-white hover:bg-leaf-600")}
-        >
-          Offer $120
-        </SiteLink>
-        <SiteLink
-          href="/checkout/35mm-film-camera"
-          className={cn(
-            chip,
-            "border border-leaf-900 text-text hover:bg-public-photo",
-          )}
-        >
-          Buy for $152
-        </SiteLink>
+        {live ? (
+          <>
+            <button
+              type="button"
+              onClick={example}
+              className={cn(chip, "bg-leaf-900 text-white hover:bg-leaf-600")}
+            >
+              Offer $120
+            </button>
+            <button
+              type="button"
+              onClick={example}
+              className={cn(
+                chip,
+                "border border-leaf-900 text-text hover:bg-public-photo",
+              )}
+            >
+              Buy for $152
+            </button>
+          </>
+        ) : (
+          <>
+            <SiteLink
+              href="/offer/35mm-film-camera"
+              className={cn(chip, "bg-leaf-900 text-white hover:bg-leaf-600")}
+            >
+              Offer $120
+            </SiteLink>
+            <SiteLink
+              href="/checkout/35mm-film-camera"
+              className={cn(
+                chip,
+                "border border-leaf-900 text-text hover:bg-public-photo",
+              )}
+            >
+              Buy for $152
+            </SiteLink>
+          </>
+        )}
         <button
           type="button"
           aria-pressed={watching}
           onClick={() => {
+            if (live) return example();
             setWatching(!watching);
             toast.add({
               title: watching

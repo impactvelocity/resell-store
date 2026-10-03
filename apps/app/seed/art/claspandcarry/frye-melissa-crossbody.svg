@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400">
+  <rect width="400" height="400" fill="#ffdceb"/>
+  <!-- long thin strap rising from both top corners -->
+  <path d="M112 188 C112 92 150 62 200 62 C250 62 288 92 288 188" fill="none" stroke="#f5be0b" stroke-width="7" stroke-linecap="round"/>
+  <!-- body -->
+  <path d="M112 190 H288 Q306 190 306 208 V300 Q306 318 288 318 H112 Q94 318 94 300 V208 Q94 190 112 190 Z" fill="#f5be0b"/>
+  <!-- body stitching -->
+  <path d="M106 210 V298 Q106 306 114 306 H286 Q294 306 294 298 V210" fill="none" stroke="#14261d" stroke-width="4" stroke-linecap="round" stroke-dasharray="2 12"/>
+  <!-- curved flap edge and its stitching -->
+  <path d="M94 238 Q200 300 306 238" fill="none" stroke="#14261d" stroke-width="5" stroke-linecap="round"/>
+  <path d="M108 236 Q200 286 292 236" fill="none" stroke="#14261d" stroke-width="4" stroke-linecap="round" stroke-dasharray="2 12"/>
+  <!-- strap rings -->
+  <circle cx="112" cy="188" r="10" fill="none" stroke="#ffd934" stroke-width="6"/>
+  <circle cx="288" cy="188" r="10" fill="none" stroke="#ffd934" stroke-width="6"/>
+  <!-- brass stud closure -->
+  <circle cx="200" cy="268" r="12" fill="#ffd934"/>
+  <circle cx="200" cy="268" r="4" fill="#f5be0b"/>
+</svg>

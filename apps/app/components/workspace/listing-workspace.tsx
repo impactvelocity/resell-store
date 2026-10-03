@@ -11,7 +11,7 @@ import {
   CloseIcon,
   ListIcon,
 } from "@repo/ui/icons";
-import { LemonMark } from "@repo/ui/logo";
+import { DotMark } from "@repo/ui/logo";
 import { cn } from "@repo/ui/lib/utils";
 import { Composer } from "../agent-chat/agent-chat";
 import { ProgressBar } from "./listing-panel";
@@ -146,6 +146,8 @@ export interface ListingWorkspaceProps {
   onSend?: (text: string) => void;
   /** The composer's Stop button while `busy`. */
   onStop?: () => void;
+  /** The composer's camera button, e.g. to open the photo picker. */
+  onCamera?: () => void;
   /** Phone only: start with the listing drawer open. */
   defaultCanvasOpen?: boolean;
   /** Change this to flash "Saving" in the bar. */
@@ -167,6 +169,7 @@ export function ListingWorkspace({
   busy,
   onSend,
   onStop,
+  onCamera,
   defaultCanvasOpen,
   saveKey,
   closeHref = "/shops/home-and-kitchen",
@@ -183,6 +186,7 @@ export function ListingWorkspace({
       busy={busy}
       onSend={onSend}
       onStop={onStop}
+      onCamera={onCamera}
     />
   );
 
@@ -192,7 +196,7 @@ export function ListingWorkspace({
       <header className="hidden h-[72px] shrink-0 items-center justify-between border-b border-border bg-surface px-6 desk:flex">
         <div className="flex min-w-0 flex-1 items-center gap-3.5 xl:w-[340px] xl:flex-none">
           <Link href="/home" aria-label="Home">
-            <LemonMark size={32} />
+            <DotMark />
           </Link>
           <div className="flex min-w-0 flex-col text-sm">
             <span className="truncate font-bold">{title}</span>

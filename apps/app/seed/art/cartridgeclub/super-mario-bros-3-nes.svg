@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400">
+  <rect width="400" height="400" fill="#ddf0e3"/>
+  <!-- cartridge body -->
+  <path d="M100 78 H300 Q312 78 312 90 V258 H302 V300 H312 V310 Q312 322 300 322 H100 Q88 322 88 310 V300 H98 V258 H88 V90 Q88 78 100 78 Z" fill="#ffffff" stroke="#ffffff" stroke-width="4" stroke-linejoin="round"/>
+  <!-- ridged grip -->
+  <g fill="none" stroke="#f5be0b" stroke-width="5" stroke-linecap="round">
+    <path d="M112 98 H288 M112 114 H288 M112 130 H288 M112 146 H288"/>
+  </g>
+  <!-- label -->
+  <rect x="112" y="166" width="176" height="138" rx="6" fill="#ff5fa8"/>
+  <rect x="126" y="178" width="88" height="9" rx="4.5" fill="#ffffff"/>
+  <rect x="126" y="193" width="54" height="7" rx="3.5" fill="#ffffff"/>
+  <!-- raccoon tail: bushy, ringed, dark rounded tip, swishing -->
+  <path d="M134 292 C124 262 132 232 166 212 C180 204 204 202 210 214 C214 224 206 232 196 236 C172 248 162 268 160 292 C156 300 138 300 134 292 Z" fill="#f5be0b"/>
+  <path d="M166 212 C180 204 204 202 210 214 C214 224 206 232 196 236 C190 226 180 216 166 212 Z" fill="#14261d"/>
+  <g fill="none" stroke="#14261d" stroke-width="8" stroke-linecap="round">
+    <path d="M138 258 L160 270"/>
+    <path d="M146 234 L174 248"/>
+  </g>
+  <g fill="none" stroke="#ffffff" stroke-width="4" stroke-linecap="round">
+    <path d="M216 196 Q228 204 228 218"/>
+    <path d="M118 236 Q112 250 116 264"/>
+  </g>
+  <!-- leaf -->
+  <path d="M212 280 C214 248 238 230 268 232 C268 262 246 282 212 280 Z" fill="#256b4c"/>
+  <path d="M220 272 L254 244" fill="none" stroke="#8cc9a4" stroke-width="4" stroke-linecap="round"/>
+</svg>

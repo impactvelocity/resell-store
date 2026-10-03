@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400">
+  <rect width="400" height="400" fill="#ddf0e3"/>
+  <!-- cocoon body -->
+  <path d="M174 70 H226 C252 78 270 98 276 134 C286 190 284 250 274 292 Q266 332 238 334 H162 Q134 332 126 292 C116 250 114 190 124 134 C130 98 148 78 174 70 Z" fill="#f5be0b"/>
+  <!-- sleeves from the dropped shoulders -->
+  <path d="M252 90 C282 102 298 126 302 166 L312 282 Q313 292 303 293 L282 295 Q274 295 273 287 L268 198 Q268 140 252 90 Z" fill="#f5be0b"/>
+  <path d="M148 90 C118 102 102 126 98 166 L88 282 Q87 292 97 293 L118 295 Q126 295 127 287 L132 198 Q132 140 148 90 Z" fill="#f5be0b"/>
+  <path d="M252 92 Q268 140 268 198 L273 286 M148 92 Q132 140 132 198 L127 286" fill="none" stroke="#ddf0e3" stroke-width="4" stroke-linecap="round"/>
+  <!-- front opening -->
+  <path d="M200 192 V332" fill="none" stroke="#ddf0e3" stroke-width="4" stroke-linecap="round"/>
+  <!-- wide lapels, edged in lemon -->
+  <path d="M174 72 L152 88 L144 124 L160 132 L200 192 Z M226 72 L248 88 L256 124 L240 132 L200 192 Z" fill="#f5be0b"/>
+  <path d="M174 72 L152 88 L144 124 L160 132 L200 192 L240 132 L256 124 L248 88 L226 72" fill="none" stroke="#ffd934" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M174 72 L200 192 L226 72" fill="none" stroke="#ffd934" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+  <!-- two large buttons -->
+  <circle cx="216" cy="226" r="11" fill="#14261d"/>
+  <circle cx="216" cy="276" r="11" fill="#14261d"/>
+</svg>

@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400">
+  <rect width="400" height="400" fill="#ddf0e3"/>
+  <!-- jacket body and sleeves -->
+  <path d="M168 86 H232 L276 100 Q290 106 294 120 L328 298 Q329 307 320 308 L298 311 Q290 312 289 304 L268 190 V316 Q268 324 260 324 H140 Q132 324 132 316 V190 L111 304 Q110 312 102 311 L80 308 Q71 307 72 298 L106 120 Q110 106 124 100 Z" fill="#256b4c"/>
+  <!-- cuff seams -->
+  <path d="M290 290 L324 286 M110 290 L76 286" fill="none" stroke="#14261d" stroke-width="4" stroke-linecap="round"/>
+  <!-- check lining peeking at the open collar -->
+  <path d="M184 108 H216 L200 142 Z" fill="#ff5fa8" stroke="#ff5fa8" stroke-width="4" stroke-linejoin="round"/>
+  <path d="M190 120 H210 M195 110 V128 M205 110 V128" fill="none" stroke="#ffd934" stroke-width="3" stroke-linecap="round"/>
+  <!-- corduroy collar, folded down -->
+  <path d="M164 84 Q200 74 236 84 L262 104 L242 142 L212 110 H188 L158 142 L138 104 Z" fill="#14261d" stroke="#14261d" stroke-width="4" stroke-linejoin="round"/>
+  <g fill="none" stroke="#256b4c" stroke-width="3" stroke-linecap="round">
+    <path d="M150 104 V118 M160 96 V128 M170 92 V118 M180 90 V104"/>
+    <path d="M250 104 V118 M240 96 V128 M230 92 V118 M220 90 V104"/>
+    <path d="M192 86 V100 M200 84 V100 M208 86 V100"/>
+  </g>
+  <!-- storm flap over the zip -->
+  <path d="M212 146 V322" fill="none" stroke="#14261d" stroke-width="4" stroke-linecap="round"/>
+  <g fill="#ffd934">
+    <circle cx="203" cy="170" r="5"/><circle cx="203" cy="214" r="5"/><circle cx="203" cy="258" r="5"/><circle cx="203" cy="302" r="5"/>
+  </g>
+  <!-- two big patch pockets with flaps -->
+  <g fill="none" stroke="#14261d" stroke-width="4" stroke-linecap="round" stroke-dasharray="2 10">
+    <path d="M144 232 V300 Q144 306 150 306 H182 Q188 306 188 300 V232"/>
+    <path d="M222 232 V300 Q222 306 228 306 H252 Q258 306 258 300 V232"/>
+  </g>
+  <path d="M142 230 H190 M220 230 H260" fill="none" stroke="#14261d" stroke-width="5" stroke-linecap="round"/>
+  <circle cx="166" cy="220" r="5" fill="#ffd934"/>
+  <circle cx="240" cy="220" r="5" fill="#ffd934"/>
+</svg>

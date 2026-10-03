@@ -1,0 +1,16 @@
+# Local Postgres with pgvector, matching Render Postgres. `docker compose up -d`
+services:
+  db:
+    image: pgvector/pgvector:pg17
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: resell
+      POSTGRES_PASSWORD: resell
+      POSTGRES_DB: resell
+    ports:
+      - "5433:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+volumes:
+  pgdata:

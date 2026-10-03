@@ -1,7 +1,7 @@
 import { cn } from "@repo/ui/lib/utils";
 import type { Review, SoldItem } from "../../../lib/mock-market";
 import { formatPrice } from "../../../lib/mock-market";
-import { ItemArt } from "../art";
+import { ListingImage } from "../parts";
 
 /** Section title with a muted aside and a green "see all" action on the right. */
 export function SectionHeader({
@@ -40,8 +40,13 @@ export function SectionHeader({
 function SoldCard({ item }: { item: SoldItem }) {
   return (
     <div className="flex min-w-0 flex-col gap-3">
-      <div className="relative flex aspect-[243/210] w-full items-center justify-center rounded-2xl bg-public-photo">
-        <ItemArt art={item.art} size={110} className="h-auto max-w-[50%]" />
+      <div className="relative flex aspect-[243/210] w-full items-center justify-center overflow-hidden rounded-2xl bg-public-photo">
+        <ListingImage
+          photo={item.photo}
+          art={item.art}
+          artSize={110}
+          artClassName="h-auto max-w-[50%]"
+        />
         <span
           className="absolute bottom-3 left-2.5 origin-top-left rounded-full bg-leaf-600 px-3 py-[3px] font-display text-sm font-extrabold text-white"
           style={{ rotate: "-4deg" }}
@@ -67,8 +72,8 @@ export function SoldGrid({ items, className }: { items: SoldItem[]; className?: 
         className,
       )}
     >
-      {items.map((item) => (
-        <SoldCard key={item.title} item={item} />
+      {items.map((item, i) => (
+        <SoldCard key={`${i}-${item.title}`} item={item} />
       ))}
     </div>
   );

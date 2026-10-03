@@ -31,7 +31,7 @@ export function WeeklyBars({
       <div
         className={cn(
           "relative flex w-full shrink-0 items-end justify-around border-b border-border",
-          desk ? "h-[232px] gap-6" : "h-[150px]",
+          desk ? cn("h-[232px]", weeks.length > 5 ? "gap-2" : "gap-6") : "h-[150px]",
         )}
         onPointerLeave={() => setActive(null)}
       >
@@ -53,7 +53,7 @@ export function WeeklyBars({
                 onClick={() => setActive(i)}
                 className={cn(
                   "relative flex cursor-default flex-col items-center outline-none",
-                  desk ? "flex-1 gap-2" : "w-14 shrink-0 gap-1.5",
+                  desk ? "min-w-0 flex-1 gap-2" : weeks.length > 5 ? "min-w-0 flex-1 gap-1.5" : "w-14 shrink-0 gap-1.5",
                 )}
               >
                 {active === i && (
@@ -64,13 +64,13 @@ export function WeeklyBars({
                     ${week.value} earned, {week.dates}
                   </span>
                 )}
-                <span className={cn("text-sm text-text", desk ? "font-bold" : "font-semibold")}>
+                <span className={cn("text-text", desk ? "font-bold" : "font-semibold", weeks.length > 7 ? "text-xs" : "text-sm")}>
                   ${week.value}
                 </span>
                 <span
                   className={cn(
                     "shrink-0 rounded-t-[4px] bg-secondary transition-opacity",
-                    desk ? "w-16" : "w-7",
+                    desk ? (weeks.length > 5 ? "w-full max-w-16" : "w-16") : weeks.length > 7 ? "w-4" : "w-7",
                     active !== null && active !== i && "opacity-60",
                   )}
                   style={{ height }}
@@ -80,13 +80,13 @@ export function WeeklyBars({
           })
         )}
       </div>
-      <div className={cn("flex w-full justify-around", desk && "gap-6 pt-2.5")}>
+      <div className={cn("flex w-full justify-around", desk && (weeks.length > 5 ? "gap-2 pt-2.5" : "gap-6 pt-2.5"))}>
         {weeks.map((week) => (
           <span
             key={week.label}
             className={cn(
               "text-center text-sm text-text-muted",
-              desk ? "flex-1" : "w-14 shrink-0 font-medium",
+              desk ? "min-w-0 flex-1" : weeks.length > 5 ? "min-w-0 flex-1 text-xs font-medium" : "w-14 shrink-0 font-medium",
             )}
           >
             {desk ? week.label : week.short}

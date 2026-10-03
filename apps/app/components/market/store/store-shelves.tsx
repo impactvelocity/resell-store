@@ -1,15 +1,18 @@
 "use client";
 
-import { useId, useMemo, useRef, useState, type KeyboardEvent } from "react";
+import { useEffect, useId, useMemo, useRef, useState, type KeyboardEvent } from "react";
 import { Chip, ChipGroup } from "@repo/ui/chip";
 import { ChevronDownIcon } from "@repo/ui/icons";
 import { cn } from "@repo/ui/lib/utils";
 import { SearchField } from "@repo/ui/search-field";
 import { useToast } from "@repo/ui/toast";
-import type { Listing, Review, SoldItem, Store } from "../../../lib/mock-market";
-import { ListingCard } from "../parts";
+import type { PublicListing, PublicStore, Review, SoldItem } from "../../../lib/mock-market";
+import { EmptyState } from "../../empty-state";
+import { SiteLink } from "../links";
+import { ListingCard, pillLink } from "../parts";
 import { sectionCounts } from "./store-data";
 import { EmptyLine, ReviewList, SectionHeader, SoldGrid } from "./store-sections";
+import { ReviewPreview, StoreReviews, type StoreReviewsData } from "./store-reviews";
 
 type Tab = "sale" | "sold" | "reviews";
 type Sort = "newest" | "low" | "high";
@@ -25,11 +28,18 @@ export function StoreShelves({
   listings,
   sold,
   reviews,
+  liveReviews,
+  isOwner = false,
 }: {
-  store: Store;
-  listings: Listing[];
+  store: PublicStore;
+  listings: PublicListing[];
   sold: SoldItem[];
+  /** The prototype's quotes. Live stores pass `liveReviews` instead. */
   reviews: Review[];
+  /** A live store's real reviews: rating, star counts and the first page. */
+  liveReviews?: StoreReviewsData | null;
+  /** The signed-in person runs this store: empty shelves point them at listing. */
+  isOwner?: boolean;
 }) {
   const [tab, setTab] = useState<Tab>("sale");
   const [query, setQuery] = useState("");
@@ -39,6 +49,20 @@ export function StoreShelves({
   const toast = useToast();
 
   const chips = useMemo(() => sectionChips(store, listings), [store, listings]);
+  const hasLive = !!liveReviews && liveReviews.reviews.length > 0;
+  const hasReviews = hasLive || reviews.length > 0;
+
+  // "12 reviews" by the store's name links to #reviews: open that tab
+  useEffect(() => {
+    function onHash() {
+      if (window.location.hash !== "#reviews") return;
+      setTab("reviews");
+      tabsRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+    onHash();
+    window.addEventListener("hashchange", onHash);
+    return () => window.removeEventListener("hashchange", onHash);
+  }, []);
 
   const shown = useMemo(() => {
     const q = query.trim().toLowerCase();
@@ -78,9 +102,9 @@ export function StoreShelves({
           <StoreTabs
             tab={tab}
             onChange={setTab}
-            counts={{ sale: store.forSale, sold: store.sold, reviews: store.ratings }}
+            counts={{ sale: store.forSale, sold: store.sold, reviews: store.ratings ?? 0 }}
           />
-          {tab === "sale" && (
+          {tab === "sale" && listings.length > 0 && (
             <div className="flex items-center gap-5 desk:pb-3">
               <SearchField
                 aria-label={`Search ${store.name}`}
@@ -96,7 +120,31 @@ export function StoreShelves({
         </div>
 
         <div role="tabpanel" id={`store-panel-${tab}`} aria-labelledby={`store-tab-${tab}`}>
-          {tab === "sale" && (
+          {tab === "sale" && listings.length === 0 && (
+            <EmptyState
+              surface="public"
+              art="items"
+              sticker={isOwner ? "Your shelf" : "Coming soon"}
+              title={isOwner ? "Your shelves are ready" : `${store.owner} is getting things ready`}
+              actions={
+                isOwner ? (
+                  <SiteLink href={`/shops/${store.slug}`} className={pillLink.primary}>
+                    List your first thing
+                  </SiteLink>
+                ) : (
+                  <SiteLink href="/discover" className={pillLink.outline}>
+                    Browse everything
+                  </SiteLink>
+                )
+              }
+            >
+              {isOwner
+                ? "Anything you list shows up here, and on the marketplace if your store is public."
+                : `Nothing is for sale here just yet. Follow ${store.name} and you'll see the first things as they're listed.`}
+            </EmptyState>
+          )}
+
+          {tab === "sale" && listings.length > 0 && (
             <div className="flex flex-col gap-8">
               {chips.length > 1 && (
                 <ChipGroup
@@ -144,20 +192,41 @@ export function StoreShelves({
           {tab === "sold" &&
             (sold.length > 0 ? (
               <SoldGrid items={sold} />
+            ) : store.live ? (
+              <EmptyState
+                surface="public"
+                size="sm"
+                art="payout"
+                title="Nothing sold yet"
+              >
+                Things {store.owner} has sold will show up here, with what they went for.
+              </EmptyState>
             ) : (
               <EmptyLine>Things {store.owner} has sold will show up here.</EmptyLine>
             ))}
 
           {tab === "reviews" &&
-            (reviews.length > 0 ? (
+            (hasLive ? (
+              <StoreReviews store={store} data={liveReviews!} />
+            ) : reviews.length > 0 ? (
               <ReviewList reviews={reviews} className="pt-2" />
+            ) : store.live ? (
+              <EmptyState
+                surface="public"
+                size="sm"
+                art="messages"
+                title="No reviews yet"
+              >
+                Only people who bought from {store.owner} can review, so these start with the
+                first orders.
+              </EmptyState>
             ) : (
               <EmptyLine>Reviews from {store.owner}&apos;s buyers will show up here.</EmptyLine>
             ))}
         </div>
       </section>
 
-      {tab === "sale" && (
+      {tab === "sale" && (listings.length < store.forSale || section !== "all" || query) && (
         <div className="flex justify-center">
           <button
             type="button"
@@ -181,15 +250,19 @@ export function StoreShelves({
         </section>
       )}
 
-      {tab !== "reviews" && reviews.length > 0 && (
+      {tab !== "reviews" && hasReviews && (
         <section className="flex flex-col gap-7 border-t border-public-border pt-10">
           <SectionHeader
             title="What buyers say"
-            aside={`${store.rating.toFixed(1)} out of 5 from ${store.ratings} buyers. Only people who bought can review.`}
-            action={`Read all ${store.ratings}`}
+            aside={
+              store.rating != null
+                ? `${store.rating.toFixed(1)} out of 5 from ${store.ratings} buyers. Only people who bought can review.`
+                : "Only people who bought can review."
+            }
+            action={`Read all ${store.ratings ?? reviews.length}`}
             onAction={() => openTab("reviews")}
           />
-          <ReviewList reviews={reviews} />
+          {hasLive ? <ReviewPreview store={store} reviews={liveReviews!.reviews} /> : <ReviewList reviews={reviews} />}
         </section>
       )}
     </>
@@ -197,8 +270,9 @@ export function StoreShelves({
 }
 
 /** Chips for the sections a store sorts its things into, plus a price chip. */
-function sectionChips(store: Store, listings: Listing[]) {
-  const known = sectionCounts[store.slug] ?? {};
+function sectionChips(store: PublicStore, listings: PublicListing[]) {
+  // The prototype's fuller counts only apply to prototype stores
+  const known = (!store.live && sectionCounts[store.slug]) || {};
   const names = [
     ...new Set([...Object.keys(known), ...listings.flatMap((l) => (l.section ? [l.section] : []))]),
   ];

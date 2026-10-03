@@ -312,7 +312,7 @@ export default function DesignSystemPage() {
             <Sticker tone="primary" size="lg" rotate={-5}>
               $24
             </Sticker>
-            <Sticker tone="accent" rotate={4}>
+            <Sticker tone="accent" rotate={4} className="text-white">
               Just listed
             </Sticker>
             <Sticker tone="secondary" rotate={-3}>

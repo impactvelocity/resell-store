@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400">
+  <rect width="400" height="400" fill="#ddf0e3"/>
+  <!-- the pen, capped, lying almost flat -->
+  <g transform="rotate(-12 200 200)">
+    <!-- barrel, rounded end -->
+    <path d="M186 178 H312 Q336 178 336 200 Q336 222 312 222 H186 Z" fill="#256b4c"/>
+    <!-- cap, rounded end -->
+    <path d="M190 175 V225 H90 Q64 225 64 200 Q64 175 90 175 Z" fill="#256b4c"/>
+    <!-- marble swirls -->
+    <g fill="none" stroke="#8cc9a4" stroke-width="5" stroke-linecap="round">
+      <path d="M82 192 Q98 182 114 192 T150 190"/>
+      <path d="M96 212 Q114 204 130 214 T166 210"/>
+      <path d="M200 188 Q214 182 226 190"/>
+      <path d="M282 190 Q298 182 316 192"/>
+      <path d="M206 213 Q228 206 248 214 T300 212"/>
+    </g>
+    <!-- cap band -->
+    <rect x="176" y="175" width="12" height="50" rx="3" fill="#ffffff"/>
+    <!-- lever on the barrel -->
+    <rect x="232" y="193" width="46" height="10" rx="5" fill="#ffffff"/>
+    <circle cx="278" cy="198" r="7" fill="#ffffff"/>
+    <!-- simple clip -->
+    <rect x="86" y="168" width="78" height="10" rx="5" fill="#ffffff"/>
+  </g>
+</svg>

@@ -18,10 +18,10 @@ import {
   TruckIcon,
   UserIcon,
 } from "@repo/ui/icons";
-import { LemonMark } from "@repo/ui/logo";
+import { Wordmark } from "@repo/ui/logo";
 import { TabBar, TabBarItem } from "@repo/ui/tab-bar";
 import { cn } from "@repo/ui/lib/utils";
-import { inboxCount, me } from "../../lib/mock";
+import { shopsHref, useViewer, type Viewer } from "../viewer";
 
 /*
  * The frame around every signed-in screen (spec 04 / A. App shell).
@@ -38,10 +38,11 @@ type NavItem = {
   count?: number;
 };
 
-const mainNav: NavItem[] = [
+function mainNavFor(viewer: Viewer): NavItem[] {
+  return [
   { href: "/home", label: "Home", icon: HomeIcon, match: ["/home"] },
   {
-    href: "/shops/mayas-closet",
+    href: shopsHref(viewer),
     label: "Shops",
     icon: BagIcon,
     match: ["/shops", "/listings", "/offers"],
@@ -51,11 +52,12 @@ const mainNav: NavItem[] = [
     label: "Inbox",
     icon: ChatIcon,
     match: ["/inbox"],
-    count: inboxCount,
+    count: viewer.inboxCount,
   },
   { href: "/sales", label: "Sales", icon: TruckIcon, match: ["/sales"] },
   { href: "/stats", label: "Stats", icon: StatsIcon, match: ["/stats"] },
-];
+  ];
+}
 
 const toolsNav: NavItem[] = [
   {
@@ -113,6 +115,7 @@ function SidebarLink({ item, active }: { item: NavItem; active: boolean }) {
 
 export function Sidebar({ className }: { className?: string }) {
   const pathname = usePathname();
+  const viewer = useViewer();
   return (
     <aside
       className={cn(
@@ -122,12 +125,8 @@ export function Sidebar({ className }: { className?: string }) {
     >
       <div className="flex flex-col gap-6">
         <div className="flex flex-col gap-5">
-          <Link
-            href="/home"
-            className="flex items-center gap-2.5 px-2 font-display text-xl font-extrabold tracking-tight"
-          >
-            <LemonMark size={32} />
-            resell.store
+          <Link href="/home" className="flex items-center px-2">
+            <Wordmark size="sm" />
           </Link>
           <Link
             href="/list/new"
@@ -138,7 +137,7 @@ export function Sidebar({ className }: { className?: string }) {
           </Link>
         </div>
         <nav className="flex flex-col gap-0.5" aria-label="Main">
-          {mainNav.map((item) => (
+          {mainNavFor(viewer).map((item) => (
             <SidebarLink
               key={item.href}
               item={item}
@@ -167,10 +166,10 @@ export function Sidebar({ className }: { className?: string }) {
         )}
       >
         <span className="flex size-10 shrink-0 items-center justify-center rounded-full bg-primary font-display text-lg font-extrabold text-on-primary">
-          {me.initial}
+          {viewer.initial}
         </span>
         <span className="flex min-w-0 flex-1 flex-col text-sm">
-          <span className="font-bold">{me.name}</span>
+          <span className="truncate font-bold">{viewer.name}</span>
           <span className="text-text-muted">Profile and settings</span>
         </span>
         <ChevronRightIcon size={18} className="text-text-muted" />
@@ -182,6 +181,7 @@ export function Sidebar({ className }: { className?: string }) {
 /** Home, Search, List something, Inbox, Me. Floats 16px above the bottom safe area. */
 export function MobileTabBar({ className }: { className?: string }) {
   const pathname = usePathname();
+  const { inboxCount } = useViewer();
   const onMe = isActive(pathname, [
     "/me",
     "/shops",

@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400">
+  <rect width="400" height="400" fill="#ffdceb"/>
+  <!-- box top and right side -->
+  <path d="M92 84 L122 66 H302 V262 L272 284 V84 Z" fill="#d9391b" stroke="#d9391b" stroke-width="6" stroke-linejoin="round"/>
+  <!-- lid front: the sea -->
+  <rect x="92" y="84" width="180" height="200" rx="6" fill="#8cc9a4"/>
+  <!-- title band -->
+  <rect x="104" y="96" width="156" height="36" rx="6" fill="#d9391b"/>
+  <rect x="116" y="104" width="84" height="9" rx="4.5" fill="#ffffff"/>
+  <rect x="116" y="119" width="52" height="7" rx="3.5" fill="#ffffff"/>
+  <!-- hex tiles -->
+  <g stroke-width="5" stroke-linejoin="round">
+    <path d="M161 154 l17 10 v20 l-17 10 l-17 -10 v-20 Z" fill="#256b4c" stroke="#256b4c"/>
+    <path d="M203 154 l17 10 v20 l-17 10 l-17 -10 v-20 Z" fill="#ffd934" stroke="#ffd934"/>
+    <path d="M140 190 l17 10 v20 l-17 10 l-17 -10 v-20 Z" fill="#f5be0b" stroke="#f5be0b"/>
+    <path d="M182 190 l17 10 v20 l-17 10 l-17 -10 v-20 Z" fill="#ffd934" stroke="#ffd934"/>
+    <path d="M224 190 l17 10 v20 l-17 10 l-17 -10 v-20 Z" fill="#256b4c" stroke="#256b4c"/>
+    <path d="M161 226 l17 10 v20 l-17 10 l-17 -10 v-20 Z" fill="#256b4c" stroke="#256b4c"/>
+    <path d="M203 226 l17 10 v20 l-17 10 l-17 -10 v-20 Z" fill="#f5be0b" stroke="#f5be0b"/>
+  </g>
+  <!-- tiny houses on the tiles -->
+  <g fill="#ffffff" stroke="#ffffff" stroke-width="3" stroke-linejoin="round">
+    <path d="M155 178 v-8 l6 -6 l6 6 v8 Z"/>
+    <path d="M176 214 v-8 l6 -6 l6 6 v8 Z"/>
+    <path d="M197 250 v-8 l6 -6 l6 6 v8 Z"/>
+  </g>
+  <!-- wooden house tokens in front -->
+  <g stroke-width="6" stroke-linejoin="round">
+    <path d="M132 330 V306 L152 290 L172 306 V330 Z" fill="#ff5fa8" stroke="#ff5fa8"/>
+    <path d="M186 334 V310 L206 294 L226 310 V334 Z" fill="#8cc9a4" stroke="#8cc9a4"/>
+    <path d="M240 330 V306 L260 290 L280 306 V330 Z" fill="#ffffff" stroke="#ffffff"/>
+  </g>
+</svg>

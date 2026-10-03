@@ -7,12 +7,14 @@ import { ChevronLeftIcon, ChevronRightIcon, PlusIcon } from "@repo/ui/icons";
 import { SearchField } from "@repo/ui/search-field";
 import { useToast } from "@repo/ui/toast";
 import { cn } from "@repo/ui/lib/utils";
-import { shops, type Shop } from "../../lib/mock";
+import type { Shop } from "../../lib/mock";
 import type { ShopData, ShopListing } from "../../lib/mock-shops";
+import { EmptyState } from "../empty-state";
+import { useViewer } from "../viewer";
 import {
   Badge,
   CopySmallIcon,
-  ItemThumb,
+  ListingThumb,
   Menu,
   MenuItem,
   ShopTile,
@@ -24,26 +26,48 @@ import {
   useShareShop,
 } from "./parts";
 
-/* B2 Shop listings. One shop's header, numbers and its listings by status. */
+/*
+ * B2 Shop listings. One shop's header, numbers and its listings by status.
+ * With `live`, the numbers are only the ones we really keep (no views, saves
+ * or offers yet) and the links go to the real store and listings.
+ */
 
 type Tab = "live" | "draft" | "sold";
 
 const PAGE = 4;
 
+export type ShopListingsLive = {
+  /** The store's real address, for See shop and Share. */
+  storeUrl: string;
+  picture: string | null;
+  paused: boolean;
+};
+
 function listingHref(listing: ShopListing) {
-  return listing.status === "draft"
-    ? "/list/dutch-oven/details"
-    : "/listings/linen-dress";
+  if (listing.href) return listing.href;
+  return listing.status === "draft" ? "/list/dutch-oven/details" : "/listings/linen-dress";
 }
 
 function money(n: number) {
-  return `$${n.toLocaleString("en-US")}`;
+  return `$${n.toLocaleString("en-US", Number.isInteger(n) ? {} : { minimumFractionDigits: 2 })}`;
 }
 
-export function ShopListings({ shop, data }: { shop: Shop; data: ShopData }) {
+export function ShopListings({
+  shop,
+  data,
+  live,
+}: {
+  shop: Shop;
+  data: ShopData;
+  live?: ShopListingsLive;
+}) {
   const toast = useToast();
   const share = useShareShop();
-  const [tab, setTab] = useState<Tab>(data.counts.live > 0 ? "live" : "draft");
+  const { shops } = useViewer();
+  const newHref = live ? `/list/new?shop=${shop.slug}` : "/list/new";
+  const [tab, setTab] = useState<Tab>(
+    data.counts.live > 0 || data.counts.drafts === 0 ? "live" : "draft",
+  );
   const [query, setQuery] = useState("");
   const [expanded, setExpanded] = useState(false);
 
@@ -63,6 +87,10 @@ export function ShopListings({ shop, data }: { shop: Shop; data: ShopData }) {
   ];
 
   function seeShop() {
+    if (live && shop.visibility !== "private") {
+      window.open(live.storeUrl, "_blank", "noopener");
+      return;
+    }
     toast.add({
       title:
         shop.visibility === "private"
@@ -81,7 +109,7 @@ export function ShopListings({ shop, data }: { shop: Shop; data: ShopData }) {
     ) : (
       <button
         type="button"
-        onClick={() => share(shop)}
+        onClick={() => share(shop, live?.storeUrl)}
         className={cn(
           "flex w-fit cursor-pointer items-center gap-1.5 rounded-sm font-semibold whitespace-nowrap text-secondary outline-none hover:underline focus-visible:outline-2 focus-visible:outline-secondary",
           size === "sm" ? "text-sm" : "text-base",
@@ -108,9 +136,7 @@ export function ShopListings({ shop, data }: { shop: Shop; data: ShopData }) {
       {tabs.map((t) => (
         <Chip key={t.value} value={t.value} className="group gap-1.5 px-4">
           {t.label}
-          <span className="text-text-muted group-data-pressed:text-leaf-300">
-            {t.count}
-          </span>
+          <span className="text-text-muted group-data-pressed:text-leaf-300">{t.count}</span>
         </Chip>
       ))}
     </ChipGroup>
@@ -128,11 +154,90 @@ export function ShopListings({ shop, data }: { shop: Shop; data: ShopData }) {
               : "Nothing sold yet. It'll come."}
       </span>
       {!query.trim() && tab !== "sold" && (
-        <Link href="/list/new" className="text-sm font-bold text-secondary hover:underline">
+        <Link href={newHref} className="text-sm font-bold text-secondary hover:underline">
           List something new
         </Link>
       )}
     </div>
+  );
+
+  const nothingYet = !!live && data.listings.length === 0;
+  const firstListing = (
+    <EmptyState
+      sticker="Nothing yet"
+      title="Your shop is ready for its first thing"
+      actions={
+        <Link
+          href={newHref}
+          className="flex h-14 items-center gap-2 rounded-full bg-primary px-7 text-base font-bold text-on-primary transition-colors hover:bg-lemon-300"
+        >
+          <SparkleSolid size={18} />
+          List something
+        </Link>
+      }
+    >
+      Snap a photo or say what it is. Your agent looks it up, prices it and writes it for you.
+    </EmptyState>
+  );
+
+  const pausedNote = live?.paused && (
+    <div className="flex items-center gap-3 rounded-lg bg-surface-muted px-4 py-3">
+      <span className="min-w-0 flex-1 text-sm font-medium">
+        This shop is paused. Nobody else can see it right now.
+      </span>
+      <Link
+        href={`/shops/${shop.slug}/settings`}
+        className="shrink-0 text-sm font-bold text-secondary hover:underline"
+      >
+        Open it again
+      </Link>
+    </div>
+  );
+
+  const phoneStats = live
+    ? [
+        { value: String(data.counts.live), label: "live" },
+        { value: data.viewsThisWeek.toLocaleString("en-US"), label: "views this week" },
+        { value: String(data.offersWaiting), label: "offers waiting" },
+      ]
+    : [
+        { value: money(data.madeThisWeek), label: "this week" },
+        { value: String(data.counts.live), label: "live" },
+        { value: String(data.offersWaiting), label: "offers waiting" },
+      ];
+
+  const deskTiles = live
+    ? [
+        { label: "Made this week", value: money(data.madeThisWeek) },
+        { label: "Live listings", value: String(data.counts.live) },
+        { label: "Offers waiting", value: String(data.offersWaiting) },
+        { label: "Views this week", value: data.viewsThisWeek.toLocaleString("en-US") },
+      ]
+    : [
+        { label: "Made this week", value: money(data.madeThisWeek) },
+        { label: "Live listings", value: String(data.counts.live) },
+        { label: "Offers waiting", value: String(data.offersWaiting) },
+        {
+          label: "Views this week",
+          value: data.viewsThisWeek.toLocaleString("en-US"),
+        },
+      ];
+
+
+  // Live: followers, likes and shares in one quiet line, into the full stats
+  const miniStats = live && (
+    <Link
+      href={`/stats?shop=${shop.slug}`}
+      className="flex flex-wrap items-center gap-x-1.5 gap-y-1 text-sm text-text-muted hover:text-text"
+    >
+      {[
+        `${(data.followers ?? 0).toLocaleString("en-US")} ${data.followers === 1 ? "follower" : "followers"}`,
+        `${(data.likes ?? 0).toLocaleString("en-US")} ${data.likes === 1 ? "like" : "likes"}`,
+        `${(data.shares ?? 0).toLocaleString("en-US")} ${data.shares === 1 ? "share" : "shares"}`,
+        `${data.counts.drafts} ${data.counts.drafts === 1 ? "draft" : "drafts"}, ${data.counts.sold} sold`,
+      ].join(" · ")}
+      <span className="font-semibold text-secondary">All stats</span>
+    </Link>
   );
 
   return (
@@ -147,7 +252,12 @@ export function ShopListings({ shop, data }: { shop: Shop; data: ShopData }) {
             {(close) => (
               <>
                 {shops.map((s) => (
-                  <MenuItem key={s.slug} href={`/shops/${s.slug}`} selected={s.slug === shop.slug} onClick={close}>
+                  <MenuItem
+                    key={s.slug}
+                    href={`/shops/${s.slug}`}
+                    selected={s.slug === shop.slug}
+                    onClick={close}
+                  >
                     {s.name}
                   </MenuItem>
                 ))}
@@ -158,37 +268,45 @@ export function ShopListings({ shop, data }: { shop: Shop; data: ShopData }) {
               </>
             )}
           </Menu>
-          <Link href={`/shops/${shop.slug}/settings`} aria-label="Shop settings" className={roundButton}>
+          <Link
+            href={`/shops/${shop.slug}/settings`}
+            aria-label="Shop settings"
+            className={roundButton}
+          >
             <SlidersIcon />
           </Link>
         </div>
 
         <section className="flex flex-col gap-4 px-4 pt-6">
           <div className="flex items-center gap-3.5 px-1">
-            <ShopTile shop={shop} size={64} art={38} />
+            <ShopTile shop={shop} size={64} art={38} image={live?.picture} />
             <div className="flex min-w-0 flex-1 flex-col gap-0.5">
               <h1 className="font-display text-2xl font-extrabold tracking-tight">{shop.name}</h1>
               {linkLine("sm")}
             </div>
             <VisibilityTag visibility={shop.visibility} />
           </div>
+          {pausedNote}
           <div className="flex items-start border-y border-border px-1 py-4">
-            {[
-              { value: money(data.madeThisWeek), label: "this week" },
-              { value: String(data.counts.live), label: "live" },
-              { value: String(data.offersWaiting), label: "offers waiting" },
-            ].map((stat) => (
+            {phoneStats.map((stat) => (
               <div key={stat.label} className="flex flex-1 flex-col">
-                <span className="font-display text-2xl font-extrabold tracking-tight">{stat.value}</span>
+                <span className="font-display text-2xl font-extrabold tracking-tight">
+                  {stat.value}
+                </span>
                 <span className="text-sm font-medium text-text-muted">{stat.label}</span>
               </div>
             ))}
           </div>
+          {miniStats && <div className="-mt-1 px-1">{miniStats}</div>}
           <div className="flex items-center gap-2">
             <button type="button" onClick={seeShop} className={cn(softPill, "flex-1 px-0")}>
               See shop
             </button>
-            <button type="button" onClick={() => share(shop)} className={cn(softPill, "flex-1 px-0")}>
+            <button
+              type="button"
+              onClick={() => share(shop, live?.storeUrl)}
+              className={cn(softPill, "flex-1 px-0")}
+            >
               Share
             </button>
             <Link href={`/stats?shop=${shop.slug}`} className={cn(softPill, "flex-1 px-0")}>
@@ -197,55 +315,74 @@ export function ShopListings({ shop, data }: { shop: Shop; data: ShopData }) {
           </div>
         </section>
 
-        <section className="flex flex-col gap-3 px-4 pt-7">
-          <div className="-mx-4 overflow-x-auto px-4 [scrollbar-width:none]">{tabChips}</div>
-          <div className="flex flex-col rounded-lg border border-border bg-surface px-3.5 py-0.5">
-            {visible.length === 0
-              ? empty
-              : visible.map((listing, i) => (
-                  <Link
-                    key={listing.id}
-                    href={listingHref(listing)}
-                    className={cn(
-                      "flex items-center gap-3 py-3 outline-none focus-visible:rounded-sm focus-visible:outline-2 focus-visible:outline-secondary",
-                      i < visible.length - 1 && "border-b border-border",
-                    )}
-                  >
-                    <ItemThumb kind={listing.thumb} tone={listing.tone} />
-                    <span className="flex min-w-0 flex-1 flex-col">
-                      <span className="truncate text-base font-bold">{listing.title}</span>
-                      <span className="text-sm text-text-muted">
-                        {listing.status === "live"
-                          ? `${money(listing.price)}, ${listing.views} views`
-                          : listing.status === "sold"
-                            ? `${listing.listed}, ${money(listing.price)}`
-                            : listing.detail}
-                      </span>
-                    </span>
-                    <span className="flex w-[88px] shrink-0 justify-end">
-                      {listing.offers > 0 ? (
-                        <Badge tone="accent">
-                          {listing.offers} {listing.offers === 1 ? "offer" : "offers"}
-                        </Badge>
-                      ) : listing.isNew ? (
-                        <Badge tone="lemon">New</Badge>
-                      ) : listing.status === "draft" ? (
-                        <Badge tone="muted">Draft</Badge>
-                      ) : (
-                        <ChevronRightIcon size={18} strokeWidth={2.2} className="text-text-muted" />
+        {nothingYet ? (
+          <section className="px-4 pt-2 pb-6">{firstListing}</section>
+        ) : (
+          <section className="flex flex-col gap-3 px-4 pt-7">
+            <div className="-mx-4 overflow-x-auto px-4 [scrollbar-width:none]">{tabChips}</div>
+            <div className="flex flex-col rounded-lg border border-border bg-surface px-3.5 py-0.5">
+              {visible.length === 0
+                ? empty
+                : visible.map((listing, i) => (
+                    <Link
+                      key={listing.id}
+                      href={listingHref(listing)}
+                      className={cn(
+                        "flex items-center gap-3 py-3 outline-none focus-visible:rounded-sm focus-visible:outline-2 focus-visible:outline-secondary",
+                        i < visible.length - 1 && "border-b border-border",
                       )}
-                    </span>
-                  </Link>
-                ))}
-          </div>
-          <Link
-            href="/list/new"
-            className="flex h-[60px] w-full items-center justify-center gap-2 rounded-full bg-primary text-base font-bold text-on-primary transition-colors hover:bg-lemon-300"
-          >
-            <SparkleSolid size={20} />
-            List something new
-          </Link>
-        </section>
+                    >
+                      <ListingThumb listing={listing} />
+                      <span className="flex min-w-0 flex-1 flex-col">
+                        <span className="truncate text-base font-bold">{listing.title}</span>
+                        <span className="truncate text-sm text-text-muted">
+                          {listing.status === "live"
+                            ? live && !listing.views
+                              ? `${money(listing.price)}, ${listing.listed.toLowerCase()}`
+                              : `${money(listing.price)}, ${listing.views} ${listing.views === 1 ? "view" : "views"}`
+                            : listing.status === "sold"
+                              ? `${listing.listed}, ${money(listing.price)}`
+                              : listing.detail}
+                        </span>
+                      </span>
+                      <span className="flex w-[88px] shrink-0 justify-end">
+                        {listing.offers > 0 ? (
+                          <Badge tone="accent">
+                            {listing.offers} {listing.offers === 1 ? "offer" : "offers"}
+                          </Badge>
+                        ) : listing.isNew ? (
+                          <Badge tone="lemon">New</Badge>
+                        ) : listing.status === "draft" ? (
+                          <Badge tone="muted">Draft</Badge>
+                        ) : (
+                          <ChevronRightIcon
+                            size={18}
+                            strokeWidth={2.2}
+                            className="text-text-muted"
+                          />
+                        )}
+                      </span>
+                    </Link>
+                  ))}
+            </div>
+            {live && matching.length > PAGE && (
+              <button
+                type="button"
+                onClick={() => setExpanded((e) => !e)}
+                className="cursor-pointer self-center py-1 text-sm font-bold text-secondary hover:underline"
+              >
+                {expanded ? "Show less" : `Show all ${matching.length}`}
+              </button>
+            )}
+            <Link
+              href={newHref}
+              className="flex h-[60px] w-full items-center justify-center gap-2 rounded-full bg-primary text-base font-bold text-on-primary transition-colors hover:bg-lemon-300"
+            >
+              <SparkleSolid size={20} />
+              List something new
+            </Link>
+          </section>
+        )}
       </div>
 
       {/* ---------- Desktop ---------- */}
@@ -276,7 +413,7 @@ export function ShopListings({ shop, data }: { shop: Shop; data: ShopData }) {
         </nav>
 
         <div className="flex flex-wrap items-center gap-5">
-          <ShopTile shop={shop} size={80} art={48} />
+          <ShopTile shop={shop} size={80} art={48} image={live?.picture} />
           <div className="flex min-w-[240px] flex-1 flex-col gap-1">
             <div className="flex flex-wrap items-center gap-3">
               <h1 className="font-display text-3xl font-extrabold tracking-tight">{shop.name}</h1>
@@ -288,7 +425,7 @@ export function ShopListings({ shop, data }: { shop: Shop; data: ShopData }) {
             <button type="button" onClick={seeShop} className={softPill}>
               See shop
             </button>
-            <button type="button" onClick={() => share(shop)} className={softPill}>
+            <button type="button" onClick={() => share(shop, live?.storeUrl)} className={softPill}>
               Share
             </button>
             <Link href={`/shops/${shop.slug}/settings`} className={softPill}>
@@ -297,118 +434,130 @@ export function ShopListings({ shop, data }: { shop: Shop; data: ShopData }) {
           </div>
         </div>
 
+        {pausedNote}
+
+        <div className="flex flex-col gap-2.5">
         <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
-          {[
-            { label: "Made this week", value: money(data.madeThisWeek) },
-            { label: "Live listings", value: String(data.counts.live) },
-            { label: "Offers waiting", value: String(data.offersWaiting) },
-            { label: "Views this week", value: data.viewsThisWeek.toLocaleString("en-US") },
-          ].map((tile) => (
+          {deskTiles.map((tile) => (
             <Link
               key={tile.label}
               href={`/stats?shop=${shop.slug}`}
               className="flex flex-col gap-0.5 rounded-lg border border-border bg-surface px-5 py-4 transition-colors hover:border-text-muted/40"
             >
               <span className="text-sm font-medium text-text-muted">{tile.label}</span>
-              <span className="font-display text-2xl font-extrabold tracking-tight">{tile.value}</span>
+              <span className="font-display text-2xl font-extrabold tracking-tight">
+                {tile.value}
+              </span>
             </Link>
           ))}
         </div>
-
-        <div className="flex flex-col gap-3.5">
-          <div className="flex items-center justify-between gap-4">
-            {tabChips}
-            <SearchField
-              placeholder="Search this shop"
-              aria-label="Search this shop"
-              value={query}
-              onChange={(event) => setQuery(event.currentTarget.value)}
-              containerClassName="h-11 w-[300px] shrink gap-2.5 px-[18px]"
-              className="text-sm"
-            />
-          </div>
-          <div className="flex flex-col rounded-lg border border-border bg-surface px-6 py-1">
-            <div className="flex items-center gap-4 border-b border-border pt-3.5 pb-2.5 text-sm font-semibold text-text-muted">
-              <span className="flex-1">Item</span>
-              <span className="w-[72px] shrink-0 text-right">Price</span>
-              <span className="w-[72px] shrink-0 text-right">Views</span>
-              <span className="hidden w-[72px] shrink-0 text-right xl:block">Saves</span>
-              <span className="hidden w-[120px] shrink-0 xl:block">Listed</span>
-              <span className="w-[110px] shrink-0">Offers</span>
-              <span className="w-[18px] shrink-0" />
-            </div>
-            {visible.length === 0
-              ? empty
-              : visible.map((listing) => (
-                  <Link
-                    key={listing.id}
-                    href={listingHref(listing)}
-                    className="group flex items-center gap-4 border-b border-border py-3 outline-none focus-visible:rounded-sm focus-visible:outline-2 focus-visible:outline-secondary"
-                  >
-                    <span className="flex min-w-0 flex-1 items-center gap-3.5">
-                      <ItemThumb kind={listing.thumb} tone={listing.tone} size={48} art={30} />
-                      <span className="flex min-w-0 flex-col">
-                        <span className="flex items-center gap-2">
-                          <span className="truncate text-base font-bold group-hover:underline">
-                            {listing.title}
-                          </span>
-                          {listing.isNew && (
-                            <span className="flex h-6 shrink-0 items-center rounded-full bg-primary-soft px-2.5 text-sm font-semibold">
-                              New
-                            </span>
-                          )}
-                        </span>
-                        <span className="truncate text-sm text-text-muted">{listing.detail}</span>
-                      </span>
-                    </span>
-                    <span className="w-[72px] shrink-0 text-right text-base font-bold">
-                      {listing.price ? money(listing.price) : "Not set"}
-                    </span>
-                    <span className="w-[72px] shrink-0 text-right text-base font-medium">
-                      {listing.views}
-                    </span>
-                    <span className="hidden w-[72px] shrink-0 text-right text-base font-medium xl:block">
-                      {listing.saves}
-                    </span>
-                    <span className="hidden w-[120px] shrink-0 text-sm text-text-muted xl:block">
-                      {listing.listed}
-                    </span>
-                    <span className="flex w-[110px] shrink-0">
-                      {listing.offers > 0 ? (
-                        <Badge tone="accent">{listing.offers} waiting</Badge>
-                      ) : (
-                        <span className="text-sm text-text-muted">
-                          {listing.status === "draft"
-                            ? "Draft"
-                            : listing.status === "sold"
-                              ? "Sold"
-                              : "None yet"}
-                        </span>
-                      )}
-                    </span>
-                    <ChevronRightIcon
-                      size={18}
-                      strokeWidth={2.2}
-                      className="text-text-muted transition-colors group-hover:text-text"
-                    />
-                  </Link>
-                ))}
-            <div className="flex items-center justify-between py-3.5 text-sm">
-              <span className="text-text-muted">
-                Showing {visible.length} of {total}
-              </span>
-              {matching.length > PAGE && (
-                <button
-                  type="button"
-                  onClick={() => setExpanded((e) => !e)}
-                  className="cursor-pointer font-bold text-secondary hover:underline"
-                >
-                  {expanded ? "Show less" : "Show more"}
-                </button>
-              )}
-            </div>
-          </div>
+        {miniStats}
         </div>
+
+        {nothingYet ? (
+          <div className="rounded-xl border border-border bg-surface">{firstListing}</div>
+        ) : (
+          <div className="flex flex-col gap-3.5">
+            <div className="flex items-center justify-between gap-4">
+              {tabChips}
+              <SearchField
+                placeholder="Search this shop"
+                aria-label="Search this shop"
+                value={query}
+                onChange={(event) => setQuery(event.currentTarget.value)}
+                containerClassName="h-11 w-[300px] shrink gap-2.5 px-[18px]"
+                className="text-sm"
+              />
+            </div>
+            <div className="flex flex-col rounded-lg border border-border bg-surface px-6 py-1">
+              <div className="flex items-center gap-4 border-b border-border pt-3.5 pb-2.5 text-sm font-semibold text-text-muted">
+                <span className="flex-1">Item</span>
+                <span className="w-[72px] shrink-0 text-right">Price</span>
+                <span className="w-[72px] shrink-0 text-right">Views</span>
+                <span className="hidden w-[72px] shrink-0 text-right xl:block">{live ? "Likes" : "Saves"}</span>
+                <span className="hidden w-[120px] shrink-0 xl:block">
+                  {live && tab === "draft" ? "Started" : live && tab === "sold" ? "Sold" : "Listed"}
+                </span>
+                <span className="w-[110px] shrink-0">Offers</span>
+                <span className="w-[18px] shrink-0" />
+              </div>
+              {visible.length === 0
+                ? empty
+                : visible.map((listing) => (
+                    <Link
+                      key={listing.id}
+                      href={listingHref(listing)}
+                      className="group flex items-center gap-4 border-b border-border py-3 outline-none focus-visible:rounded-sm focus-visible:outline-2 focus-visible:outline-secondary"
+                    >
+                      <span className="flex min-w-0 flex-1 items-center gap-3.5">
+                        <ListingThumb listing={listing} size={48} art={30} />
+                        <span className="flex min-w-0 flex-col">
+                          <span className="flex items-center gap-2">
+                            <span className="truncate text-base font-bold group-hover:underline">
+                              {listing.title}
+                            </span>
+                            {listing.isNew && (
+                              <span className="flex h-6 shrink-0 items-center rounded-full bg-primary-soft px-2.5 text-sm font-semibold">
+                                New
+                              </span>
+                            )}
+                          </span>
+                          <span className="truncate text-sm text-text-muted">{listing.detail}</span>
+                        </span>
+                      </span>
+                      <span className="w-[72px] shrink-0 text-right text-base font-bold">
+                        {listing.price ? money(listing.price) : "Not set"}
+                      </span>
+                      {
+                        <>
+                          <span className="w-[72px] shrink-0 text-right text-base font-medium">
+                            {listing.views}
+                          </span>
+                          <span className="hidden w-[72px] shrink-0 text-right text-base font-medium xl:block">
+                            {listing.saves}
+                          </span>
+                          <span className="hidden w-[120px] shrink-0 text-sm text-text-muted xl:block">
+                            {listing.listed}
+                          </span>
+                          <span className="flex w-[110px] shrink-0">
+                            {listing.offers > 0 ? (
+                              <Badge tone="accent">{listing.offers} waiting</Badge>
+                            ) : (
+                              <span className="text-sm text-text-muted">
+                                {listing.status === "draft"
+                                  ? "Draft"
+                                  : listing.status === "sold"
+                                    ? "Sold"
+                                    : "None yet"}
+                              </span>
+                            )}
+                          </span>
+                        </>
+                      }
+                      <ChevronRightIcon
+                        size={18}
+                        strokeWidth={2.2}
+                        className="text-text-muted transition-colors group-hover:text-text"
+                      />
+                    </Link>
+                  ))}
+              <div className="flex items-center justify-between py-3.5 text-sm">
+                <span className="text-text-muted">
+                  Showing {visible.length} of {total}
+                </span>
+                {matching.length > PAGE && (
+                  <button
+                    type="button"
+                    onClick={() => setExpanded((e) => !e)}
+                    className="cursor-pointer font-bold text-secondary hover:underline"
+                  >
+                    {expanded ? "Show less" : "Show more"}
+                  </button>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </>
   );

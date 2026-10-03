@@ -7,9 +7,10 @@ import { Button } from "@repo/ui/button";
 import { ChevronRightIcon } from "@repo/ui/icons";
 import { useToast } from "@repo/ui/toast";
 import { cn } from "@repo/ui/lib/utils";
-import { me } from "../../lib/mock";
+import { deleteAccount } from "../../app/actions/profile";
+import { signOut } from "../../lib/auth-client";
 import { ConfirmDialog } from "../offers/offer-parts";
-import { useProfileDraft } from "./profile-context";
+import { useProfile, useProfileDraft } from "./profile-context";
 import {
   AboutField,
   InterestChips,
@@ -18,30 +19,34 @@ import {
   NotifyRows,
   ProfileAvatar,
   ReachChips,
+  useAvatarPicker,
 } from "./profile-fields";
 
 /* A6 + A7 on desktop: one "Profile and settings" page. */
 
+/** The mock's public profile. Live screens use `account.publicHref`. */
 export const publicProfileHref = "/shops/mayas-closet";
 
 function CardTitle({ children }: { children: React.ReactNode }) {
   return (
-    <h2 className="font-display text-xl font-extrabold tracking-tight text-text">
-      {children}
-    </h2>
+    <h2 className="font-display text-xl font-extrabold tracking-tight text-text">{children}</h2>
   );
 }
 
-const card =
-  "flex w-full flex-col rounded-xl border border-border bg-surface";
+const card = "flex w-full flex-col rounded-xl border border-border bg-surface";
 
-const textLink =
-  "shrink-0 cursor-pointer text-sm font-bold text-secondary hover:underline";
+const textLink = "shrink-0 cursor-pointer text-sm font-bold text-secondary hover:underline";
 
-/** Log out asks once, then goes to the welcome screen. */
+/** Log out asks once, signs out (when live), then goes to the welcome screen. */
 export function useLogOut() {
   const router = useRouter();
+  const { account } = useProfile();
   const [open, setOpen] = useState(false);
+  async function logOut() {
+    if (account.live) await signOut().catch(() => {});
+    router.push("/welcome");
+    router.refresh();
+  }
   const dialog = (
     <ConfirmDialog
       open={open}
@@ -49,7 +54,7 @@ export function useLogOut() {
       title="Log out?"
       description="Your agent keeps answering buyers while you're away."
       confirm="Log out"
-      onConfirm={() => router.push("/welcome")}
+      onConfirm={() => void logOut()}
     />
   );
   return { ask: () => setOpen(true), dialog };
@@ -57,38 +62,48 @@ export function useLogOut() {
 
 export function ProfileSettings({ className }: { className?: string }) {
   const toast = useToast();
-  const { draft, set, save } = useProfileDraft();
+  const router = useRouter();
+  const { account } = useProfile();
+  const { draft, set, save, saving } = useProfileDraft();
   const logOut = useLogOut();
+  const avatar = useAvatarPicker();
   const [deleting, setDeleting] = useState(false);
 
+  async function removeAccount() {
+    if (!account.live) {
+      toast.add({ title: "Nothing deleted. This is a prototype." });
+      return;
+    }
+    try {
+      await deleteAccount();
+      await signOut().catch(() => {});
+      toast.add({ title: "Your account is deleted. Thanks for being here." });
+      router.push("/welcome");
+      router.refresh();
+    } catch {
+      toast.add({ title: "That didn't work. Try again in a moment." });
+    }
+  }
+
   return (
-    <div
-      className={cn(
-        "w-full flex-col gap-7 px-12 pt-8 pb-14",
-        className,
-      )}
-    >
+    <div className={cn("w-full flex-col gap-7 px-12 pt-8 pb-14", className)}>
       <div className="flex w-full items-center justify-between gap-6">
         <h1 className="font-display text-3xl leading-[44px] font-extrabold tracking-tight text-text">
           Profile and settings
         </h1>
         <div className="flex items-center gap-3">
-          <Button
-            variant="soft"
-            size="md"
-            className="h-12"
-            render={<Link href={publicProfileHref} />}
-            nativeButton={false}
-          >
-            See public profile
-          </Button>
-          <Button
-            className="h-12 px-6"
-            onClick={() => {
-              save();
-              toast.add({ title: "Profile saved" });
-            }}
-          >
+          {account.publicHref && (
+            <Button
+              variant="soft"
+              size="md"
+              className="h-12"
+              render={<Link href={account.publicHref} />}
+              nativeButton={false}
+            >
+              See public profile
+            </Button>
+          )}
+          <Button className="h-12 px-6" disabled={saving} onClick={() => void save()}>
             Save changes
           </Button>
         </div>
@@ -100,15 +115,21 @@ export function ProfileSettings({ className }: { className?: string }) {
           <section className={cn(card, "gap-5 p-7")}>
             <CardTitle>About you</CardTitle>
             <div className="flex items-center gap-4">
-              <ProfileAvatar name={draft.name} className="size-20 text-3xl text-text" />
+              <ProfileAvatar
+                name={draft.name}
+                image={account.image}
+                className="size-20 text-3xl text-text"
+              />
               <div className="flex flex-col gap-0.5">
                 <button
                   type="button"
                   className={cn(textLink, "w-fit")}
-                  onClick={() => toast.add({ title: "Photo picker opens here" })}
+                  disabled={avatar.busy}
+                  onClick={avatar.pick}
                 >
-                  Change photo
+                  {avatar.busy ? "Uploading…" : "Change photo"}
                 </button>
+                {avatar.input}
                 <span className="text-sm text-text-muted">
                   Buyers see this on your shops and messages.
                 </span>
@@ -130,10 +151,7 @@ export function ProfileSettings({ className }: { className?: string }) {
                 Shapes what you see when you&apos;re buying.
               </p>
             </div>
-            <InterestChips
-              value={draft.interests}
-              onChange={(v) => set("interests", v)}
-            />
+            <InterestChips value={draft.interests} onChange={(v) => set("interests", v)} />
           </section>
         </div>
 
@@ -160,23 +178,25 @@ export function ProfileSettings({ className }: { className?: string }) {
             <div className="flex items-center gap-4 border-b border-border py-4">
               <div className="flex min-w-0 flex-1 flex-col">
                 <div className="text-base font-bold text-text">Email</div>
-                <div className="text-sm text-text-muted">{me.email}</div>
+                <div className="text-sm text-text-muted">{account.email}</div>
               </div>
-              <button
-                type="button"
-                className={textLink}
-                onClick={() =>
-                  toast.add({ title: `We sent a link to ${me.email}` })
-                }
-              >
-                Change
-              </button>
+              {!account.live && (
+                <button
+                  type="button"
+                  className={textLink}
+                  onClick={() => toast.add({ title: `We sent a link to ${account.email}` })}
+                >
+                  Change
+                </button>
+              )}
             </div>
             <div className="flex items-center gap-4 border-b border-border py-4">
               <div className="flex min-w-0 flex-1 flex-col">
                 <div className="text-base font-bold text-text">You sign in with</div>
                 <div className="text-sm text-text-muted">
-                  PayPal, or a link sent to your email
+                  {account.live
+                    ? "A link sent to your email"
+                    : "PayPal, or a link sent to your email"}
                 </div>
               </div>
               <Link href="/tools/connections" className={textLink}>
@@ -218,9 +238,7 @@ export function ProfileSettings({ className }: { className?: string }) {
         description="Your shops and listings come down everywhere. This can't be undone."
         confirm="Delete my account"
         danger
-        onConfirm={() =>
-          toast.add({ title: "Nothing deleted. This is a prototype." })
-        }
+        onConfirm={() => void removeAccount()}
       />
     </div>
   );

@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400">
+  <rect width="400" height="400" fill="#ddf0e3"/>
+  <!-- ribbed cuffs -->
+  <path d="M332 252 L338 270 L306 284 L300 266 Z M68 252 L62 270 L94 284 L100 266 Z" fill="#ff5fa8" stroke="#ff5fa8" stroke-width="6" stroke-linejoin="round"/>
+  <!-- fleece body and sleeves, soft bumps along the outline -->
+  <path d="M174 92 H226 L272 108 Q284 113 290 126 Q304 145 304 169 Q318 188 318 211 Q332 231 332 254 L300 268 L264 178 Q270 200 264 222 Q270 244 264 266 Q270 288 264 310 Q264 320 254 320 Q236 326 218 320 Q200 326 182 320 Q164 326 146 320 Q136 320 136 310 Q130 288 136 266 Q130 244 136 222 Q130 200 136 178 L100 268 L68 254 Q68 231 82 211 Q82 188 96 169 Q96 145 110 126 Q116 113 128 108 Z" fill="#256b4c"/>
+  <!-- stand collar -->
+  <path d="M168 80 H232 Q240 80 238 90 L232 104 H168 L162 90 Q160 80 168 80 Z" fill="#ff5fa8"/>
+  <!-- snap placket -->
+  <rect x="188" y="98" width="24" height="84" rx="6" fill="#ff5fa8"/>
+  <g fill="#ffd934">
+    <circle cx="200" cy="112" r="5"/><circle cx="200" cy="130" r="5"/><circle cx="200" cy="148" r="5"/><circle cx="200" cy="166" r="5"/>
+  </g>
+  <!-- chest pocket with its flap -->
+  <path d="M226 150 V176 Q226 182 232 182 H252 Q258 182 258 176 V150" fill="none" stroke="#ff5fa8" stroke-width="3" stroke-linecap="round" stroke-dasharray="2 8"/>
+  <rect x="222" y="138" width="40" height="16" rx="6" fill="#ff5fa8"/>
+</svg>

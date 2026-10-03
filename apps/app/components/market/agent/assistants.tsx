@@ -17,7 +17,7 @@ const action =
 const pressable =
   "cursor-pointer transition-colors outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-leaf-600";
 
-/** "Pick your assistant": five connector cards and the MCP link bar. */
+/** "Pick your assistant" (prototype): five connector cards and the MCP link bar. The live page uses live.tsx. */
 export function PickAssistant() {
   const toast = useToast();
   const { copy, copied } = useCopyMcpLink();
@@ -125,7 +125,7 @@ export function PickAssistant() {
 }
 
 /** Letter tile, or the link / browser glyph for the generic options. */
-function Mark({ mark }: { mark: Assistant["mark"] }) {
+export function Mark({ mark }: { mark: Assistant["mark"] }) {
   return (
     <div className="flex size-12 shrink-0 items-center justify-center rounded-md bg-public-photo font-display text-xl font-extrabold text-text">
       {mark === "link" ? (

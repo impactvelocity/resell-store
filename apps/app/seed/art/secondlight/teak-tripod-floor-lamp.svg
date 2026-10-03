@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400">
+  <rect width="400" height="400" fill="#fff6c2"/>
+  <!-- cord with foot switch -->
+  <path d="M206 264 C214 300 224 330 252 333 C280 336 312 330 336 334" fill="none" stroke="#14261d" stroke-width="4" stroke-linecap="round"/>
+  <rect x="284" y="325" width="28" height="14" rx="7" fill="#14261d"/>
+  <!-- slim pole -->
+  <rect x="195" y="140" width="10" height="118" rx="5" fill="#f5be0b"/>
+  <!-- three splayed legs -->
+  <g fill="none" stroke="#f5be0b" stroke-width="10" stroke-linecap="round">
+    <path d="M200 260 L212 324"/>
+    <path d="M196 258 L136 334"/>
+    <path d="M204 258 L264 334"/>
+  </g>
+  <!-- collar -->
+  <rect x="186" y="246" width="28" height="18" rx="6" fill="#ffd934"/>
+  <!-- wide drum shade -->
+  <rect x="122" y="62" width="156" height="88" rx="8" fill="#ffffff"/>
+  <path d="M132 71 H268 M132 141 H268" fill="none" stroke="#ffd934" stroke-width="5" stroke-linecap="round"/>
+</svg>

@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400">
+  <rect width="400" height="400" fill="#fff6c2"/>
+  <!-- cord with inline switch -->
+  <path d="M262 330 C300 330 300 360 340 356 C352 355 360 350 372 350" fill="none" stroke="#14261d" stroke-width="5" stroke-linecap="round"/>
+  <rect x="312" y="344" width="26" height="14" rx="7" transform="rotate(-6 325 351)" fill="#14261d"/>
+  <!-- stem -->
+  <rect x="176" y="206" width="48" height="104" rx="6" fill="#f5be0b"/>
+  <!-- base -->
+  <rect x="126" y="306" width="148" height="30" rx="15" fill="#d9391b"/>
+  <!-- mushroom cap -->
+  <path d="M84 206 C84 120 136 76 200 76 C264 76 316 120 316 206 Z" fill="#f5be0b"/>
+  <!-- glow under the cap -->
+  <ellipse cx="200" cy="222" rx="96" ry="10" fill="#ffd934"/>
+  <rect x="78" y="196" width="244" height="22" rx="11" fill="#d9391b"/>
+</svg>

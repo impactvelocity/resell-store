@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400">
+  <rect width="400" height="400" fill="#ffdceb"/>
+  <!-- the card -->
+  <rect x="110" y="74" width="180" height="252" rx="12" fill="#ffd934"/>
+  <rect x="124" y="90" width="152" height="124" rx="6" fill="#ff5fa8"/>
+  <!-- black star promo badge -->
+  <path d="M146 97 L150 105 L158 106 L152 112 L154 121 L146 116 L138 121 L140 112 L134 106 L142 105 Z" fill="#14261d" stroke="#14261d" stroke-width="3" stroke-linejoin="round"/>
+  <!-- Zappaw: lightning tail -->
+  <path d="M224 194 L250 172 L240 170 L262 138 L228 164 L238 166 L216 186 Z" fill="#f5be0b" stroke="#f5be0b" stroke-width="3" stroke-linejoin="round"/>
+  <!-- body and paws -->
+  <ellipse cx="206" cy="190" rx="30" ry="18" fill="#ffd934"/>
+  <rect x="186" y="196" width="12" height="14" rx="6" fill="#ffd934"/>
+  <rect x="214" y="196" width="12" height="14" rx="6" fill="#ffd934"/>
+  <!-- zig-zag ears -->
+  <path d="M166 142 L160 126 L168 124 L166 106 L188 132 Z" fill="#f5be0b" stroke="#f5be0b" stroke-width="4" stroke-linejoin="round"/>
+  <path d="M210 142 L216 126 L208 124 L210 106 L188 132 Z" fill="#f5be0b" stroke="#f5be0b" stroke-width="4" stroke-linejoin="round"/>
+  <!-- head -->
+  <circle cx="188" cy="158" r="28" fill="#ffd934"/>
+  <path d="M182 134 V142 M188 132 V141 M194 134 V142" fill="none" stroke="#f5be0b" stroke-width="3.5" stroke-linecap="round"/>
+  <!-- face and whiskers -->
+  <circle cx="178" cy="157" r="4" fill="#14261d"/>
+  <circle cx="198" cy="157" r="4" fill="#14261d"/>
+  <path d="M185 165 H191 L188 168 Z" fill="#14261d" stroke="#14261d" stroke-width="2" stroke-linejoin="round"/>
+  <path d="M182 171 Q185 175 188 171 Q191 175 194 171" fill="none" stroke="#14261d" stroke-width="2.5" stroke-linecap="round"/>
+  <path d="M168 166 H154 M168 172 L156 177 M208 166 H222 M208 172 L220 177" fill="none" stroke="#14261d" stroke-width="2.5" stroke-linecap="round"/>
+  <!-- card text -->
+  <rect x="124" y="230" width="96" height="10" rx="5" fill="#14261d"/>
+  <rect x="124" y="250" width="134" height="8" rx="4" fill="#f5be0b"/>
+  <rect x="124" y="265" width="100" height="8" rx="4" fill="#f5be0b"/>
+  <rect x="124" y="300" width="40" height="8" rx="4" fill="#14261d"/>
+</svg>

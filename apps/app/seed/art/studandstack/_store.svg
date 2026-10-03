@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400">
+  <rect width="400" height="400" fill="#fff6c2"/>
+  <!-- one 2x2 brick, seen from the front and above -->
+  <!-- top face -->
+  <path d="M130 112 H270 Q280 112 280 122 V192 H120 V122 Q120 112 130 112 Z" fill="#ffd934"/>
+  <!-- front face -->
+  <path d="M120 192 H280 V262 Q280 274 268 274 H132 Q120 274 120 262 Z" fill="#f5be0b"/>
+  <!-- four studs, back pair then front pair, with the rim of each top -->
+  <g fill="#f5be0b">
+    <path d="M134 122 A26 9 0 0 1 186 122 V138 A26 9 0 0 1 134 138 Z"/>
+    <path d="M214 122 A26 9 0 0 1 266 122 V138 A26 9 0 0 1 214 138 Z"/>
+    <path d="M134 158 A26 9 0 0 1 186 158 V174 A26 9 0 0 1 134 174 Z"/>
+    <path d="M214 158 A26 9 0 0 1 266 158 V174 A26 9 0 0 1 214 174 Z"/>
+  </g>
+  <g fill="none" stroke="#ffd934" stroke-width="4" stroke-linecap="round">
+    <path d="M140 124 A22 7 0 0 0 180 124"/><path d="M220 124 A22 7 0 0 0 260 124"/>
+    <path d="M140 160 A22 7 0 0 0 180 160"/><path d="M220 160 A22 7 0 0 0 260 160"/>
+  </g>
+</svg>

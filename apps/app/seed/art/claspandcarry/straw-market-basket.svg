@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400">
+  <rect width="400" height="400" fill="#ffdceb"/>
+  <!-- two long leather handles -->
+  <path d="M120 176 C120 80 160 60 200 60 C240 60 280 80 280 176" fill="none" stroke="#f5be0b" stroke-width="12" stroke-linecap="round"/>
+  <path d="M140 176 C140 100 170 86 200 86 C230 86 260 100 260 176" fill="none" stroke="#f5be0b" stroke-width="12" stroke-linecap="round"/>
+  <!-- round-bottomed basket -->
+  <path d="M90 176 H310 C310 280 276 332 200 332 C124 332 90 280 90 176 Z" fill="#ffd934"/>
+  <!-- rim -->
+  <rect x="82" y="162" width="236" height="24" rx="12" fill="#ffd934"/>
+  <path d="M96 174 H304" fill="none" stroke="#f5be0b" stroke-width="5" stroke-linecap="round" stroke-dasharray="10 10"/>
+  <!-- band of pink weave near the rim -->
+  <path d="M94 204 H306" fill="none" stroke="#ff5fa8" stroke-width="12" stroke-linecap="round" stroke-dasharray="14 8"/>
+  <!-- woven pattern of short amber dashes -->
+  <g fill="none" stroke="#f5be0b" stroke-width="6" stroke-linecap="round" stroke-dasharray="12 14">
+    <path d="M104 232 H296"/>
+    <path d="M117 256 H283" stroke-dashoffset="13"/>
+    <path d="M116 280 H284"/>
+    <path d="M136 304 H264" stroke-dashoffset="13"/>
+  </g>
+  <!-- leather handle tabs -->
+  <rect x="110" y="168" width="20" height="26" rx="5" fill="#f5be0b"/>
+  <rect x="130" y="168" width="20" height="26" rx="5" fill="#f5be0b"/>
+  <rect x="250" y="168" width="20" height="26" rx="5" fill="#f5be0b"/>
+  <rect x="270" y="168" width="20" height="26" rx="5" fill="#f5be0b"/>
+</svg>

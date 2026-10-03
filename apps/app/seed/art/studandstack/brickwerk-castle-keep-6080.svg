@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400">
+  <rect width="400" height="400" fill="#fff6c2"/>
+  <!-- base plate strip -->
+  <rect x="70" y="300" width="260" height="18" rx="5" fill="#256b4c"/>
+  <rect x="74" y="294" width="12" height="8" rx="3" fill="#256b4c"/>
+  <rect x="314" y="294" width="12" height="8" rx="3" fill="#256b4c"/>
+  <!-- flags, behind the towers -->
+  <path d="M120 104 V66 M280 104 V66" fill="none" stroke="#14261d" stroke-width="4" stroke-linecap="round"/>
+  <path d="M123 66 H150 L143 75 L150 84 H123 Z" fill="#d9391b" stroke="#d9391b" stroke-width="3" stroke-linejoin="round"/>
+  <path d="M277 66 H250 L257 75 L250 84 H277 Z" fill="#ffffff" stroke="#ffffff" stroke-width="3" stroke-linejoin="round"/>
+  <path d="M258 75 H272" fill="none" stroke="#d9391b" stroke-width="4" stroke-linecap="round"/>
+  <!-- walls: two towers and the curtain wall, with battlements -->
+  <g fill="#ffd934">
+    <rect x="90" y="124" width="60" height="173" rx="3"/>
+    <rect x="250" y="124" width="60" height="173" rx="3"/>
+    <rect x="150" y="176" width="100" height="121"/>
+    <rect x="90" y="104" width="16" height="24" rx="3"/><rect x="112" y="104" width="16" height="24" rx="3"/><rect x="134" y="104" width="16" height="24" rx="3"/>
+    <rect x="250" y="104" width="16" height="24" rx="3"/><rect x="272" y="104" width="16" height="24" rx="3"/><rect x="294" y="104" width="16" height="24" rx="3"/>
+    <rect x="156" y="158" width="20" height="22" rx="3"/><rect x="190" y="158" width="20" height="22" rx="3"/><rect x="224" y="158" width="20" height="22" rx="3"/>
+  </g>
+  <!-- studs on the battlements -->
+  <g fill="#ffd934">
+    <rect x="92" y="98" width="12" height="8" rx="3"/><rect x="114" y="98" width="12" height="8" rx="3"/><rect x="136" y="98" width="12" height="8" rx="3"/>
+    <rect x="252" y="98" width="12" height="8" rx="3"/><rect x="274" y="98" width="12" height="8" rx="3"/><rect x="296" y="98" width="12" height="8" rx="3"/>
+    <rect x="160" y="152" width="12" height="8" rx="3"/><rect x="194" y="152" width="12" height="8" rx="3"/><rect x="228" y="152" width="12" height="8" rx="3"/>
+  </g>
+  <!-- brick courses -->
+  <g fill="none" stroke="#fff6c2" stroke-width="3">
+    <path d="M90 273 H310 M90 249 H310 M90 225 H310 M90 201 H310 M90 177 H150 M250 177 H310 M90 153 H150 M250 153 H310 M90 129 H150 M250 129 H310"/>
+    <path d="M150 177 V297 M250 177 V297"/>
+    <path d="M120 273 V297 M280 273 V297 M200 249 V273 M108 225 V249 M292 225 V249 M120 177 V201 M280 177 V201 M200 201 V225 M108 153 V177 M292 153 V177 M120 129 V153 M280 129 V153"/>
+  </g>
+  <!-- arrow slits -->
+  <rect x="116" y="206" width="8" height="26" rx="4" fill="#14261d"/>
+  <rect x="276" y="206" width="8" height="26" rx="4" fill="#14261d"/>
+  <!-- raised drawbridge in the arched gate, with chains -->
+  <path d="M172 297 V248 A28 28 0 0 1 228 248 V297 Z" fill="#f5be0b"/>
+  <path d="M190 236 V290 M210 236 V290" fill="none" stroke="#14261d" stroke-width="3" stroke-linecap="round"/>
+  <path d="M166 200 L180 234 M234 200 L220 234" fill="none" stroke="#14261d" stroke-width="4" stroke-linecap="round" stroke-dasharray="1 7"/>
+</svg>

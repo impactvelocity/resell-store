@@ -1,0 +1,34 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400">
+  <rect width="400" height="400" fill="#ffdceb"/>
+  <!-- the card -->
+  <rect x="110" y="74" width="180" height="252" rx="12" fill="#256b4c"/>
+  <rect x="124" y="90" width="152" height="124" rx="6" fill="#fff6c2"/>
+  <!-- Grovelord: branch arms with leaf hands -->
+  <path d="M176 172 L152 154 M224 172 L248 154" fill="none" stroke="#f5be0b" stroke-width="10" stroke-linecap="round"/>
+  <circle cx="148" cy="150" r="10" fill="#8cc9a4"/>
+  <circle cx="252" cy="150" r="10" fill="#8cc9a4"/>
+  <!-- root feet and bark body -->
+  <ellipse cx="180" cy="204" rx="14" ry="7" fill="#f5be0b"/>
+  <ellipse cx="220" cy="204" rx="14" ry="7" fill="#f5be0b"/>
+  <path d="M170 204 V156 Q170 136 200 136 Q230 136 230 156 V204 Z" fill="#f5be0b"/>
+  <!-- leafy crown -->
+  <circle cx="170" cy="130" r="22" fill="#8cc9a4"/>
+  <circle cx="230" cy="130" r="22" fill="#8cc9a4"/>
+  <circle cx="200" cy="118" r="24" fill="#8cc9a4"/>
+  <circle cx="200" cy="140" r="18" fill="#8cc9a4"/>
+  <path d="M186 116 Q194 110 202 116 M214 132 Q222 126 230 132 M164 128 Q172 122 180 128" fill="none" stroke="#256b4c" stroke-width="3.5" stroke-linecap="round"/>
+  <!-- face -->
+  <circle cx="188" cy="172" r="6.5" fill="#ffd934"/>
+  <circle cx="212" cy="172" r="6.5" fill="#ffd934"/>
+  <circle cx="188" cy="173" r="3.5" fill="#14261d"/>
+  <circle cx="212" cy="173" r="3.5" fill="#14261d"/>
+  <path d="M192 188 Q200 194 208 188" fill="none" stroke="#14261d" stroke-width="3.5" stroke-linecap="round"/>
+  <!-- holo sparkles -->
+  <path d="M140 196 l3 -9 l3 9 l9 3 l-9 3 l-3 9 l-3 -9 l-9 -3 Z" fill="#ffd934"/>
+  <path d="M256 100 l2 -6 l2 6 l6 2 l-6 2 l-2 6 l-2 -6 l-6 -2 Z" fill="#ffd934"/>
+  <!-- card text -->
+  <rect x="124" y="230" width="96" height="10" rx="5" fill="#14261d"/>
+  <rect x="124" y="250" width="134" height="8" rx="4" fill="#8cc9a4"/>
+  <rect x="124" y="265" width="100" height="8" rx="4" fill="#8cc9a4"/>
+  <rect x="124" y="300" width="40" height="8" rx="4" fill="#ffd934"/>
+</svg>

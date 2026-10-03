@@ -5,11 +5,13 @@ import { CheckIcon, ShareIcon, ShieldCheckIcon, SparkleIcon, TruckIcon } from "@
 import { cn } from "@repo/ui/lib/utils";
 import { Tag } from "@repo/ui/tag";
 import type { ListingDetail } from "../../../lib/mock-listing-detail";
-import type { Listing, Store } from "../../../lib/mock-market";
+import type { PublicListing, PublicStore } from "../../../lib/mock-market";
 import { formatPrice } from "../../../lib/mock-market";
+import { trackShare } from "../../../lib/track";
 import { SiteLink, StoreLink } from "../links";
 import { StoreAvatar } from "../parts";
-import { arrivesPhrase, city, deliveryTitle, sellerLine, shippingLine } from "./copy";
+import { StarIcon } from "../../reviews/review-parts";
+import { arrivesPhrase, deliveryNote, deliveryTitle, sellerLine, shippingLine } from "./copy";
 import { useCopyLink } from "./use-copy-link";
 
 export const focusRing =
@@ -27,16 +29,16 @@ export const pill = {
   ),
 };
 
-/** Store avatar, name, rating line and a Follow toggle. */
+/** Store avatar, name, rating line and a Follow toggle (left out without `onFollow`). */
 export function SellerRow({
   store,
   following,
   onFollow,
   compact,
 }: {
-  store: Store;
+  store: PublicStore;
   following: boolean;
-  onFollow: () => void;
+  onFollow?: () => void;
   compact?: boolean;
 }) {
   return (
@@ -51,29 +53,91 @@ export function SellerRow({
         >
           {store.name}
         </StoreLink>
-        <p className={cn("text-public-text-muted", compact ? "text-xs" : "text-sm")}>
-          {sellerLine(store, !compact)}
+        <p className={cn("flex items-center gap-1 text-public-text-muted", compact ? "text-xs" : "text-sm")}>
+          {store.rating != null && <StarIcon size={compact ? 12 : 14} />}
+          <span className="min-w-0">{sellerLine(store, !compact)}</span>
         </p>
       </div>
-      <button
-        type="button"
-        aria-pressed={following}
-        onClick={onFollow}
-        className={cn(
-          "flex shrink-0 cursor-pointer items-center gap-1.5 rounded-full border border-leaf-900 text-sm font-semibold transition-colors",
-          compact ? "h-9 px-4" : "h-10 px-[18px]",
-          following ? "bg-leaf-900 text-white" : "text-text hover:bg-public-photo",
-          focusRing,
+      {onFollow && (
+        <button
+          type="button"
+          aria-pressed={following}
+          onClick={onFollow}
+          className={cn(
+            "flex shrink-0 cursor-pointer items-center gap-1.5 rounded-full border border-leaf-900 text-sm font-semibold transition-colors",
+            compact ? "h-9 px-4" : "h-10 px-[18px]",
+            following ? "bg-leaf-900 text-white" : "text-text hover:bg-public-photo",
+            focusRing,
+          )}
+        >
+          {following && <CheckIcon size={14} strokeWidth={2.6} />}
+          {following ? "Following" : "Follow"}
+        </button>
+      )}
+    </div>
+  );
+}
+
+/** Checkout and offer links use the id for live listings: slugs repeat across stores. */
+export const buyKey = (listing: PublicListing) => listing.id ?? listing.slug;
+
+/**
+ * Who's looking, for live listings: the seller sees a way to manage it instead
+ * of buy buttons, and a buyer whose offer was accepted pays that price. On a
+ * store subdomain in local dev the session cookie doesn't reach the page, so
+ * everyone looks signed out; checkout on the main domain checks again.
+ */
+export type ViewerBuyState = {
+  own?: boolean;
+  /** The viewer's accepted offer, in dollars */
+  accepted?: number | null;
+};
+
+/** "This is your listing", where the buy buttons would be. */
+export function OwnListingNote({ listing, compact }: { listing: PublicListing; compact?: boolean }) {
+  return (
+    <div
+      className={cn(
+        "flex grow items-center gap-3 rounded-lg bg-public-photo",
+        compact ? "px-4 py-2.5" : "px-5 py-4",
+      )}
+    >
+      <div className="flex min-w-0 grow flex-col">
+        <p className={cn("font-bold", compact ? "text-sm" : "text-base")}>This is your listing</p>
+        {!compact && (
+          <p className="text-sm text-public-text-muted">
+            Buyers see Buy now{listing.openToOffers ? " and Make an offer" : ""} here.
+          </p>
         )}
+      </div>
+      <SiteLink
+        href={`/listings/${buyKey(listing)}`}
+        className={cn(pill.outline, compact ? "h-10 px-4 text-sm" : "h-11 px-5 text-sm")}
       >
-        {following && <CheckIcon size={14} strokeWidth={2.6} />}
-        {following ? "Following" : "Follow"}
-      </button>
+        Manage it
+      </SiteLink>
     </div>
   );
 }
 
 /** Green "Open to offers" tag. */
+/** Where the buy buttons were, once it has sold. */
+export function SoldNote({ store, compact }: { store: Pick<PublicStore, "name">; compact?: boolean }) {
+  return (
+    <div
+      className={cn(
+        "flex items-center gap-3 rounded-md bg-public-photo",
+        compact ? "grow px-4 py-2.5 text-sm" : "px-5 py-4 text-base",
+      )}
+    >
+      <span className="rounded-full bg-leaf-900 px-3 py-1 text-sm font-bold text-white">Sold</span>
+      <span className="text-public-text-muted">
+        This one found a new home. {compact ? "" : `${store.name} may have more like it.`}
+      </span>
+    </div>
+  );
+}
+
 export function OffersTag({ compact }: { compact?: boolean }) {
   return (
     <Tag className={compact ? "h-7 px-2.5 text-xs" : "h-8 gap-2"}>
@@ -91,37 +155,50 @@ export function BuyBox({
   onLike,
   following,
   onFollow,
+  viewer,
 }: {
-  listing: Listing;
-  store: Store;
+  listing: PublicListing;
+  store: PublicStore;
   detail: ListingDetail;
   liked: boolean;
   onLike: (liked: boolean) => void;
   following: boolean;
-  onFollow: () => void;
+  onFollow?: () => void;
+  viewer?: ViewerBuyState;
 }) {
   const copyLink = useCopyLink();
   const title = listing.fullTitle ?? listing.title;
-  const offers = !!listing.openToOffers;
-  const perPayment = formatPrice((listing.price + listing.shipping) / 4, true);
+  const accepted = viewer?.accepted ?? null;
+  // An accepted offer is the deal now: no second offer
+  const offers = !!listing.openToOffers && accepted == null;
+  const perPayment = formatPrice((listing.price + (listing.shipping ?? 0)) / 4, true);
+  const key = buyKey(listing);
 
   const buyNow = (
-    <SiteLink href={`/checkout/${listing.slug}`} className={cn(pill.buy, "h-14 grow text-lg")}>
-      Buy now
+    <SiteLink href={`/checkout/${key}`} className={cn(pill.buy, "h-14 grow px-5 text-lg")}>
+      {accepted != null ? `Pay ${formatPrice(accepted, true)} (your accepted offer)` : "Buy now"}
     </SiteLink>
   );
+  async function share() {
+    await copyLink("Link copied. Go show it off.");
+    // Counts toward the listing's Stats; prototype listings have no id
+    if (listing.id) trackShare({ listing: listing.id });
+  }
   const iconActions = (
     <>
-      <LikeButton
-        pressed={liked}
-        onPressedChange={onLike}
-        aria-label={`Save ${listing.title}`}
-        className="size-14 border border-public-border"
-      />
+      {/* Nobody saves their own listing */}
+      {!viewer?.own && (
+        <LikeButton
+          pressed={liked}
+          onPressedChange={onLike}
+          aria-label={`Save ${listing.title}`}
+          className="size-14 border border-public-border"
+        />
+      )}
       <button
         type="button"
         aria-label="Share this listing"
-        onClick={() => copyLink("Link copied. Go show it off.")}
+        onClick={share}
         className={cn(
           "flex size-14 shrink-0 cursor-pointer items-center justify-center rounded-full border border-public-border text-text transition-[background-color,scale] hover:bg-public-photo active:scale-90",
           focusRing,
@@ -138,7 +215,7 @@ export function BuyBox({
 
       <div className="flex flex-col gap-2.5">
         <h1 className="font-display text-3xl font-extrabold tracking-tight">{title}</h1>
-        <p className="text-base text-public-text-muted">{detail.subtitle}</p>
+        {detail.subtitle && <p className="text-base text-public-text-muted">{detail.subtitle}</p>}
       </div>
 
       <div className="flex flex-wrap items-end justify-between gap-3">
@@ -148,15 +225,30 @@ export function BuyBox({
           </span>
           <span className="text-sm text-public-text-muted">{shippingLine(listing, store)}</span>
         </p>
-        {offers && <OffersTag />}
+        {listing.openToOffers && <OffersTag />}
       </div>
 
       <div className="flex flex-col gap-3">
-        {offers ? (
+        {listing.sold && !viewer?.own ? (
+          <>
+            <SoldNote store={store} />
+            <div className="flex gap-3">
+              <SiteLink href="/discover" className={cn(pill.outline, "h-14 grow text-lg")}>
+                Find something like it
+              </SiteLink>
+              {iconActions}
+            </div>
+          </>
+        ) : viewer?.own ? (
+          <>
+            <OwnListingNote listing={listing} />
+            <div className="flex gap-3">{iconActions}</div>
+          </>
+        ) : offers ? (
           <>
             {buyNow}
             <div className="flex gap-3">
-              <SiteLink href={`/offer/${listing.slug}`} className={cn(pill.outline, "h-14 grow text-lg")}>
+              <SiteLink href={`/offer/${key}`} className={cn(pill.outline, "h-14 grow text-lg")}>
                 Make an offer
               </SiteLink>
               {iconActions}
@@ -168,9 +260,12 @@ export function BuyBox({
             {iconActions}
           </div>
         )}
-        <p className="text-center text-sm text-public-text-muted">
-          Or 4 payments of {perPayment} with PayPal Pay Later, no interest.
-        </p>
+        {/* Pay Later comes with PayPal checkout; live stores don't have it yet */}
+        {!store.live && (
+          <p className="text-center text-sm text-public-text-muted">
+            Or 4 payments of {perPayment} with PayPal Pay Later, no interest.
+          </p>
+        )}
       </div>
 
       <ul className="flex flex-col border-t border-public-border">
@@ -185,9 +280,7 @@ export function BuyBox({
           icon={<TruckIcon size={20} strokeWidth={2.2} />}
           title={deliveryTitle(detail, store)}
         >
-          {detail.arrives
-            ? `Ships from ${city(store)} within ${store.shipsIn}, tracked to Vancouver. You get the tracking link as soon as it is posted.`
-            : `Pay here, then pick a time with ${store.owner}. Your money stays held until it is in your hands.`}
+          {deliveryNote(detail, store)}
         </Assurance>
         <Assurance
           icon={<SparkleIcon size={20} className="text-pink-400" />}
@@ -203,8 +296,14 @@ export function BuyBox({
           }
           last
         >
-          This listing is ready for ChatGPT, Claude and other assistants. It can ask questions,
-          {offers ? " make an offer and check out for you." : " and check out for you."}
+          {store.live ? (
+            "Paste this link into ChatGPT, Claude or another assistant to ask it about this. Offers and checkout for agents open soon."
+          ) : (
+            <>
+              This listing is ready for ChatGPT, Claude and other assistants. It can ask questions,
+              {offers ? " make an offer and check out for you." : " and check out for you."}
+            </>
+          )}
         </Assurance>
       </ul>
     </div>

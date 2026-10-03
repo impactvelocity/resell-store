@@ -1,0 +1,339 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Demo Video Storyboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,800&family=Figtree:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #fffdf2; --card: #ffffff; --ink: #14261d; --muted: #56675e; --line: #e8e3c8;
+    --lemon: #ffd934; --leaf: #256b4c; --pink: #ff5fa8; --soft: #f7f3df;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #0f1c15; --card: #16271e; --ink: #f3f1e4; --muted: #a7b5ac; --line: #26392e; --soft: #1d3127;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #0f1c15; --card: #16271e; --ink: #f3f1e4; --muted: #a7b5ac; --line: #26392e; --soft: #1d3127;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font: 16px/1.5 Figtree, system-ui, sans-serif; }
+  header { max-width: 1280px; margin: 0 auto; padding: 48px 16px 24px; }
+  h1 { font: 800 clamp(36px, 6vw, 64px)/1 "Bricolage Grotesque", system-ui, sans-serif; letter-spacing: -0.03em; margin: 0 0 12px; }
+  header p { margin: 0; color: var(--muted); font-size: 18px; max-width: 760px; }
+  header .total { display: inline-block; margin-top: 16px; background: var(--lemon); color: #14261d; font-weight: 700; padding: 4px 14px; border-radius: 999px; }
+  main { max-width: 1280px; margin: 0 auto; padding: 8px 16px 64px; display: grid; gap: 20px; grid-template-columns: repeat(auto-fill, minmax(min(100%, 380px), 1fr)); }
+  article { background: var(--card); border: 1px solid var(--line); border-radius: 24px; overflow: hidden; display: flex; flex-direction: column; }
+  .visual { position: relative; aspect-ratio: 16 / 9; overflow: hidden; background: var(--soft); border-bottom: 1px solid var(--line); }
+  .visual img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: top left; display: block; }
+  .visual img[src*="/phone/"] { object-fit: contain; object-position: center; padding: 12px 0; }
+  .visual .type { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; padding: 24px; text-align: center; font: 800 clamp(24px, 3vw, 34px)/1.05 "Bricolage Grotesque", system-ui, sans-serif; letter-spacing: -0.02em; }
+  .num { position: absolute; top: 12px; left: 12px; width: 36px; height: 36px; border-radius: 50%; background: var(--lemon); color: #14261d; font: 800 18px/36px "Bricolage Grotesque", sans-serif; text-align: center; }
+  .body { padding: 18px 20px 20px; }
+  .when { margin: 0; color: var(--muted); font-size: 13px; font-weight: 600; }
+  h2 { margin: 2px 0 6px; font: 800 24px/1.15 "Bricolage Grotesque", system-ui, sans-serif; letter-spacing: -0.01em; }
+  .scene { margin: 0 0 10px; color: var(--muted); }
+  .label { margin: 12px 0 2px; font-size: 12px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--leaf); }
+  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .label { color: #8cc9a4; } }
+  :root[data-theme="dark"] .label { color: #8cc9a4; }
+  .onscreen { margin: 0; font-weight: 600; }
+  .vo { margin: 0; font-style: italic; border-left: 3px solid var(--pink); padding-left: 10px; }
+  details { margin-top: 14px; color: var(--muted); font-size: 15px; }
+  summary { cursor: pointer; font-weight: 700; color: var(--ink); }
+  .more { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 8px; }
+  .more img { height: 64px; border-radius: 8px; border: 1px solid var(--line); }
+</style>
+</head>
+<body>
+<header>
+  <h1>resell.store demo storyboard</h1>
+  <p>Snap a photo, say yes, get paid — your agent does the selling in between.</p>
+  <span class="total">20 frames · 2:56</span>
+</header>
+<main>
+    <article>
+      <div class="visual"><div class="type">$4,267 of unused stuff at home</div><span class="num">1</span></div>
+      <div class="body">
+        <p class="when">0:00–0:07 · 7s · cut</p>
+        <h2>Hook: the stuff at home</h2>
+        <p class="scene">Flat item illustrations drop and pile up; &quot;$4,267&quot; counts up over them</p>
+        <p class="label">On screen</p><p class="onscreen">&quot;$4,267&quot; / &quot;of unused stuff in the average US home&quot; / src: Mercari 2023 Reuse Report</p>
+        <p class="label">Voiceover</p>
+        <p class="vo">“The average American home has over four thousand dollars of stuff it never uses.”</p>
+        <details><summary>Direction</summary><p>Cold open on cream. Items drop in one by one on the beat, bounce and stack into a wobbly pile. The number counts up in Bricolage ExtraBold, leaf-900, with a lemon highlighter swipe under &quot;unused&quot;. End with the yellow dutch oven nudged to the top of the pile, since it's our hero.</p>
+        
+        </details>
+      </div>
+    </article>
+    <article>
+      <div class="visual"><div class="type">Price it. Shoot it. Write it. Haggle. Dodge scams.</div><span class="num">2</span></div>
+      <div class="body">
+        <p class="when">0:07–0:17 · 10s · crossfade</p>
+        <h2>Why it stays there</h2>
+        <p class="scene">A checklist of selling chores fills fast and turns into a mess; &quot;$15.9B lost to fraud&quot; lands as the last line</p>
+        <p class="label">On screen</p><p class="onscreen">&quot;Work out a price · Take photos · Write the listing · 'Is this still available?' · Haggle with lowballers · Dodge scams&quot; then &quot;$15.9B lost to fraud in the US in 2025&quot; / src: FTC, 2026</p>
+        <p class="label">Voiceover</p>
+        <p class="vo">“Because selling it means pricing it, photographing it, writing it up, answering the same questions, haggling with lowballers, and dodging scams. So it stays in the cupboard.”</p>
+        <details><summary>Direction</summary><p>Chores tick in quickly, each a rounded pill, getting faster and more crowded until they jam. Two fake chat bubbles flick past (&quot;is this still available??&quot;, &quot;$20 cash today?&quot;). Then hard stop: the pile from frame 1 slides back into a cupboard and the door shuts. Fraud stat in pink-600.</p>
+        
+        </details>
+      </div>
+    </article>
+    <article>
+      <div class="visual"><div class="type">1 in 3 would sell if AI listed it</div><span class="num">3</span></div>
+      <div class="body">
+        <p class="when">0:17–0:25 · 8s · wipe</p>
+        <h2>The turn</h2>
+        <p class="scene">Two stat cards flip in: &quot;1 in 3&quot; and &quot;6 in 10&quot;</p>
+        <p class="label">On screen</p><p class="onscreen">&quot;1 in 3 non-sellers would sell if AI listed it&quot; / &quot;6 in 10 would let AI negotiate their deals&quot; / src: ThredUp 2026 Resale Report</p>
+        <p class="label">Voiceover</p>
+        <p class="vo">“But a third of people who never sell say they would, if AI did the listing. Six in ten would let AI do the haggling. So we built that.”</p>
+        <details><summary>Direction</summary><p>Lemon background wipe. The two cards pop in with the landing page's Pop rotate. On &quot;So we built that&quot;, the cupboard door from frame 2 swings open again.</p>
+        
+        </details>
+      </div>
+    </article>
+    <article>
+      <div class="visual"><img src="captures/desktop/l1-landing-hero.png" alt="" loading="lazy"><span class="num">4</span></div>
+      <div class="body">
+        <p class="when">0:25–0:31 · 6s · cut</p>
+        <h2>Meet resell.store</h2>
+        <p class="scene">Wordmark, then the hero line, then the landing hero slides up in a browser card</p>
+        <p class="label">On screen</p><p class="onscreen">Sell your stuff without doing the selling&quot; + pill &quot;Built for the PayPal AI Hackathon</p>
+        <p class="label">Voiceover</p>
+        <p class="vo">“This is resell.store. Sell your stuff, without doing the selling.”</p>
+        <details><summary>Direction</summary><p>The music drops here. Wordmark (with the lemon dot) pops center, the FlowerMark spins in, the line types on, then the landing hero capture rises from below. PayPal hackathon pill in the corner.</p>
+        
+        </details>
+      </div>
+    </article>
+    <article>
+      <div class="visual"><img src="captures/phone/m-c1-start.png" alt="" loading="lazy"><span class="num">5</span></div>
+      <div class="body">
+        <p class="when">0:31–0:38 · 7s · crossfade</p>
+        <h2>Snap a photo</h2>
+        <p class="scene">Phone: the &quot;What are you selling?&quot; screen; the photo lands, one line types in</p>
+        <p class="label">On screen</p><p class="onscreen">Step 1 of 1 that's actually yours: snap a photo</p>
+        <p class="label">Voiceover</p>
+        <p class="vo">“Maya snaps her old dutch oven and adds one line.”</p>
+        <details><summary>Direction</summary><p>Phone frame left-of-center (52px radius, 4px border, like the hero phone). The pot illustration drops into the photo slot, then &quot;Le Creuset dutch oven, the yellow one. It was a wedding gift.&quot; types out in the field. Desktop c1 sits blurred behind for depth.</p>
+        <div class="more"><a href="captures/desktop/c1-start.png" target="_blank"><img src="captures/desktop/c1-start.png" alt="" loading="lazy"></a></div>
+        </details>
+      </div>
+    </article>
+    <article>
+      <div class="visual"><img src="captures/desktop/c2-research.png" alt="" loading="lazy"><span class="num">6</span></div>
+      <div class="body">
+        <p class="when">0:38–0:50 · 12s · push</p>
+        <h2>The agent does the research</h2>
+        <p class="scene">Research screen: &quot;Looked in 4 places, took 38 seconds&quot;, price range bar fills, suggested $185</p>
+        <p class="label">On screen</p><p class="onscreen">&quot;Used ones sell for $160 to $210 · Suggested $185&quot;; sponsor tags &quot;Channel3 · product data&quot; and &quot;Kernel · cloud browsers for price research&quot;; pink sparkle on the agent messages</p>
+        <p class="label">Voiceover</p>
+        <p class="vo">“Her agent checks what the same pot really sells for: recent sales, live listings, the maker's own site. Thirty-eight seconds later, it has a fair price.”</p>
+        <details><summary>Direction</summary><p>Push in on the chat column first: the agent bubble, then the &quot;Looked in 4 places&quot; row ticks green. Pan right to &quot;Your listing&quot;. The range bar's band and dot animate in, and $185 counts up. Source chips (42 recent sales / The maker's site / 318 buyer reviews) pop one by one. Two small sponsor tags slide in at the bottom-left: Channel3 and Kernel.</p>
+        
+        </details>
+      </div>
+    </article>
+    <article>
+      <div class="visual"><img src="captures/desktop/c3-findings.png" alt="" loading="lazy"><span class="num">7</span></div>
+      <div class="body">
+        <p class="when">0:50–0:58 · 8s · cut</p>
+        <h2>It asks, then it writes</h2>
+        <p class="scene">Quick 3-shot montage: findings questions → photos → the words</p>
+        <p class="label">On screen</p><p class="onscreen">It asks what a photo can't show&quot; → &quot;…and writes the rest</p>
+        <p class="label">Voiceover</p>
+        <p class="vo">“It only asks what a photo can't show, then writes the listing for her.”</p>
+        <details><summary>Direction</summary><p>Cut on the beat: c3 zoomed on the question chips (&quot;Yes, the original box / No box&quot;), c5 zoomed on the photo tips, then c6 zoomed on the title &quot;Sunny yellow Le Creuset dutch oven, 5.5 qt&quot; with the description typing. The 5-step progress bar along the top fills Research → Words across the three cuts.</p>
+        <div class="more"><a href="captures/desktop/c5-photos.png" target="_blank"><img src="captures/desktop/c5-photos.png" alt="" loading="lazy"></a><a href="captures/desktop/c6-words.png" target="_blank"><img src="captures/desktop/c6-words.png" alt="" loading="lazy"></a></div>
+        </details>
+      </div>
+    </article>
+    <article>
+      <div class="visual"><img src="captures/desktop/c7-publish.png" alt="" loading="lazy"><span class="num">8</span></div>
+      <div class="body">
+        <p class="when">0:58–1:06 · 8s · zoom</p>
+        <h2>Live in her own shop</h2>
+        <p class="scene">Publish → Maya's shop page on desktop and phone</p>
+        <p class="label">On screen</p><p class="onscreen">&quot;maya.resell.store&quot; URL pill; &quot;Link copied. Go show it off.&quot; toast</p>
+        <p class="label">Voiceover</p>
+        <p class="vo">“One tap, and it's live in her own shop, with a link she can share anywhere.”</p>
+        <details><summary>Direction</summary><p>Press the &quot;Publish listing&quot; button (cursor tap and ripple) on c7. Zoom out through the button into p2 &quot;Maya's closet&quot;. The phone version slides in front at an angle. The black &quot;Link copied&quot; toast from the landing hero pops in.</p>
+        <div class="more"><a href="captures/desktop/p2-store.png" target="_blank"><img src="captures/desktop/p2-store.png" alt="" loading="lazy"></a><a href="captures/phone/m-p2-store.png" target="_blank"><img src="captures/phone/m-p2-store.png" alt="" loading="lazy"></a></div>
+        </details>
+      </div>
+    </article>
+    <article>
+      <div class="visual"><img src="captures/desktop/a5-inbox.png" alt="" loading="lazy"><span class="num">9</span></div>
+      <div class="body">
+        <p class="when">1:06–1:13 · 7s · crossfade</p>
+        <h2>It answers buyers</h2>
+        <p class="scene">Seller inbox: &quot;Your agent handled&quot; list; a buyer's question gets an instant agent answer</p>
+        <p class="label">On screen</p><p class="onscreen">&quot;Answered in seconds&quot; · &quot;Needs you&quot; chip</p>
+        <p class="label">Voiceover</p>
+        <p class="vo">“When buyers ask questions, her agent answers from the listing, and hands over to Maya when it can't.”</p>
+        <details><summary>Direction</summary><p>Zoom into a5's &quot;Your agent handled&quot; column. The rows tick in with pink sparkles. Then a tight crop of p6's &quot;Second Shutter's agent answered from the listing in a few seconds&quot; bubble as proof from the buyer's side.</p>
+        <div class="more"><a href="captures/desktop/p6-messages.png" target="_blank"><img src="captures/desktop/p6-messages.png" alt="" loading="lazy"></a></div>
+        </details>
+      </div>
+    </article>
+    <article>
+      <div class="visual"><img src="captures/desktop/c10-offer.png" alt="" loading="lazy"><span class="num">10</span></div>
+      <div class="body">
+        <p class="when">1:13–1:27 · 14s · cut</p>
+        <h2>Two agents haggle</h2>
+        <p class="scene">Offer screen: &quot;Jess offered $170&quot;; the &quot;How it went&quot; timeline builds row by row, $150 → $178 → $165 → $175 → $170</p>
+        <p class="label">On screen</p><p class="onscreen">Her agent and yours went back and forth for 29 minutes&quot;; &quot;$20 hold paid&quot; chip (PayPal); end card line &quot;Good offers wait for your yes.&quot;; stat chip &quot;Only 12% trust AI to pay without asking — Accenture 2026</p>
+        <p class="label">Voiceover</p>
+        <p class="vo">“Then Jess's agent makes an offer. Maya's agent counters, asks for a deposit to show she's serious, and comes back ten dollars over Maya's lowest. But it never accepts on its own. Good offers wait for your yes.”</p>
+        <details><summary>Direction</summary><p>This is the &quot;agentic commerce&quot; money shot, so give it room. Music goes minimal. The timeline reveals one row per beat, prices counting, with Jess's agent rows from the left (pink-100 avatar) and &quot;Your agent&quot; rows from the right (pink sparkle). The &quot;$20 hold paid&quot; chip pops with a small PayPal shield. Push to the right card: &quot;I'd take it. It's $10 over your lowest…&quot;. Hold on it, then &quot;Good offers wait for your yes.&quot; in big type over a lemon panel, with the Accenture stat in the corner as the reason.</p>
+        <div class="more"><a href="captures/phone/m-c10-offer.png" target="_blank"><img src="captures/phone/m-c10-offer.png" alt="" loading="lazy"></a></div>
+        </details>
+      </div>
+    </article>
+    <article>
+      <div class="visual"><img src="captures/desktop/c10-offer.png" alt="" loading="lazy"><span class="num">11</span></div>
+      <div class="body">
+        <p class="when">1:27–1:39 · 12s · cut</p>
+        <h2>Say yes, PayPal does the rest</h2>
+        <p class="scene">Tap &quot;Accept $170&quot; → PayPal sandbox approval (live) → &quot;Where your money waits&quot; → Sales and payouts &quot;$96 on its way&quot;</p>
+        <p class="label">On screen</p><p class="onscreen">&quot;Paid&quot; → &quot;Held until it arrives&quot; → &quot;Paid out&quot; along the money timeline</p>
+        <p class="label">Voiceover</p>
+        <p class="vo">“Maya taps accept. PayPal takes the payment, holds it until the pot arrives, then pays her out.”</p>
+        <details><summary>Direction</summary><p>Cursor taps &quot;Accept $170&quot;: the button squishes and the music lifts. Cut to the live PayPal sandbox approval (2–3s). Then p4's &quot;Where your money waits&quot; timeline (Today: PayPal holds it → Ships → Paid out) draws as a progress line. Land on b5 with the &quot;$96 on its way&quot; figure counting. Keep it quick: frame 18 explains PayPal in detail.</p>
+        <div class="more"><a href="captures/desktop/p4-checkout.png" target="_blank"><img src="captures/desktop/p4-checkout.png" alt="" loading="lazy"></a><a href="captures/desktop/b5-sales-payouts.png" target="_blank"><img src="captures/desktop/b5-sales-payouts.png" alt="" loading="lazy"></a></div>
+        </details>
+      </div>
+    </article>
+    <article>
+      <div class="visual"><img src="captures/desktop/p7-buyer-agent.png" alt="" loading="lazy"><span class="num">12</span></div>
+      <div class="body">
+        <p class="when">1:39–1:49 · 10s · wipe</p>
+        <h2>Buyers can send their own agent</h2>
+        <p class="scene">&quot;Send your agent shopping.&quot; Chat: &quot;Find me a tested 35mm film camera under $150&quot; → the agent finds it → &quot;Go no higher than $126&quot; → hand it to your agent</p>
+        <p class="label">On screen</p><p class="onscreen">&quot;One MCP link. Any agent.&quot; / &quot;AI shopping traffic up 693% last holiday — Adobe&quot; / the MCP link pill from the hero</p>
+        <p class="label">Voiceover</p>
+        <p class="vo">“And buyers can send their own agent. Add resell.store to the AI assistant you already use, set a limit, and it shops, makes offers, and asks before it pays.”</p>
+        <details><summary>Direction</summary><p>Flip the perspective: the background turns leaf-900, white type. p7's right card plays as a chat: the user bubble, then the &quot;Your assistant, using resell.store&quot; answer, then the camera result card. Cut to p6's right rail: the &quot;$126&quot; ceiling types, then the hand-off button (crop or cover its label, which names an assistant). A quick flash of the d3 API code card (&quot;list something with one request&quot;) says this is a real API underneath. No third-party names or logos: crop p7 above its &quot;Pick your assistant&quot; row.</p>
+        <div class="more"><a href="captures/desktop/p6-messages.png" target="_blank"><img src="captures/desktop/p6-messages.png" alt="" loading="lazy"></a><a href="captures/desktop/d3-api.png" target="_blank"><img src="captures/desktop/d3-api.png" alt="" loading="lazy"></a></div>
+        </details>
+      </div>
+    </article>
+    <article>
+      <div class="visual"><img src="captures/desktop/d4-sidekick.png" alt="" loading="lazy"><span class="num">13</span></div>
+      <div class="body">
+        <p class="when">1:49–1:59 · 10s · wipe</p>
+        <h2>The shopping sidekick</h2>
+        <p class="scene">Shopping sidekick: &quot;Know what it's worth before you buy it.&quot; Two dresses at the same $120: one sells on for $70, the other for $25, and a &quot;Better buy&quot; sticker lands</p>
+        <p class="label">On screen</p><p class="onscreen">Know what it's worth before you buy it&quot; · &quot;Same $120. Sells on for $70 vs $25.&quot; · &quot;Better buy&quot; sticker · &quot;Not to flip. Just to know.</p>
+        <p class="label">Voiceover</p>
+        <p class="vo">“Buyers get a shopping sidekick too. Snap a tag or paste a link, and see what it'll be worth later. Not to flip it. Just to buy smarter.”</p>
+        <details><summary>Direction</summary><p>Start on the phone (m-d4-sidekick), as if you're in a shop: &quot;black wrap dress, $120&quot; types into the field and &quot;Check it&quot; taps. Cut to the desktop hero: the two dress cards flip in, the &quot;$70&quot; and &quot;$25&quot; figures count, and the pink &quot;Better buy&quot; sticker slaps onto the wrap dress with the landing page's Pop rotate. Pull down to &quot;Things you've checked&quot;: the &quot;Holds its value&quot; and &quot;Loses most of it&quot; chips pop. End on the last row, &quot;Yellow dutch oven · You own this · List it&quot;. That's the callback: what you buy smart today is easy to sell tomorrow, and it loops back to Maya's pot. Runs on the same research as listing (Channel3 + Kernel).</p>
+        <div class="more"><a href="captures/desktop/d4-sidekick-full.png" target="_blank"><img src="captures/desktop/d4-sidekick-full.png" alt="" loading="lazy"></a><a href="captures/phone/m-d4-sidekick.png" target="_blank"><img src="captures/phone/m-d4-sidekick.png" alt="" loading="lazy"></a></div>
+        </details>
+      </div>
+    </article>
+    <article>
+      <div class="visual"><div class="type">We made selling as easy as saying yes.</div><span class="num">14</span></div>
+      <div class="body">
+        <p class="when">1:59–2:05 · 6s · zoom</p>
+        <h2>Close</h2>
+        <p class="scene">Market stat counts up, then the payoff line</p>
+        <p class="label">On screen</p><p class="onscreen">$306.5B US resale market by 2030 — OfferUp 2025 Recommerce Report&quot; → &quot;We made selling as easy as saying yes.</p>
+        <p class="label">Voiceover</p>
+        <p class="vo">“US resale is heading for three hundred billion dollars. We made selling as easy as saying yes.”</p>
+        <details><summary>Direction</summary><p>The stat counts up for 2s, then swaps for the line in big type. The music resolves here, then drops to a lighter &quot;credits&quot; groove for the sponsor screens.</p>
+        
+        </details>
+      </div>
+    </article>
+    <article>
+      <div class="visual"><img src="captures/desktop/p2-store.png" alt="" loading="lazy"><span class="num">15</span></div>
+      <div class="body">
+        <p class="when">2:05–2:12 · 7s · push</p>
+        <h2>Render: where it all runs</h2>
+        <p class="scene">Sponsor screen: &quot;Render&quot; title card, a services diagram (web, Postgres, Workflow, cron), shop subdomain URLs, and the timed-jobs list ticking</p>
+        <p class="label">On screen</p><p class="onscreen">Render&quot; · &quot;Hosts the app, every shop at name.resell.store, plus api., docs. and mcp.&quot; · &quot;Postgres with pgvector for search&quot; · &quot;Render Workflows run the timed jobs: offers expire · ship-by reminders · unshipped orders cancel · 'did it arrive?' check · payouts release · quiet disputes escalate&quot; · &quot;One render.yaml deploys the lot</p>
+        <p class="label">Voiceover</p>
+        <p class="vo">“Render runs it all: the app, every shop on its own subdomain, the Postgres database, and a background workflow that expires offers, nudges sellers to ship, and releases payouts on time.”</p>
+        <details><summary>Direction</summary><p>Same template for frames 15–18: the sponsor name big on the left in Bricolage, and on the right a mini diagram or the app screen it powers, with 3–5 short lines popping in one by one. For Render, draw four service boxes (web · Postgres · Workflow · cron) wired together, with shop URLs (maya., secondshutter.) peeling off the web box. The Workflow box ticks through its timed jobs like a checklist.</p>
+        
+        </details>
+      </div>
+    </article>
+    <article>
+      <div class="visual"><img src="captures/desktop/c2-research.png" alt="" loading="lazy"><span class="num">16</span></div>
+      <div class="body">
+        <p class="when">2:12–2:19 · 7s · push</p>
+        <h2>Channel3: what the item really is</h2>
+        <p class="scene">Sponsor screen: &quot;Channel3&quot;, one API call fanning out into the facts on the research screen</p>
+        <p class="label">On screen</p><p class="onscreen">Channel3&quot; · &quot;Identifies the item from a photo and a line&quot; · &quot;Live price new: 'Still sold new, $420'&quot; · &quot;Resale offers across retailers&quot; · &quot;Maker photos for the listing</p>
+        <p class="label">Voiceover</p>
+        <p class="vo">“Channel3 tells the agent exactly what the item is: what it costs new, what it resells for, and the maker's own photos, all from one API.”</p>
+        <details><summary>Direction</summary><p>Show a short request line (&quot;search: Le Creuset dutch oven, yellow&quot;) fanning into four result cards, then cut to c2's right column with those values highlighted.</p>
+        <div class="more"><a href="captures/desktop/c5-photos.png" target="_blank"><img src="captures/desktop/c5-photos.png" alt="" loading="lazy"></a></div>
+        </details>
+      </div>
+    </article>
+    <article>
+      <div class="visual"><img src="captures/desktop/c2-research.png" alt="" loading="lazy"><span class="num">17</span></div>
+      <div class="body">
+        <p class="when">2:19–2:26 · 7s · push</p>
+        <h2>Kernel: research in real browsers</h2>
+        <p class="scene">Sponsor screen: &quot;Kernel&quot;, cloud browser windows tiling in (resale marketplaces, the open web, a signed-in account), with listings flowing back into the price range</p>
+        <p class="label">On screen</p><p class="onscreen">Kernel&quot; · &quot;Cloud browsers the agent drives&quot; · &quot;Searches popular resale marketplaces and the web&quot; · &quot;Managed sign-in: use your own accounts on popular platforms&quot; · &quot;Real listings, not guesses → $160 to $210</p>
+        <p class="label">Voiceover</p>
+        <p class="vo">“Kernel gives the agent real browsers in the cloud. It searches the popular resale marketplaces and the wider web, and with managed sign-in, sellers can let it use their own accounts on the big platforms.”</p>
+        <details><summary>Direction</summary><p>Three or four small browser frames tile in with generic labels only (&quot;Resale marketplace&quot;, &quot;The web&quot;, &quot;Your account&quot;): no site names, no logos, and blur the address bars in any live recording. A small padlock with &quot;Signed in as you&quot; sits on the account frame. Listing cards slide out of the windows into c2's price range bar, which fills. **Build check:** today `kernel.ts` searches public marketplace listings only, and managed sign-in isn't built yet. Ship it before the video goes out, since judges check that what's shown works, or drop the sign-in line.</p>
+        
+        </details>
+      </div>
+    </article>
+    <article>
+      <div class="visual"><img src="captures/desktop/d1-connections.png" alt="" loading="lazy"><span class="num">18</span></div>
+      <div class="body">
+        <p class="when">2:26–2:34 · 8s · push</p>
+        <h2>PayPal: every dollar, start to finish</h2>
+        <p class="scene">Sponsor screen: &quot;PayPal&quot; as lead sponsor, the money path from connect to payout with each step lighting up</p>
+        <p class="label">On screen</p><p class="onscreen">PayPal — lead sponsor&quot; · &quot;Sellers connect in a tap&quot; · &quot;Checkout, with Pay Later&quot; · &quot;Deposits on offers&quot; · &quot;Money held until it arrives&quot; · &quot;Our fee taken automatically&quot; · &quot;Payouts when it lands&quot; · &quot;Refunds and disputes, synced by webhook</p>
+        <p class="label">Voiceover</p>
+        <p class="vo">“And PayPal moves every dollar. Sellers connect in a tap, buyers can pay later, the money's held until the item arrives, our fee comes off automatically, and refunds and disputes are handled.”</p>
+        <details><summary>Direction</summary><p>Give PayPal the biggest of the four, on the leaf-900 card from the landing page PayPal block. Draw the money path left to right (Connect → Pay → Hold → Fee → Payout, with Refund/Dispute as a branch off Hold). Each node lights up with its line, and the matching screen flashes in a small window beside it.</p>
+        <div class="more"><a href="captures/desktop/p4-checkout.png" target="_blank"><img src="captures/desktop/p4-checkout.png" alt="" loading="lazy"></a><a href="captures/desktop/b5-sales-payouts.png" target="_blank"><img src="captures/desktop/b5-sales-payouts.png" alt="" loading="lazy"></a></div>
+        </details>
+      </div>
+    </article>
+    <article>
+      <div class="visual"><img src="captures/desktop/l1-landing-full.png" alt="" loading="lazy"><span class="num">19</span></div>
+      <div class="body">
+        <p class="when">2:34–2:46 · 12s · crossfade</p>
+        <h2>Open source, every step covered</h2>
+        <p class="scene">&quot;resell.store is open source.&quot; A grid of tiles, each a mini capture, checks off every piece that ships: sales page, sign-in, seller app, two-sided marketplace, shop pages, agents, API + MCP + docs, PayPal payments, notification emails, design system, tests, one-file Render deploy</p>
+        <p class="label">On screen</p><p class="onscreen">resell.store is open source&quot; · tiles: &quot;Sales page&quot; · &quot;Sign-in&quot; · &quot;Seller app&quot; · &quot;Two-sided marketplace&quot; · &quot;Shop pages&quot; · &quot;Selling + buying agents&quot; · &quot;API, MCP + docs&quot; · &quot;PayPal payments&quot; · &quot;Notification emails&quot; · &quot;Design system&quot; · &quot;Tests&quot; · &quot;Deploys to Render in one file&quot; · end line &quot;Every step, covered.&quot; · &quot;github.com/impactvelocity/resell-store</p>
+        <p class="label">Voiceover</p>
+        <p class="vo">“And resell.store is open source. You get the whole thing: the sales page, sign-in, a full two-sided marketplace, the design system, the agents, the API, payments and the notification emails. Every step, covered.”</p>
+        <details><summary>Direction</summary><p>A 4×3 grid on cream. Each tile pops in on the beat with a tiny live thumbnail and a green check, quick enough to feel like a lot. The emails get a little extra: two or three of the email captures fan out like a hand of cards from their tile. When the grid is full, everything nudges back and &quot;Every step, covered.&quot; lands big, with the GitHub URL under it. This frame is for builders and judges: it shows the size of what was built.</p>
+        <div class="more"><a href="captures/desktop/a1-welcome.png" target="_blank"><img src="captures/desktop/a1-welcome.png" alt="" loading="lazy"></a><a href="captures/desktop/a3-home-selling.png" target="_blank"><img src="captures/desktop/a3-home-selling.png" alt="" loading="lazy"></a><a href="captures/desktop/p1-discover.png" target="_blank"><img src="captures/desktop/p1-discover.png" alt="" loading="lazy"></a><a href="captures/desktop/p2-store.png" target="_blank"><img src="captures/desktop/p2-store.png" alt="" loading="lazy"></a><a href="captures/desktop/c10-offer.png" target="_blank"><img src="captures/desktop/c10-offer.png" alt="" loading="lazy"></a><a href="captures/desktop/d3-api.png" target="_blank"><img src="captures/desktop/d3-api.png" alt="" loading="lazy"></a><a href="captures/desktop/d6-api-docs.png" target="_blank"><img src="captures/desktop/d6-api-docs.png" alt="" loading="lazy"></a><a href="captures/desktop/p4-checkout.png" target="_blank"><img src="captures/desktop/p4-checkout.png" alt="" loading="lazy"></a><a href="captures/desktop/e-offer-received.png" target="_blank"><img src="captures/desktop/e-offer-received.png" alt="" loading="lazy"></a><a href="captures/desktop/e-agent-summary.png" target="_blank"><img src="captures/desktop/e-agent-summary.png" alt="" loading="lazy"></a><a href="captures/desktop/e-sold.png" target="_blank"><img src="captures/desktop/e-sold.png" alt="" loading="lazy"></a><a href="captures/desktop/e-paid-out.png" target="_blank"><img src="captures/desktop/e-paid-out.png" alt="" loading="lazy"></a><a href="captures/desktop/d5-design-system.png" target="_blank"><img src="captures/desktop/d5-design-system.png" alt="" loading="lazy"></a></div>
+        </details>
+      </div>
+    </article>
+    <article>
+      <div class="visual"><div class="type">Nothing good goes unused.</div><span class="num">20</span></div>
+      <div class="body">
+        <p class="when">2:46–2:56 · 10s · zoom</p>
+        <h2>The mission</h2>
+        <p class="scene">Callback to frame 1: the pile of unused things empties as each item flies off to a new owner, then the mission line, then the wordmark end card</p>
+        <p class="label">On screen</p><p class="onscreen">$560 billion of unused stuff in US homes&quot; / src: Mercari 2023 Reuse Report → &quot;Nothing good goes unused.&quot; → &quot;Sellers get the value back. Buyers pay a fair price. Everything finds its next home.&quot; → end card: &quot;resell.store&quot; · &quot;Snap a photo. Say yes. Get paid.&quot; · &quot;Built for the PayPal AI Hackathon&quot; · &quot;Open source on GitHub&quot; · &quot;Open your shop in 5 minutes</p>
+        <p class="label">Voiceover</p>
+        <p class="vo">“Our mission: nothing good goes unused. Sellers get the value back, buyers pay a fair price, and every thing finds its next home. resell.store.”</p>
+        <details><summary>Direction</summary><p>Bookend the film. Start on the frame 1 pile with the cupboard behind it and &quot;$560 billion&quot; counting up over it. Then, one per beat, each item pops off the pile and arcs out to a small card for its new owner (a shop tile, a buyer avatar, a &quot;Sold&quot; chip). The dutch oven goes last and lands with Jess. The cupboard is left open and empty. &quot;Nothing good goes unused.&quot; lands big in leaf-900, with the two lines under it. Then the lemon circle from the hero grows to fill the frame, and the wordmark, tagline and badges pop in with the FlowerMark spinning on the final beat. Hold the end card for 3s, since it doubles as the YouTube end frame and the landing page poster.</p>
+        
+        </details>
+      </div>
+    </article>
+</main>
+</body>
+</html>

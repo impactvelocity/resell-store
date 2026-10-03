@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400">
+  <rect width="400" height="400" fill="#ffdceb"/>
+  <!-- lemon ring -->
+  <circle cx="200" cy="200" r="104" fill="none" stroke="#ffd934" stroke-width="18"/>
+  <!-- meeple: body with arms and legs -->
+  <path d="M174 166 Q200 158 226 166 L268 180 Q284 186 279 201 Q274 214 258 211 L236 206 L258 262 Q264 278 248 278 H224 Q214 278 210 268 L200 246 L190 268 Q186 278 176 278 H152 Q136 278 142 262 L164 206 L142 211 Q126 214 121 201 Q116 186 132 180 Z" fill="#ff5fa8"/>
+  <!-- meeple: head -->
+  <circle cx="200" cy="138" r="28" fill="#ff5fa8"/>
+</svg>

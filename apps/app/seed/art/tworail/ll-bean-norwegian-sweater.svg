@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400">
+  <defs>
+    <!-- snowflake -->
+    <g id="flake" fill="none" stroke="#ffffff" stroke-width="4" stroke-linecap="round">
+      <path d="M-11 0 H11 M-5.5 -9.5 L5.5 9.5 M5.5 -9.5 L-5.5 9.5"/>
+    </g>
+  </defs>
+  <rect width="400" height="400" fill="#ddf0e3"/>
+  <!-- sweater body and sleeves -->
+  <path d="M166 90 Q200 102 234 90 L274 104 Q288 110 292 124 L332 252 L300 266 L266 180 V312 Q266 320 258 320 H142 Q134 320 134 312 V180 L100 266 L68 252 L108 124 Q112 110 126 104 Z" fill="#14261d"/>
+  <!-- crew neck rib -->
+  <path d="M166 92 Q200 78 234 92 Q200 112 166 92 Z" fill="#14261d" stroke="#ffffff" stroke-width="7" stroke-linejoin="round"/>
+  <!-- yoke: dots and snowflakes around the neck -->
+  <path d="M140 108 A62 34 0 0 0 260 108" fill="none" stroke="#ffffff" stroke-width="6" stroke-linecap="round" stroke-dasharray="0.1 12"/>
+  <use href="#flake" x="134" y="132"/>
+  <use href="#flake" x="164" y="152"/>
+  <use href="#flake" x="200" y="160"/>
+  <use href="#flake" x="236" y="152"/>
+  <use href="#flake" x="266" y="132"/>
+  <use href="#flake" x="112" y="124"/>
+  <use href="#flake" x="288" y="124"/>
+  <path d="M118 150 Q200 208 282 150" fill="none" stroke="#ffffff" stroke-width="6" stroke-linecap="round" stroke-dasharray="0.1 12"/>
+  <path d="M136 176 Q200 214 264 176" fill="none" stroke="#ffffff" stroke-width="4" stroke-linecap="round"/>
+  <!-- two tiny clasps at the collar -->
+  <rect x="182" y="100" width="12" height="8" rx="3" fill="#8cc9a4"/>
+  <rect x="206" y="100" width="12" height="8" rx="3" fill="#8cc9a4"/>
+  <!-- ribbed cuffs and hem -->
+  <g fill="none" stroke="#8cc9a4" stroke-width="3" stroke-linecap="round">
+    <path d="M322 238 L325 252 M316 241 L319 255 M310 244 L312 257 M303 247 L306 260"/>
+    <path d="M78 238 L75 252 M84 241 L81 255 M90 244 L88 257 M97 247 L94 260"/>
+    <path d="M146 298 V312 M160 298 V312 M174 298 V312 M188 298 V312 M202 298 V312 M216 298 V312 M230 298 V312 M244 298 V312 M258 298 V312"/>
+  </g>
+</svg>

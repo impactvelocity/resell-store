@@ -1,9 +1,10 @@
 import Link from "next/link";
 import type { ComponentProps, ReactNode } from "react";
 import { BellIcon, ChevronLeftIcon } from "@repo/ui/icons";
-import { LemonMark } from "@repo/ui/logo";
+import { Wordmark } from "@repo/ui/logo";
 import { cn } from "@repo/ui/lib/utils";
-import { me } from "../../lib/mock";
+import { ViewerInitial } from "../viewer";
+import { BellBadge, BellLabel } from "./bell-badge";
 
 /*
  * Page-level pieces shared by screens inside the app shell.
@@ -65,15 +66,15 @@ export function BellButton({
   return (
     <Link
       href="/inbox"
-      aria-label="Notifications"
       className={cn(
-        "relative flex shrink-0 items-center justify-center rounded-full border-[1.5px] border-border bg-surface transition-colors hover:bg-surface-muted",
+        "relative flex shrink-0 items-center justify-center rounded-full border-[1.5px] border-border bg-surface text-text transition-colors hover:bg-surface-muted",
         size === "lg" ? "size-12" : "size-10",
         className,
       )}
     >
-      <BellIcon />
-      <span className="absolute top-[7px] right-2 size-[9px] rounded-full border-2 border-surface bg-accent" />
+      <BellIcon size={size === "lg" ? 22 : 20} strokeWidth={2.2} aria-hidden />
+      <BellLabel />
+      <BellBadge />
     </Link>
   );
 }
@@ -88,7 +89,7 @@ export function MeAvatar({ className }: { className?: string }) {
         className,
       )}
     >
-      {me.initial}
+      <ViewerInitial />
     </Link>
   );
 }
@@ -109,12 +110,8 @@ export function MobileTopBar({
         className,
       )}
     >
-      <Link
-        href="/home"
-        className="flex items-center gap-2 font-display text-xl font-extrabold tracking-tight"
-      >
-        <LemonMark size={32} />
-        resell.store
+      <Link href="/home" className="flex items-center">
+        <Wordmark size="sm" />
       </Link>
       <div className="flex items-center gap-2">
         {actions ?? (

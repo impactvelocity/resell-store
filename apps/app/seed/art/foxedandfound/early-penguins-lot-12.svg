@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400">
+  <rect width="400" height="400" fill="#ffdceb"/>
+  <!-- eight paperbacks in a row, spines out: band, white middle, band -->
+  <!-- book 1 -->
+  <rect x="74" y="88" width="28" height="226" rx="4" fill="#f5be0b"/>
+  <rect x="74" y="154" width="28" height="94" fill="#ffffff"/>
+  <rect x="85" y="185" width="6" height="32" rx="3" fill="#14261d"/>
+  <!-- book 2 -->
+  <rect x="106" y="96" width="28" height="218" rx="4" fill="#f5be0b"/>
+  <rect x="106" y="162" width="28" height="86" fill="#ffffff"/>
+  <rect x="117" y="189" width="6" height="32" rx="3" fill="#14261d"/>
+  <!-- book 3 -->
+  <rect x="138" y="84" width="28" height="230" rx="4" fill="#256b4c"/>
+  <rect x="138" y="150" width="28" height="98" fill="#ffffff"/>
+  <rect x="149" y="183" width="6" height="32" rx="3" fill="#14261d"/>
+  <!-- book 4 -->
+  <rect x="170" y="92" width="28" height="222" rx="4" fill="#f5be0b"/>
+  <rect x="170" y="158" width="28" height="90" fill="#ffffff"/>
+  <rect x="181" y="187" width="6" height="32" rx="3" fill="#14261d"/>
+  <!-- book 5 -->
+  <rect x="202" y="90" width="28" height="224" rx="4" fill="#f5be0b"/>
+  <rect x="202" y="156" width="28" height="92" fill="#ffffff"/>
+  <rect x="213" y="186" width="6" height="32" rx="3" fill="#14261d"/>
+  <!-- book 6 -->
+  <rect x="234" y="98" width="28" height="216" rx="4" fill="#256b4c"/>
+  <rect x="234" y="164" width="28" height="84" fill="#ffffff"/>
+  <rect x="245" y="190" width="6" height="32" rx="3" fill="#14261d"/>
+  <!-- book 7 -->
+  <rect x="266" y="86" width="28" height="228" rx="4" fill="#f5be0b"/>
+  <rect x="266" y="152" width="28" height="96" fill="#ffffff"/>
+  <rect x="277" y="184" width="6" height="32" rx="3" fill="#14261d"/>
+  <!-- book 8 -->
+  <rect x="298" y="94" width="28" height="220" rx="4" fill="#f5be0b"/>
+  <rect x="298" y="160" width="28" height="88" fill="#ffffff"/>
+  <rect x="309" y="188" width="6" height="32" rx="3" fill="#14261d"/>
+</svg>

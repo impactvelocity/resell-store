@@ -1,125 +1,280 @@
+import type { Metadata } from "next";
 import {
-  AccountNav,
-  OfferRow,
-  OrderRow,
-  SeeAllOrders,
-} from "../../../../components/market/buyer/account";
-import { ShieldIcon } from "../../../../components/market/buyer/chat-parts";
-import { SiteLink, StoreLink } from "../../../../components/market/links";
-import { ListingCard, StoreAvatar } from "../../../../components/market/parts";
-import {
-  accountCounts,
-  favourites,
-  following,
-  offers,
-  orders,
-} from "../../../../lib/mock-buyer";
-import { findListing, getStore } from "../../../../lib/mock-market";
+  LiveAccount,
+  type LiveOfferView,
+  type LiveOrderView,
+} from "../../../../components/market/buyer/live-account";
+import { EmptyAccount, SignInPrompt } from "../../../../components/market/buyer/live-empty";
+import { shortPrice } from "../../../../lib/mock-checkout";
+import { toDollars } from "../../../../lib/money";
+import { agreedCents, listBuyerOffers, listBuyerOrders } from "../../../../lib/server/commerce";
+import { latestDisputes, type DisputeRow } from "../../../../lib/server/disputes";
+import { listFollowedShops } from "../../../../lib/server/follows";
+import { listLikedListings } from "../../../../lib/server/likes";
+import { publicViewer } from "../../../../lib/server/market";
+import { buyerCanCancel, shipBy } from "../../../../lib/server/payout-policy";
+import { reviewedOrderIds } from "../../../../lib/server/reviews";
+import { countOwnedShops } from "../../../../lib/server/shops";
+import { accountVisit, isNewSince } from "../../../../lib/server/account-visit";
 
-/** P8 Buyer account: what needs Maya today, then orders, offers, follows and favourites. */
-export default function AccountPage() {
-  return (
-    <div className="mx-auto flex max-w-[1440px] flex-col gap-8 px-4 pt-6 pb-16 desk:flex-row desk:items-start desk:gap-12 desk:px-16 desk:pt-14 desk:pb-20 xl:gap-[72px]">
-      <AccountNav />
+export const metadata: Metadata = { title: "Your account · resell.store" };
 
-      <main className="flex min-w-0 flex-1 flex-col gap-12 desk:gap-14">
-        <section
-          id="overview"
-          className="flex scroll-mt-8 flex-col gap-4 lg:flex-row lg:items-end lg:justify-between"
-        >
-          <div className="flex flex-col gap-2.5">
-            <h1 className="font-display text-4xl font-extrabold tracking-tight">Hi Maya.</h1>
-            <p className="text-lg text-public-text-muted">
-              Two things need you today: a counter offer and a chair to check.
-            </p>
-          </div>
-          <p className="flex h-9 w-fit shrink-0 items-center gap-2 rounded-full bg-leaf-100 px-3.5 text-sm font-semibold text-leaf-600">
-            <ShieldIcon />
-            $144 of yours held safely by PayPal
-          </p>
-        </section>
-
-        <section id="orders" className="flex scroll-mt-8 flex-col gap-2">
-          <SectionHead title="Orders">
-            <SeeAllOrders />
-          </SectionHead>
-          <ul className="flex flex-col">
-            {orders.map((o) => (
-              <OrderRow key={o.id} order={o} />
-            ))}
-          </ul>
-        </section>
-
-        <section id="offers" className="flex scroll-mt-8 flex-col gap-2">
-          <SectionHead title="Offers">
-            <SiteLink href="/messages?thread=secondshutter" className={seeAll}>
-              See all offers
-            </SiteLink>
-          </SectionHead>
-          <ul className="flex flex-col">
-            {offers.map((o) => (
-              <OfferRow key={o.id} offer={o} />
-            ))}
-          </ul>
-        </section>
-
-        <section id="following" className="flex scroll-mt-8 flex-col gap-5">
-          <SectionHead title="Stores you follow">
-            <SiteLink href="/stores" className={seeAll}>
-              See all {accountCounts.following}
-            </SiteLink>
-          </SectionHead>
-          <ul className="-mx-4 flex gap-2 overflow-x-auto px-4 [scrollbar-width:none] desk:mx-0 desk:flex-wrap desk:gap-4 desk:overflow-visible desk:px-0">
-            {following.map(({ store: slug, fresh }) => {
-              const store = getStore(slug)!;
-              return (
-                <li key={slug} className="w-[96px] shrink-0 desk:w-[112px]">
-                  <StoreLink
-                    store={slug}
-                    className="group flex flex-col items-center gap-2 rounded-2xl outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-secondary"
-                  >
-                    <span className="relative">
-                      <StoreAvatar store={store} size={64} />
-                      {fresh && (
-                        <span className="absolute top-0 right-0 size-3.5 rounded-full border-2 border-white bg-pink-400">
-                          <span className="sr-only">New listings</span>
-                        </span>
-                      )}
-                    </span>
-                    <span className="text-center text-sm font-medium group-hover:underline">
-                      {store.name}
-                    </span>
-                  </StoreLink>
-                </li>
-              );
-            })}
-          </ul>
-        </section>
-
-        <section id="favourites" className="flex scroll-mt-8 flex-col gap-5">
-          <SectionHead title="Favourites">
-            <SiteLink href="/discover" className={seeAll}>
-              See all {accountCounts.favourites}
-            </SiteLink>
-          </SectionHead>
-          <div className="grid grid-cols-2 gap-x-4 gap-y-8 lg:grid-cols-4 lg:gap-6">
-            {favourites.map((slug) => (
-              <ListingCard key={slug} listing={findListing(slug)!} defaultLiked />
-            ))}
-          </div>
-        </section>
+/**
+ * P8 Buyer account: the buyer's home for updates. Real orders and offers with
+ * what each one needs next, what they've saved and the shops they follow.
+ * Signed out, a way in; nothing yet, a friendly start. Sellers get a way
+ * back to their shops.
+ */
+export default async function AccountPage() {
+  const viewer = await publicViewer();
+  if (!viewer) {
+    return (
+      <main className="mx-auto max-w-[1440px] px-4 desk:px-16">
+        <SignInPrompt what="account" />
       </main>
-    </div>
+    );
+  }
+
+  const [orderRows, offerRows, saved, following, ownedShops, since] = await Promise.all([
+    listBuyerOrders(viewer.id),
+    listBuyerOffers(viewer.id),
+    listLikedListings(viewer.id),
+    // One listing per shop is enough to say "new this week"
+    listFollowedShops(viewer.id, { perShop: 1 }),
+    countOwnedShops(viewer.id),
+    accountVisit(viewer.id),
+  ]);
+  const sells = ownedShops > 0;
+  if (!orderRows.length && !offerRows.length && !saved.length && !following.length) {
+    return <EmptyAccount firstName={viewer.firstName} sells={sells} />;
+  }
+
+  const [problems, reviewed] = await Promise.all([
+    latestDisputes(orderRows.map((r) => r.order.id)),
+    reviewedOrderIds(orderRows.filter((r) => r.order.status === "completed").map((r) => r.order.id)),
+  ]);
+  const liveProblem = (orderId: string) => {
+    const d = problems.get(orderId);
+    return d && (d.status === "open" || d.status === "escalated") ? d : null;
+  };
+  const orders = orderRows.map((r) => ({
+    ...toOrderView(r, liveProblem(r.order.id)),
+    canReview: r.order.status === "completed" && !reviewed.has(r.order.id),
+    isNew: isNewSince(since, r.order.updatedAt),
+  }));
+  const offers = offerRows.map((r) => ({ ...toOfferView(r), isNew: isNewSince(since, r.offer.updatedAt) }));
+  const fresh = orders.filter((o) => o.isNew).length + offers.filter((o) => o.isNew).length;
+
+  // What needs the buyer, in the words of the overview line
+  const toCheck = orderRows.filter(
+    (r) => (r.order.status === "shipped" || r.order.status === "delivered") && !liveProblem(r.order.id),
+  ).length;
+  const counters = offerRows.filter((r) => r.status === "countered").length;
+  const toPay = offerRows.filter((r) => r.status === "accepted").length;
+  const needs = [
+    counters && plural(counters, "a counter offer", "counter offers"),
+    toPay && plural(toPay, "an accepted offer to pay", "accepted offers to pay"),
+    toCheck && plural(toCheck, "a parcel to check", "parcels to check"),
+  ].filter(Boolean) as string[];
+  const count = counters + toPay + toCheck;
+  const summary = [
+    needs.length
+      ? `${count === 1 ? "One thing needs" : `${numberWord(count)} things need`} you today: ${list(needs)}.`
+      : "Nothing needs you today. News on your orders, offers and the shops you follow lands here.",
+    fresh > 0 && `${fresh === 1 ? "One update" : `${numberWord(fresh)} updates`} since your last visit, marked New.`,
+  ]
+    .filter(Boolean)
+    .join(" ");
+
+  // Paid or on the way: what PayPal would be holding
+  const heldRows = orderRows.filter(
+    (r) => r.order.status === "paid" || r.order.status === "shipped" || r.order.status === "delivered",
+  );
+  const heldCents = heldRows.reduce((sum, r) => sum + r.order.totalCents, 0);
+
+  return (
+    <LiveAccount
+      firstName={viewer.firstName}
+      summary={summary}
+      held={heldCents > 0 ? dollars(heldCents) : null}
+      heldTest={heldRows.every((r) => r.order.paymentProvider !== "paypal")}
+      orders={orders}
+      offers={offers}
+      saved={saved}
+      following={following.map((f) => ({
+        shopId: f.shopId,
+        slug: f.slug,
+        name: f.name,
+        initial: f.initial,
+        tone: f.tone,
+        picture: f.picture,
+        line: [f.forSale > 0 ? `${f.forSale} for sale` : "Nothing for sale right now", f.hasNew && "new this week"]
+          .filter(Boolean)
+          .join(", "),
+      }))}
+      sells={sells}
+    />
   );
 }
 
-const seeAll = "text-sm font-semibold whitespace-nowrap text-leaf-600 hover:underline";
+/* Rows → what the account shows */
 
-function SectionHead({ title, children }: { title: string; children: React.ReactNode }) {
-  return (
-    <div className="flex items-baseline justify-between gap-4">
-      <h2 className="font-display text-2xl font-extrabold tracking-tight">{title}</h2>
-      {children}
-    </div>
-  );
+type OrderRows = Awaited<ReturnType<typeof listBuyerOrders>>;
+type OfferRows = Awaited<ReturnType<typeof listBuyerOffers>>;
+
+const dollars = (cents: number | null | undefined) => shortPrice(toDollars(cents) ?? 0);
+const shortDate = new Intl.DateTimeFormat("en-US", { month: "long", day: "numeric" });
+
+function toOrderView(r: OrderRows[number], problem: DisputeRow | null): LiveOrderView {
+  const o = r.order;
+  const shop = r.shop.name;
+  const test = o.paymentProvider !== "paypal";
+  const late = buyerCanCancel(o);
+  const status = ((): LiveOrderView["status"] => {
+    if (problem) {
+      return {
+        title: problem.status === "escalated" ? "We're looking at it" : "Problem reported",
+        detail: [
+          problem.offerCents != null && `${shop} offered ${dollars(problem.offerCents)} back.`,
+          `${shop} isn't paid until it's sorted.`,
+        ]
+          .filter(Boolean)
+          .join(" "),
+      };
+    }
+    switch (o.status) {
+      case "paid":
+        if (late) {
+          return {
+            title: `${shop} hasn't shipped it yet`,
+            detail: `It was due by ${shortDate.format(shipBy(o))}. You can cancel for a full refund, or give them a little longer.`,
+          };
+        }
+        return {
+          title: `Paid, ${shop} ships it next`,
+          detail: `${dollars(o.totalCents)} held until it arrives.${test ? " Test checkout, so no money moved." : ""}`,
+        };
+      case "shipped":
+      case "delivered":
+        return {
+          title: o.status === "delivered" ? "Delivered" : "On its way",
+          detail: o.trackingNumber
+            ? `Tracking ${o.trackingNumber}. Check it, then say it's all good.`
+            : "No tracking number yet. Check it when it lands, then say it's all good.",
+        };
+      case "completed":
+        return {
+          title: "All done",
+          detail:
+            o.refundedCents > 0
+              ? `You got ${dollars(o.refundedCents)} back and the rest went to ${shop}${test ? " (test)" : ""}.`
+              : `You confirmed it${o.completedAt ? ` on ${shortDate.format(o.completedAt)}` : ""}. ${shop} was paid${test ? " (test)" : ""}.`,
+          done: true,
+        };
+      case "refunded":
+        return {
+          title: `Refunded ${dollars(o.refundedCents || o.totalCents)}`,
+          detail: `The money went back to you${test ? " (test, no money moved)" : ""}.`,
+          muted: true,
+        };
+      case "cancelled":
+        return {
+          title: "Cancelled",
+          detail: `It didn't ship, so ${dollars(o.refundedCents || o.totalCents)} went back to you${test ? " (test)" : ""}.`,
+          muted: true,
+        };
+    }
+  })();
+  return {
+    id: o.id,
+    title: r.listing.title,
+    photo: r.photo,
+    line: `${shop}, ${dollars(o.totalCents)} with shipping`,
+    status,
+    canConfirm: (o.status === "shipped" || o.status === "delivered") && !problem,
+    shopName: shop,
+    href: `/account/orders/${o.id}`,
+    canCancel: late,
+    problem: problem ? (problem.status as "open" | "escalated") : null,
+  };
+}
+
+function toOfferView(r: OfferRows[number]): LiveOfferView {
+  const o = r.offer;
+  const shop = r.shop.name;
+  const offered = dollars(o.amountCents);
+  const deposit = o.depositCents ? ` ${dollars(o.depositCents)} deposit noted (test).` : "";
+  const left = timeLeft(o.expiresAt);
+  const base = {
+    id: o.id,
+    listingId: r.listing.id,
+    title: r.listing.title,
+    photo: r.photo,
+    line: `${shop}, asking ${dollars(r.listing.priceCents)}`,
+    shopName: shop,
+  };
+  switch (r.status) {
+    case "open":
+      return {
+        ...base,
+        status: { title: `Waiting for ${shop}`, detail: `You offered ${offered}. ${left} for them to answer.${deposit}` },
+        action: "withdraw",
+      };
+    case "countered":
+      return {
+        ...base,
+        status: {
+          title: `${shop} countered at ${dollars(o.counterCents)}`,
+          detail: `You offered ${offered}. ${left} to answer.${deposit}`,
+        },
+        action: "counter",
+        counter: dollars(o.counterCents),
+      };
+    case "accepted":
+      return {
+        ...base,
+        status: {
+          title: `Accepted at ${dollars(agreedCents(o))}`,
+          detail: `${left} to pay, or it lapses.`,
+        },
+        action: "pay",
+      };
+    case "paid":
+      return {
+        ...base,
+        status: { title: `Bought for ${dollars(agreedCents(o))}`, detail: "It's in your orders.", done: true },
+        action: null,
+      };
+    case "declined":
+      return { ...base, status: { title: "Declined", detail: `You offered ${offered}.`, muted: true }, action: null };
+    case "expired":
+      return { ...base, status: { title: "Ran out", detail: `You offered ${offered}.`, muted: true }, action: null };
+    case "withdrawn":
+      return {
+        ...base,
+        status: { title: "You took it back", detail: `You offered ${offered}.`, muted: true },
+        action: null,
+      };
+  }
+}
+
+/** "47 hours left", "2 days left", "Under an hour left". */
+function timeLeft(until: Date) {
+  const hours = Math.floor((until.getTime() - Date.now()) / 3_600_000);
+  if (hours < 1) return "Under an hour left";
+  if (hours <= 36) return `${hours} ${hours === 1 ? "hour" : "hours"} left`;
+  return `${Math.round(hours / 24)} days left`;
+}
+
+function plural(n: number, one: string, many: string) {
+  return n === 1 ? one : `${numberWord(n).toLowerCase()} ${many}`;
+}
+
+function numberWord(n: number) {
+  return ["Zero", "One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine"][n] ?? String(n);
+}
+
+/** "a, b and c" */
+function list(items: string[]) {
+  return items.length < 2 ? items.join("") : `${items.slice(0, -1).join(", ")} and ${items.at(-1)}`;
 }

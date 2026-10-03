@@ -22,7 +22,7 @@ export function CheckoutHeader({
     <header className="border-b border-public-border bg-public-background">
       <div className="mx-auto hidden h-[76px] max-w-[1440px] items-center justify-between px-16 desk:flex">
         <SiteLink href="/discover" aria-label="resell.store" className="shrink-0 rounded-full">
-          <Wordmark size="sm" className="gap-2.5 [&_svg]:size-8" />
+          <Wordmark size="sm" />
         </SiteLink>
         <div className="flex items-center gap-7">
           <span className="flex items-center gap-2 text-sm font-semibold text-leaf-600">

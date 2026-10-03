@@ -43,7 +43,7 @@ function WhereItsAt({ sale }: { sale: Sale }) {
 }
 
 function downloadCsv(rows: Sale[]) {
-  const header = ["Item", "Sold", "Buyer", "Where it's at", "You get"];
+  const header = ["Item", "Sold", "Buyer", "Status", "You get"];
   const lines = rows.map((s) =>
     [s.title, s.soldOn.replace("Sold ", ""), s.buyer, s.where, `$${s.amount}`]
       .map((v) => `"${v.replace(/"/g, '""')}"`)
@@ -97,7 +97,7 @@ export function SalesView() {
       )}
     >
       <div className="flex flex-col gap-1">
-        <span className="text-sm font-semibold tracking-wide text-leaf-100 uppercase">
+        <span className="text-base font-semibold text-leaf-100">
           On its way to you
         </span>
         <span
@@ -164,7 +164,7 @@ export function SalesView() {
       </div>
     ) : (
       <div className="flex w-full flex-col gap-1 rounded-lg border border-border bg-surface p-5">
-        <span className="text-base font-bold">Nothing to ship. Nice.</span>
+        <span className="text-base font-bold">Nothing to ship</span>
         <span className="text-sm text-text-muted">
           When something sells, it shows up here with its label.
         </span>
@@ -268,7 +268,7 @@ export function SalesView() {
               <div className="flex items-center gap-4 border-b border-border py-3.5 text-sm font-semibold text-text-muted">
                 <span className="flex-1">Item</span>
                 <span className="w-[88px] shrink-0">Buyer</span>
-                <span className="w-[168px] shrink-0">Where it&apos;s at</span>
+                <span className="w-[168px] shrink-0">Status</span>
                 <span className="w-16 shrink-0 text-right">You get</span>
               </div>
               {visible.length === 0 ? (

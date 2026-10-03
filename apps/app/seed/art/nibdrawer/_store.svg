@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400">
+  <rect width="400" height="400" fill="#ddf0e3"/>
+  <!-- background ring -->
+  <circle cx="200" cy="200" r="112" fill="#256b4c"/>
+  <!-- nib, point down -->
+  <path d="M152 108 Q200 96 248 108 C264 150 266 186 252 220 L207 296 Q200 306 193 296 L148 220 C134 186 136 150 152 108 Z" fill="#ffd934"/>
+  <!-- engraved scrolls on the shoulders -->
+  <g fill="none" stroke="#f5be0b" stroke-width="5" stroke-linecap="round">
+    <path d="M166 130 Q156 160 170 184"/>
+    <path d="M234 130 Q244 160 230 184"/>
+  </g>
+  <!-- breather hole and slit -->
+  <circle cx="200" cy="208" r="11" fill="#14261d"/>
+  <path d="M200 216 V294" fill="none" stroke="#14261d" stroke-width="5" stroke-linecap="round"/>
+</svg>

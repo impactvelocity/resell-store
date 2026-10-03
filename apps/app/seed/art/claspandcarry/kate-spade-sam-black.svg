@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400">
+  <rect width="400" height="400" fill="#ffdceb"/>
+  <!-- back handle -->
+  <path d="M142 150 C142 84 168 74 200 74 C232 74 258 84 258 150" fill="none" stroke="#14261d" stroke-width="16" stroke-linecap="round"/>
+  <!-- front handle, flat strap with a stitched centre -->
+  <path d="M152 156 C152 104 172 96 200 96 C228 96 248 104 248 156" fill="none" stroke="#14261d" stroke-width="18" stroke-linecap="round"/>
+  <path d="M152 140 C152 104 172 96 200 96 C228 96 248 104 248 140" fill="none" stroke="#ffffff" stroke-width="3" stroke-linecap="round" stroke-dasharray="2 10"/>
+  <!-- boxy body -->
+  <rect x="94" y="144" width="212" height="190" rx="16" fill="#14261d"/>
+  <!-- top binding stitch -->
+  <path d="M110 164 H290" fill="none" stroke="#ffffff" stroke-width="3" stroke-linecap="round" stroke-dasharray="2 10"/>
+  <!-- white label patch with pink stitched border -->
+  <rect x="164" y="222" width="72" height="40" rx="5" fill="#ffffff"/>
+  <rect x="172" y="230" width="56" height="24" rx="3" fill="none" stroke="#ff5fa8" stroke-width="3" stroke-linecap="round" stroke-dasharray="2 7"/>
+</svg>

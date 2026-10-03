@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400">
+  <rect width="400" height="400" fill="#ddf0e3"/>
+  <!-- the pen, capped, lying from upper left to lower right -->
+  <g transform="rotate(32 200 200)">
+    <!-- striped barrel -->
+    <rect x="198" y="178" width="108" height="44" fill="#256b4c"/>
+    <g fill="#8cc9a4">
+      <rect x="198" y="184" width="108" height="6"/>
+      <rect x="198" y="197" width="108" height="6"/>
+      <rect x="198" y="210" width="108" height="6"/>
+    </g>
+    <!-- piston knob -->
+    <path d="M304 178 H316 Q336 178 336 200 Q336 222 316 222 H304 Z" fill="#14261d"/>
+    <rect x="300" y="178" width="6" height="44" fill="#ffd934"/>
+    <!-- ink window -->
+    <rect x="182" y="178" width="18" height="44" fill="#14261d"/>
+    <path d="M187 186 V214 M195 186 V214" fill="none" stroke="#8cc9a4" stroke-width="3" stroke-linecap="round"/>
+    <!-- cap with its two bands -->
+    <path d="M182 175 V225 H90 Q64 225 64 200 Q64 175 90 175 Z" fill="#14261d"/>
+    <rect x="164" y="175" width="5" height="50" fill="#ffd934"/>
+    <rect x="174" y="175" width="5" height="50" fill="#ffd934"/>
+    <!-- beak clip -->
+    <path d="M84 166 H118 Q148 166 162 174 Q168 180 160 182 Q140 182 118 180 H84 Q80 180 80 176 V170 Q80 166 84 166 Z" fill="#ffd934"/>
+  </g>
+</svg>

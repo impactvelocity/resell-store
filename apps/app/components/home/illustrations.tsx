@@ -1,9 +1,5 @@
 import type { SVGProps } from "react";
-import {
-  DressIllustration,
-  SweaterIllustration,
-  VaseIllustration,
-} from "@repo/ui/whimsy";
+import { DressIllustration, SweaterIllustration, VaseIllustration } from "@repo/ui/whimsy";
 import type { ItemIllustration } from "../../lib/mock-home";
 import type { Shop } from "../../lib/mock";
 
@@ -69,11 +65,7 @@ export function BlanketIllustration(props: Props) {
   return (
     <Svg {...props}>
       <rect x="14" y="20" width="52" height="40" rx="8" fill="var(--color-pink-400)" />
-      <path
-        d="M14 34h52M14 46h52"
-        stroke="var(--color-pink-600)"
-        strokeWidth="3"
-      />
+      <path d="M14 34h52M14 46h52" stroke="var(--color-pink-600)" strokeWidth="3" />
     </Svg>
   );
 }
@@ -82,7 +74,15 @@ export function RecordIllustration(props: Props) {
   return (
     <Svg {...props}>
       <circle cx="40" cy="40" r="30" fill="var(--color-leaf-900)" />
-      <circle cx="40" cy="40" r="22" fill="none" stroke="#fff" strokeOpacity="0.15" strokeWidth="1.5" />
+      <circle
+        cx="40"
+        cy="40"
+        r="22"
+        fill="none"
+        stroke="#fff"
+        strokeOpacity="0.15"
+        strokeWidth="1.5"
+      />
       <circle cx="40" cy="40" r="11" fill="var(--color-pink-400)" />
       <circle cx="40" cy="40" r="2.5" fill="var(--color-leaf-900)" />
     </Svg>
@@ -94,7 +94,12 @@ export function PotIllustration(props: Props) {
     <Svg {...props}>
       <rect x="34" y="18" width="12" height="6" rx="3" fill="var(--color-leaf-900)" />
       <path d="M14 26h52v4H14Z" fill="var(--color-berry-500)" />
-      <path d="M8 36h8M64 36h8" stroke="var(--color-leaf-900)" strokeWidth="4" strokeLinecap="round" />
+      <path
+        d="M8 36h8M64 36h8"
+        stroke="var(--color-leaf-900)"
+        strokeWidth="4"
+        strokeLinecap="round"
+      />
       <path d="M16 30h48v24c0 8-6 12-12 12H28c-6 0-12-4-12-12Z" fill="var(--color-berry-500)" />
     </Svg>
   );
@@ -116,21 +121,12 @@ function PearVase(props: Props) {
 function PlainDress(props: Props) {
   return (
     <Svg {...props}>
-      <path
-        d="M29 8h5c0 5 3 8 6 8s6-3 6-8h5l2 22 12 42H15l12-42Z"
-        fill="var(--color-leaf-600)"
-      />
+      <path d="M29 8h5c0 5 3 8 6 8s6-3 6-8h5l2 22 12 42H15l12-42Z" fill="var(--color-leaf-600)" />
     </Svg>
   );
 }
 
-export function ItemArt({
-  illustration,
-  size,
-}: {
-  illustration: ItemIllustration;
-  size?: number;
-}) {
+export function ItemArt({ illustration, size }: { illustration: ItemIllustration; size?: number }) {
   switch (illustration) {
     case "sweater":
       return <SweaterIllustration size={size ?? 124} />;
@@ -157,8 +153,17 @@ const shopTileTones: Record<Shop["tone"], string> = {
   muted: "bg-surface-muted",
 };
 
-/** 48px picture tile for a shop (spec E, shop card). */
-export function ShopTile({ shop }: { shop: Shop }) {
+/** 48px picture tile for a shop (spec E, shop card). `image` is an uploaded picture. */
+export function ShopTile({ shop, image }: { shop: Shop; image?: string | null }) {
+  if (image) {
+    return (
+      <span
+        aria-hidden
+        className="size-12 shrink-0 rounded-md bg-surface-muted bg-cover bg-center"
+        style={{ backgroundImage: `url(${image})` }}
+      />
+    );
+  }
   return (
     <span
       className={`flex size-12 shrink-0 items-center justify-center rounded-md ${shopTileTones[shop.tone]}`}

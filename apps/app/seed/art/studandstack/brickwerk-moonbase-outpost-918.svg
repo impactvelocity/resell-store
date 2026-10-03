@@ -1,0 +1,49 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400">
+  <rect width="400" height="400" fill="#fff6c2"/>
+  <g transform="translate(0 -22)">
+  <!-- cratered base plate -->
+  <rect x="70" y="286" width="260" height="32" rx="8" fill="#ffffff"/>
+  <g fill="#f5be0b">
+    <ellipse cx="102" cy="304" rx="15" ry="6"/><ellipse cx="180" cy="308" rx="10" ry="4.5"/>
+    <ellipse cx="252" cy="302" rx="16" ry="6"/><ellipse cx="310" cy="309" rx="9" ry="4"/>
+  </g>
+  <rect x="74" y="280" width="12" height="8" rx="3" fill="#ffffff"/>
+  <!-- station: two white courses under a mint roof -->
+  <g fill="#ffffff">
+    <rect x="96" y="260" width="48" height="23" rx="3"/><rect x="147" y="260" width="49" height="23" rx="3"/>
+    <rect x="96" y="234" width="24" height="23" rx="3"/><rect x="123" y="234" width="73" height="23" rx="3"/>
+  </g>
+  <rect x="134" y="240" width="20" height="11" rx="3" fill="#14261d"/>
+  <rect x="164" y="240" width="20" height="11" rx="3" fill="#14261d"/>
+  <rect x="104" y="264" width="20" height="19" rx="3" fill="#8cc9a4"/>
+  <rect x="90" y="220" width="112" height="11" rx="3" fill="#8cc9a4"/>
+  <g fill="#8cc9a4">
+    <rect x="94" y="214" width="12" height="8" rx="3"/><rect x="114" y="214" width="12" height="8" rx="3"/>
+    <rect x="166" y="214" width="12" height="8" rx="3"/><rect x="186" y="214" width="12" height="8" rx="3"/>
+  </g>
+  <!-- antenna mast and dish -->
+  <rect x="136" y="210" width="20" height="10" rx="3" fill="#14261d"/>
+  <path d="M146 212 V170" fill="none" stroke="#14261d" stroke-width="5" stroke-linecap="round"/>
+  <g transform="rotate(-30 146 160)">
+    <path d="M118 156 A28 28 0 0 0 174 156 Z" fill="#f5be0b"/>
+    <path d="M146 156 V130" fill="none" stroke="#f5be0b" stroke-width="4" stroke-linecap="round"/>
+    <circle cx="146" cy="128" r="5" fill="#ffd934"/>
+  </g>
+  <!-- astronaut standing on the plate -->
+  <rect x="204" y="226" width="26" height="24" rx="10" fill="#ffffff"/>
+  <rect x="209" y="232" width="16" height="11" rx="4" fill="#14261d"/>
+  <path d="M207 252 H227 L229 268 H205 Z" fill="#8cc9a4" stroke="#8cc9a4" stroke-width="3" stroke-linejoin="round"/>
+  <rect x="206" y="270" width="10" height="14" rx="2" fill="#14261d"/>
+  <rect x="218" y="270" width="10" height="14" rx="2" fill="#14261d"/>
+  <!-- rocket car: fin, canopy with the second astronaut, body, nose, wheels -->
+  <path d="M242 258 V232 Q242 226 247 229 L268 258 Z" fill="#8cc9a4" stroke="#8cc9a4" stroke-width="3" stroke-linejoin="round"/>
+  <path d="M266 256 A22 22 0 0 1 310 256 Z" fill="#ddf0e3"/>
+  <circle cx="288" cy="246" r="9" fill="#ffffff"/>
+  <rect x="283" y="242" width="10" height="7" rx="3" fill="#14261d"/>
+  <rect x="240" y="256" width="74" height="23" rx="3" fill="#ffffff"/>
+  <path d="M317 256 L334 279 H317 Z" fill="#8cc9a4" stroke="#8cc9a4" stroke-width="3" stroke-linejoin="round"/>
+  <rect x="252" y="263" width="22" height="9" rx="4.5" fill="#8cc9a4"/>
+  <circle cx="258" cy="282" r="8" fill="#14261d"/>
+  <circle cx="298" cy="282" r="8" fill="#14261d"/>
+  </g>
+</svg>

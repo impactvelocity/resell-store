@@ -1,0 +1,1 @@
+Snap a photo of the thing in your cupboard. An agent prices it, lists it in your own shop, answers buyers and haggles with their agents, and PayPal holds the money until it arrives. You just say yes. resell.store is our PayPal AI Hackathon build, and it's open source.

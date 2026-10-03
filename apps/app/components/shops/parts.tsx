@@ -1,18 +1,14 @@
 "use client";
 
 import Link from "next/link";
-import {
-  useEffect,
-  useRef,
-  useState,
-  type ComponentProps,
-  type ReactNode,
-} from "react";
+import { useEffect, useRef, useState, type ComponentProps, type ReactNode } from "react";
 import { ChevronDownIcon } from "@repo/ui/icons";
 import { useToast } from "@repo/ui/toast";
+import { trackShare } from "../../lib/track";
 import { cn } from "@repo/ui/lib/utils";
 import { visibilityLabel, type Shop, type ShopVisibility } from "../../lib/mock";
-import type { ThumbKind, ThumbTone } from "../../lib/mock-shops";
+import type { ShopListing, ThumbKind, ThumbTone } from "../../lib/mock-shops";
+import { checkShopLink, type LinkState } from "../../app/actions/shops";
 
 /*
  * Small pieces shared by the shop screens (B1–B5): picture tiles, item
@@ -24,7 +20,12 @@ import type { ThumbKind, ThumbTone } from "../../lib/mock-shops";
 export function SlidersIcon({ size = 20 }: { size?: number }) {
   return (
     <svg width={size} height={size} viewBox="0 0 24 24" fill="none" aria-hidden>
-      <path d="M4 7h10M18 7h2M4 17h2M10 17h10" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+      <path
+        d="M4 7h10M18 7h2M4 17h2M10 17h10"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+      />
       <circle cx="16" cy="7" r="2" stroke="currentColor" strokeWidth="2" />
       <circle cx="8" cy="17" r="2" stroke="currentColor" strokeWidth="2" />
     </svg>
@@ -35,7 +36,12 @@ export function GlobeIcon({ size = 18 }: { size?: number }) {
   return (
     <svg width={size} height={size} viewBox="0 0 24 24" fill="none" aria-hidden>
       <circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="2" />
-      <path d="M3 12h18M12 3c3 3.5 3 14.5 0 18M12 3c-3 3.5-3 14.5 0 18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+      <path
+        d="M3 12h18M12 3c3 3.5 3 14.5 0 18M12 3c-3 3.5-3 14.5 0 18"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+      />
     </svg>
   );
 }
@@ -43,7 +49,13 @@ export function GlobeIcon({ size = 18 }: { size?: number }) {
 export function LinkChainIcon({ size = 18 }: { size?: number }) {
   return (
     <svg width={size} height={size} viewBox="0 0 24 24" fill="none" aria-hidden>
-      <path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+      <path
+        d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
     </svg>
   );
 }
@@ -51,8 +63,22 @@ export function LinkChainIcon({ size = 18 }: { size?: number }) {
 export function PadlockIcon({ size = 18 }: { size?: number }) {
   return (
     <svg width={size} height={size} viewBox="0 0 24 24" fill="none" aria-hidden>
-      <rect x="5" y="11" width="14" height="9" rx="2.5" stroke="currentColor" strokeWidth="2" strokeLinejoin="round" />
-      <path d="M8 11V8a4 4 0 0 1 8 0v3" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+      <rect
+        x="5"
+        y="11"
+        width="14"
+        height="9"
+        rx="2.5"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M8 11V8a4 4 0 0 1 8 0v3"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+      />
     </svg>
   );
 }
@@ -60,8 +86,23 @@ export function PadlockIcon({ size = 18 }: { size?: number }) {
 export function CopySmallIcon({ size = 16 }: { size?: number }) {
   return (
     <svg width={size} height={size} viewBox="0 0 24 24" fill="none" aria-hidden>
-      <rect x="8" y="8" width="12" height="12" rx="2.5" stroke="currentColor" strokeWidth="2.2" strokeLinejoin="round" />
-      <path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" />
+      <rect
+        x="8"
+        y="8"
+        width="12"
+        height="12"
+        rx="2.5"
+        stroke="currentColor"
+        strokeWidth="2.2"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"
+        stroke="currentColor"
+        strokeWidth="2.2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
     </svg>
   );
 }
@@ -69,7 +110,13 @@ export function CopySmallIcon({ size = 16 }: { size?: number }) {
 export function DownloadIcon({ size = 18 }: { size?: number }) {
   return (
     <svg width={size} height={size} viewBox="0 0 24 24" fill="none" aria-hidden>
-      <path d="M12 4v11M7 11l5 5 5-5M5 20h14" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" />
+      <path
+        d="M12 4v11M7 11l5 5 5-5M5 20h14"
+        stroke="currentColor"
+        strokeWidth="2.2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
     </svg>
   );
 }
@@ -77,7 +124,12 @@ export function DownloadIcon({ size = 18 }: { size?: number }) {
 export function CameraOutlineIcon({ size = 30 }: { size?: number }) {
   return (
     <svg width={size} height={size} viewBox="0 0 24 24" fill="none" aria-hidden>
-      <path d="M4 8h3l1.5-2h7L17 8h3a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1Z" stroke="currentColor" strokeWidth="2" strokeLinejoin="round" />
+      <path
+        d="M4 8h3l1.5-2h7L17 8h3a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1Z"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinejoin="round"
+      />
       <circle cx="12" cy="13" r="3.5" stroke="currentColor" strokeWidth="2" />
     </svg>
   );
@@ -87,7 +139,10 @@ export function CameraOutlineIcon({ size = 30 }: { size?: number }) {
 export function SparkleSolid({ size = 20, className }: { size?: number; className?: string }) {
   return (
     <svg width={size} height={size} viewBox="0 0 64 64" aria-hidden className={className}>
-      <path d="M32 4c2 17 11 26 28 28-17 2-26 11-28 28-2-17-11-26-28-28 17-2 26-11 28-28Z" fill="currentColor" />
+      <path
+        d="M32 4c2 17 11 26 28 28-17 2-26 11-28 28-2-17-11-26-28-28 17-2 26-11 28-28Z"
+        fill="currentColor"
+      />
     </svg>
   );
 }
@@ -107,19 +162,31 @@ function ThumbArt({ kind, size, vaseFill }: { kind: ThumbKind; size: number; vas
     case "dress":
       return (
         <svg {...common}>
-          <path d="M29 8h5c0 5 3 8 6 8s6-3 6-8h5l2 22 12 42H15l12-42Z" fill="var(--color-leaf-600)" />
+          <path
+            d="M29 8h5c0 5 3 8 6 8s6-3 6-8h5l2 22 12 42H15l12-42Z"
+            fill="var(--color-leaf-600)"
+          />
         </svg>
       );
     case "sweater":
       return (
         <svg {...common}>
-          <path d="M28 12c2 5 6 7 12 7s10-2 12-7l10 4 10 22-9 5-5-9v34H22V34l-5 9-9-5 10-22Z" fill="var(--color-pink-400)" />
+          <path
+            d="M28 12c2 5 6 7 12 7s10-2 12-7l10 4 10 22-9 5-5-9v34H22V34l-5 9-9-5 10-22Z"
+            fill="var(--color-pink-400)"
+          />
         </svg>
       );
     case "tote":
       return (
         <svg {...common}>
-          <path d="M29 34c0-18 22-18 22 0" fill="none" stroke="var(--color-leaf-900)" strokeWidth="3" strokeLinecap="round" />
+          <path
+            d="M29 34c0-18 22-18 22 0"
+            fill="none"
+            stroke="var(--color-leaf-900)"
+            strokeWidth="3"
+            strokeLinecap="round"
+          />
           <path d="M16 32h48l-4 38H20Z" fill="var(--color-lemon-400)" />
         </svg>
       );
@@ -133,7 +200,10 @@ function ThumbArt({ kind, size, vaseFill }: { kind: ThumbKind; size: number; vas
     case "vase":
       return (
         <svg {...common}>
-          <path d="M32 20h16v6c0 6 12 12 12 24 0 12-9 20-20 20s-20-8-20-20c0-12 12-18 12-24Z" fill={vaseFill ?? "var(--color-leaf-600)"} />
+          <path
+            d="M32 20h16v6c0 6 12 12 12 24 0 12-9 20-20 20s-20-8-20-20c0-12 12-18 12-24Z"
+            fill={vaseFill ?? "var(--color-leaf-600)"}
+          />
         </svg>
       );
     case "pot":
@@ -150,7 +220,14 @@ function ThumbArt({ kind, size, vaseFill }: { kind: ThumbKind; size: number; vas
       return (
         <svg {...common}>
           <circle cx="40" cy="40" r="28" fill="var(--color-leaf-900)" />
-          <circle cx="40" cy="40" r="19" fill="none" stroke="var(--color-leaf-600)" strokeWidth="1.5" />
+          <circle
+            cx="40"
+            cy="40"
+            r="19"
+            fill="none"
+            stroke="var(--color-leaf-600)"
+            strokeWidth="1.5"
+          />
           <circle cx="40" cy="40" r="10" fill="var(--color-pink-400)" />
           <circle cx="40" cy="40" r="2.5" fill="var(--color-background)" />
         </svg>
@@ -158,7 +235,12 @@ function ThumbArt({ kind, size, vaseFill }: { kind: ThumbKind; size: number; vas
     case "mug":
       return (
         <svg {...common}>
-          <path d="M52 34h5a8 8 0 0 1 0 16h-5" fill="none" stroke="var(--color-leaf-600)" strokeWidth="6" />
+          <path
+            d="M52 34h5a8 8 0 0 1 0 16h-5"
+            fill="none"
+            stroke="var(--color-leaf-600)"
+            strokeWidth="6"
+          />
           <rect x="16" y="22" width="38" height="44" rx="9" fill="var(--color-leaf-600)" />
         </svg>
       );
@@ -180,12 +262,57 @@ export function ItemThumb({
 }) {
   return (
     <span
-      className={cn("flex shrink-0 items-center justify-center rounded-md", toneBg[tone], className)}
+      className={cn(
+        "flex shrink-0 items-center justify-center rounded-md",
+        toneBg[tone],
+        className,
+      )}
       style={{ width: size, height: size }}
     >
       <ThumbArt kind={kind} size={art} />
     </span>
   );
+}
+
+/**
+ * A listing's thumbnail: its cover photo, a plain placeholder for a real
+ * listing with no photo yet, or the prototype's drawing.
+ */
+export function ListingThumb({
+  listing,
+  size = 56,
+  art = 36,
+}: {
+  listing: Pick<ShopListing, "photo" | "thumb" | "tone" | "title">;
+  size?: number;
+  art?: number;
+}) {
+  if (listing.photo) {
+    return (
+      // eslint-disable-next-line @next/next/no-img-element -- uploads and web photos of any size
+      <img
+        src={listing.photo}
+        alt=""
+        width={size}
+        height={size}
+        loading="lazy"
+        className="shrink-0 rounded-md bg-surface-muted object-cover"
+        style={{ width: size, height: size }}
+      />
+    );
+  }
+  if (listing.photo === null) {
+    return (
+      <span
+        aria-hidden
+        className="flex shrink-0 items-center justify-center rounded-md bg-surface-muted text-text-muted"
+        style={{ width: size, height: size }}
+      >
+        <CameraOutlineIcon size={Math.round(art * 0.6)} />
+      </span>
+    );
+  }
+  return <ItemThumb kind={listing.thumb} tone={listing.tone} size={size} art={art} />;
 }
 
 /* ---------- Shop picture tile ---------- */
@@ -286,13 +413,21 @@ const visibilityOptions: {
   iconBg: string;
 }[] = [
   { value: "private", title: "Only me", icon: <PadlockIcon />, iconBg: "bg-surface-muted" },
-  { value: "link", title: "Anyone with the link", icon: <LinkChainIcon />, iconBg: "bg-primary-soft" },
+  {
+    value: "link",
+    title: "Anyone with the link",
+    icon: <LinkChainIcon />,
+    iconBg: "bg-primary-soft",
+  },
   { value: "public", title: "Everyone", icon: <GlobeIcon />, iconBg: "bg-surface-muted" },
 ];
 
 export function RadioDot({ checked }: { checked: boolean }) {
   return checked ? (
-    <span aria-hidden className="flex size-6 shrink-0 items-center justify-center rounded-full bg-secondary">
+    <span
+      aria-hidden
+      className="flex size-6 shrink-0 items-center justify-center rounded-full bg-secondary"
+    >
       <span className="size-2.5 rounded-full bg-surface" />
     </span>
   ) : (
@@ -345,7 +480,9 @@ export function VisibilityPicker({
               if (!step) return;
               event.preventDefault();
               const next =
-                visibilityOptions[(i + step + visibilityOptions.length) % visibilityOptions.length]!;
+                visibilityOptions[
+                  (i + step + visibilityOptions.length) % visibilityOptions.length
+                ]!;
               onChange(next.value);
               const group = event.currentTarget.parentElement;
               group
@@ -578,17 +715,54 @@ export function MenuItem({
   );
 }
 
+/* ---------- Shop link check ---------- */
+
+export type LinkCheck = "empty" | "checking" | LinkState;
+
+/**
+ * Asks the server whether a shop link is free, a moment after typing stops.
+ * `currentSlug` is the shop being edited, whose own link always counts as free.
+ */
+export function useLinkCheck(
+  link: string,
+  { enabled, currentSlug }: { enabled: boolean; currentSlug?: string },
+): LinkCheck {
+  const [result, setResult] = useState<{ link: string; state: LinkState } | null>(null);
+  const skip = !enabled || !link || link === currentSlug;
+  useEffect(() => {
+    if (skip) return;
+    let stale = false;
+    const timer = setTimeout(() => {
+      checkShopLink(link, currentSlug)
+        .then((state) => !stale && setResult({ link, state }))
+        .catch(() => {});
+    }, 250);
+    return () => {
+      stale = true;
+      clearTimeout(timer);
+    };
+  }, [link, currentSlug, skip]);
+  if (!link) return "empty";
+  if (link === currentSlug) return "free";
+  return result?.link === link ? result.state : "checking";
+}
+
 /* ---------- Share ---------- */
 
-/** Copies the shop link, or explains why a private shop has nothing to share. */
+/**
+ * Copies the shop link, or explains why a private shop has nothing to share.
+ * `url` is the real store address; the mock falls back to its domain.
+ */
 export function useShareShop() {
   const toast = useToast();
-  return (shop: Pick<Shop, "domain" | "visibility">) => {
+  return (shop: Pick<Shop, "domain" | "visibility" | "slug">, url?: string) => {
     if (shop.visibility === "private") {
       toast.add({ title: "Only you can open this shop for now." });
       return;
     }
-    navigator.clipboard?.writeText(`https://${shop.domain}`).catch(() => {});
+    navigator.clipboard?.writeText(url ?? `https://${shop.domain}`).catch(() => {});
+    // A real shop (the prototype passes no url): count the share for Stats
+    if (url) trackShare({ shop: shop.slug });
     toast.add({ title: "Link copied. Go show it off." });
   };
 }

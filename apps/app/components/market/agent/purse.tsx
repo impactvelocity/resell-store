@@ -10,10 +10,13 @@ import {
 } from "../../../lib/mock-agent-buyer";
 import { Switch } from "./parts";
 
-const row =
+export const purseRow =
   "flex items-center justify-between gap-4 border-b border-public-border py-[18px] last:border-b-0";
 
-/** "You hold the purse.": the spend ceiling and what the agent may do alone. */
+/**
+ * "You hold the purse." (prototype): the spend ceiling and what the agent may
+ * do alone. The live page's version is in live.tsx.
+ */
 export function HoldThePurse() {
   const toast = useToast();
   const [on, setOn] = useState<Record<LimitId, boolean>>(
@@ -36,19 +39,21 @@ export function HoldThePurse() {
         </p>
       </div>
       <div className="flex flex-col pt-4 lg:w-1/2 lg:max-w-[620px] lg:shrink-0 lg:border-t lg:border-public-border lg:pt-[42px]">
-        <div className={row}>
+        <div className={purseRow}>
           <RowText
             title="Most it can spend on one order"
             hint="Anything above this comes back to you."
           />
           <SpendLimit
             onSave={(v) =>
-              toast.add({ title: `Your agent can spend up to $${v} an order.` })
+              toast.add({
+                title: `Your agent can spend up to $${v} an order.`,
+              })
             }
           />
         </div>
         {limitSwitches.map((l) => (
-          <div key={l.id} className={row}>
+          <div key={l.id} className={purseRow}>
             <RowText title={l.title} hint={l.hint} />
             <Switch
               label={l.title}
@@ -62,7 +67,7 @@ export function HoldThePurse() {
   );
 }
 
-function RowText({ title, hint }: { title: string; hint: string }) {
+export function RowText({ title, hint }: { title: string; hint: string }) {
   return (
     <div className="flex min-w-0 flex-col">
       <div className="text-base font-bold text-text">{title}</div>
@@ -71,9 +76,20 @@ function RowText({ title, hint }: { title: string; hint: string }) {
   );
 }
 
-/** The ceiling amount. Click it to type a new one; Enter or blur saves, Escape cancels. */
-function SpendLimit({ onSave }: { onSave: (value: number) => void }) {
-  const [value, setValue] = useState(spendLimit);
+/**
+ * The ceiling amount. Click it to type a new one; Enter or blur saves, Escape
+ * cancels. `initial` null reads "No limit" until one is typed.
+ */
+export function SpendLimit({
+  initial = spendLimit,
+  disabled = false,
+  onSave,
+}: {
+  initial?: number | null;
+  disabled?: boolean;
+  onSave: (value: number) => void;
+}) {
+  const [value, setValue] = useState(initial);
   const [draft, setDraft] = useState<string | null>(null);
   // Enter, Escape and the blur that follows can all try to finish one edit.
   const editing = useRef(false);
@@ -81,7 +97,7 @@ function SpendLimit({ onSave }: { onSave: (value: number) => void }) {
 
   const start = () => {
     editing.current = true;
-    setDraft(String(value));
+    setDraft(value === null ? "" : String(value));
   };
 
   const finish = (save: boolean) => {
@@ -120,12 +136,21 @@ function SpendLimit({ onSave }: { onSave: (value: number) => void }) {
     );
   }
 
+  const shown = value === null ? "No limit" : `$${value}`;
+  if (disabled) {
+    return (
+      <span className="flex h-10 shrink-0 items-center font-display text-xl font-extrabold tracking-tight text-public-text-muted">
+        {shown}
+      </span>
+    );
+  }
+
   return (
     <button
       ref={button}
       type="button"
       onClick={start}
-      aria-label={`Most it can spend on one order: $${value}. Change`}
+      aria-label={`Most it can spend on one order: ${shown}. Change`}
       className="group -mr-3 flex h-10 shrink-0 cursor-pointer items-center gap-1.5 rounded-full px-3 font-display text-xl font-extrabold tracking-tight text-text transition-colors outline-none hover:bg-public-photo focus-visible:outline-2 focus-visible:outline-leaf-600"
     >
       <PencilIcon
@@ -133,7 +158,7 @@ function SpendLimit({ onSave }: { onSave: (value: number) => void }) {
         strokeWidth={2.4}
         className="text-public-text-muted opacity-0 transition-opacity group-hover:opacity-100 group-focus-visible:opacity-100"
       />
-      ${value}
+      {shown}
     </button>
   );
 }

@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400">
+  <rect width="400" height="400" fill="#ffdceb"/>
+  <!-- book turned a little: spine on the left, front cover on the right -->
+  <!-- top edge of the pages -->
+  <path d="M150 84 L286 73.1 L248 63.6 L112 74.5 Z" fill="#ffffff" stroke="#ffffff" stroke-width="2" stroke-linejoin="round"/>
+  <!-- spine -->
+  <g transform="matrix(1 0.25 0 1 0 -37.5)">
+    <path d="M112 84 H150 V324 H118 Q112 324 112 318 Z" fill="#f5be0b"/>
+    <rect x="127" y="112" width="8" height="54" rx="4" fill="#14261d"/>
+    <rect x="127" y="290" width="8" height="16" rx="4" fill="#14261d"/>
+  </g>
+  <!-- front cover -->
+  <g transform="matrix(1 -0.08 0 1 0 12)">
+    <path d="M150 84 H286 V316 Q286 324 278 324 H150 Z" fill="#fff6c2"/>
+    <rect x="170" y="108" width="84" height="10" rx="5" fill="#14261d"/>
+    <rect x="170" y="126" width="54" height="8" rx="4" fill="#14261d"/>
+    <!-- branch and leaves -->
+    <path d="M150 262 Q214 252 280 200" fill="none" stroke="#256b4c" stroke-width="6" stroke-linecap="round"/>
+    <g fill="#256b4c">
+      <ellipse cx="172" cy="244" rx="12" ry="6" transform="rotate(-40 172 244)"/>
+      <ellipse cx="194" cy="266" rx="12" ry="6" transform="rotate(30 194 266)"/>
+      <ellipse cx="238" cy="242" rx="12" ry="6" transform="rotate(30 238 242)"/>
+      <ellipse cx="256" cy="208" rx="12" ry="6" transform="rotate(-50 256 208)"/>
+    </g>
+    <!-- small bird perched on the branch -->
+    <g fill="#14261d">
+      <ellipse cx="212" cy="229" rx="14" ry="9" transform="rotate(-20 212 229)"/>
+      <circle cx="225" cy="216" r="7"/>
+      <path d="M230 213 L239 213 L231 219 Z"/>
+      <path d="M200 234 L184 242 L197 226 Z"/>
+    </g>
+  </g>
+</svg>

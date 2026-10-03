@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400">
+  <rect width="400" height="400" fill="#ffdceb"/>
+  <!-- box border -->
+  <rect x="66" y="88" width="268" height="224" rx="10" fill="#14261d"/>
+  <!-- title -->
+  <rect x="86" y="102" width="112" height="10" rx="5" fill="#ffffff"/>
+  <rect x="206" y="102" width="48" height="10" rx="5" fill="#ffffff"/>
+  <!-- stone wall -->
+  <rect x="82" y="124" width="236" height="172" rx="4" fill="#fff6c2"/>
+  <g fill="none" stroke="#f5be0b" stroke-width="4" stroke-linecap="round">
+    <path d="M90 162 H310 M90 202 H310 M90 242 H310"/>
+    <path d="M190 128 V158 M250 128 V158 M220 166 V198 M280 166 V198 M190 206 V238 M250 206 V238 M300 246 V290 M220 246 V290"/>
+  </g>
+  <!-- dark doorway behind the hero -->
+  <path d="M94 296 V194 Q94 166 128 166 Q162 166 162 194 V296 Z" fill="#14261d"/>
+  <!-- ogre: arms, body, head, ears -->
+  <g fill="none" stroke="#256b4c" stroke-width="18" stroke-linecap="round">
+    <path d="M216 214 Q196 236 202 264"/>
+    <path d="M290 214 Q310 236 304 264"/>
+  </g>
+  <path d="M212 296 V230 Q212 196 253 196 Q294 196 294 230 V296 Z" fill="#256b4c"/>
+  <rect x="212" y="256" width="82" height="10" fill="#14261d"/>
+  <circle cx="229" cy="160" r="9" fill="#256b4c"/>
+  <circle cx="277" cy="160" r="9" fill="#256b4c"/>
+  <circle cx="253" cy="172" r="27" fill="#256b4c"/>
+  <circle cx="244" cy="166" r="4" fill="#14261d"/>
+  <circle cx="262" cy="166" r="4" fill="#14261d"/>
+  <path d="M242 180 Q253 190 264 180" fill="none" stroke="#14261d" stroke-width="4" stroke-linecap="round"/>
+  <path d="M244 182 l3 -8 l3 8 Z M256 182 l3 -8 l3 8 Z" fill="#ffffff" stroke="#ffffff" stroke-width="2" stroke-linejoin="round"/>
+  <!-- hero: sword, legs, body, head -->
+  <path d="M146 230 L158 186" fill="none" stroke="#ffffff" stroke-width="6" stroke-linecap="round"/>
+  <path d="M138 222 L156 228" fill="none" stroke="#f5be0b" stroke-width="5" stroke-linecap="round"/>
+  <rect x="116" y="252" width="10" height="38" rx="5" fill="#ffd934"/>
+  <rect x="132" y="252" width="10" height="38" rx="5" fill="#ffd934"/>
+  <rect x="114" y="218" width="30" height="44" rx="10" fill="#ffd934"/>
+  <circle cx="147" cy="232" r="6" fill="#ffd934"/>
+  <circle cx="129" cy="202" r="15" fill="#ffd934"/>
+  <circle cx="124" cy="200" r="2.5" fill="#14261d"/>
+  <circle cx="134" cy="200" r="2.5" fill="#14261d"/>
+  <!-- round shield -->
+  <circle cx="112" cy="242" r="16" fill="#d9391b"/>
+  <circle cx="112" cy="242" r="5" fill="#ffd934"/>
+</svg>

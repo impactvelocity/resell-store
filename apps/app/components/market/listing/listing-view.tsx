@@ -5,21 +5,40 @@ import { LikeButton } from "@repo/ui/button";
 import { ShieldCheckIcon, SparkleIcon } from "@repo/ui/icons";
 import { cn } from "@repo/ui/lib/utils";
 import type { DetailRow, ListingDetail } from "../../../lib/mock-listing-detail";
-import type { Listing, Store } from "../../../lib/mock-market";
+import type { PublicListing, PublicStore } from "../../../lib/mock-market";
 import { formatPrice } from "../../../lib/mock-market";
+import { useFollow, type FollowLive } from "../discover/follow-button";
+import { useLike } from "../likes";
 import { SiteLink, StoreLink } from "../links";
 import { ListingCard } from "../parts";
-import { BuyBox, focusRing, OffersTag, pill, SellerRow } from "./buy-box";
-import { aboutHeading, arrivesPhrase, askNote, city, shippingLine } from "./copy";
+import { ReviewCard, type ReviewCardData } from "../../reviews/review-parts";
+import {
+  BuyBox,
+  buyKey,
+  focusRing,
+  OffersTag,
+  OwnListingNote,
+  SoldNote,
+  pill,
+  SellerRow,
+  type ViewerBuyState,
+} from "./buy-box";
+import { aboutHeading, arrivesPhrase, askNote, deliveryTitle, shippingLine } from "./copy";
 import { Gallery, PhotoSlider } from "./gallery";
 import { useCopyLink } from "./use-copy-link";
 
 type Props = {
-  listing: Listing;
-  store: Store;
+  listing: PublicListing;
+  store: PublicStore;
   detail: ListingDetail;
   /** Other listings from the same store */
-  more: Listing[];
+  more: PublicListing[];
+  /** Live listings: the viewer's own listing, or their accepted offer on it */
+  viewer?: ViewerBuyState;
+  /** Live listings: Follow saves, starting from the server's state */
+  follow?: FollowLive | null;
+  /** Live listings: what its buyer said (a sold listing can have a review). */
+  reviews?: ReviewCardData[];
 };
 
 /** Desktop and mobile share these two columns so About lines up under the gallery. */
@@ -31,11 +50,14 @@ const columns =
  * buy box; below that it's P9's full-bleed slider, stacked content and a buy bar
  * that sticks to the bottom of the screen.
  */
-export function ListingView({ listing, store, detail, more }: Props) {
-  const [liked, setLiked] = useState(false);
-  const [following, setFollowing] = useState(false);
-  const toggleFollow = () => setFollowing((f) => !f);
+export function ListingView({ listing, store, detail, more, viewer, follow, reviews = [] }: Props) {
+  // One heart state for the photo overlay and the buy box
+  const { liked, setLiked } = useLike(listing.id, listing.title);
+  const { following, toggle: toggleFollow } = useFollow(store.name, follow);
   const title = listing.fullTitle ?? listing.title;
+  // The seller looking at their own listing gets no Follow or Ask
+  const own = !!viewer?.own || !!follow?.own;
+  const askHref = `/messages?to=${encodeURIComponent(store.slug)}&about=${encodeURIComponent(buyKey(listing))}`;
 
   return (
     <main className="desk:pb-[72px]">
@@ -44,13 +66,16 @@ export function ListingView({ listing, store, detail, more }: Props) {
         title={title}
         className="desk:hidden"
         overlay={
-          <LikeButton
-            variant="overlay"
-            pressed={liked}
-            onPressedChange={setLiked}
-            aria-label={`Save ${listing.title}`}
-            className="size-11"
-          />
+          // Nobody saves their own listing
+          own ? undefined : (
+            <LikeButton
+              variant="overlay"
+              pressed={liked}
+              onPressedChange={setLiked}
+              aria-label={`Save ${listing.title}`}
+              className="size-11"
+            />
+          )
         }
       />
 
@@ -67,7 +92,8 @@ export function ListingView({ listing, store, detail, more }: Props) {
             liked={liked}
             onLike={setLiked}
             following={following}
-            onFollow={toggleFollow}
+            onFollow={own ? undefined : toggleFollow}
+            viewer={viewer}
           />
         </div>
 
@@ -84,12 +110,14 @@ export function ListingView({ listing, store, detail, more }: Props) {
                 {p}
               </p>
             ))}
-            <div className="flex flex-wrap items-center gap-4 pt-2">
-              <SiteLink href="/messages" className={cn(pill.outline, "h-12 px-6 text-base font-semibold")}>
-                Ask a question
-              </SiteLink>
-              <p className="text-sm text-public-text-muted">{askNote(store)}</p>
-            </div>
+            {!own && (
+              <div className="flex flex-wrap items-center gap-4 pt-2">
+                <SiteLink href={askHref} className={cn(pill.outline, "h-12 px-6 text-base font-semibold")}>
+                  Ask a question
+                </SiteLink>
+                <p className="text-sm text-public-text-muted">{askNote(store)}</p>
+              </div>
+            )}
           </div>
           <div className="flex flex-col gap-3">
             <h2 className="font-display text-2xl font-extrabold tracking-tight">Details</h2>
@@ -105,8 +133,36 @@ export function ListingView({ listing, store, detail, more }: Props) {
           detail={detail}
           title={title}
           following={following}
-          onFollow={toggleFollow}
+          onFollow={own ? undefined : toggleFollow}
+          askHref={own ? null : askHref}
         />
+
+        {reviews.length > 0 && (
+          <section
+            aria-labelledby="listing-reviews"
+            className="flex flex-col gap-6 border-t border-public-border pt-8 desk:pt-11"
+          >
+            <div className="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-1">
+              <h2 id="listing-reviews" className="font-display text-xl font-extrabold tracking-tight desk:text-2xl">
+                {reviews.length === 1 ? "What the buyer said" : "What buyers said"}
+              </h2>
+              {store.ratings != null && store.ratings > reviews.length && (
+                <StoreLink
+                  store={store.slug}
+                  href="/#reviews"
+                  className={cn("text-sm font-semibold text-leaf-600 hover:underline", focusRing)}
+                >
+                  All {store.ratings} reviews of {store.name}
+                </StoreLink>
+              )}
+            </div>
+            <div className="grid gap-8 desk:grid-cols-2 desk:gap-12">
+              {reviews.map((r) => (
+                <ReviewCard key={r.id} review={r} shopName={store.name} store={store.slug} showItem={false} />
+              ))}
+            </div>
+          </section>
+        )}
 
         {more.length > 0 && (
           <section className="flex flex-col gap-6 border-t border-public-border pt-8 pb-10 desk:pt-11 desk:pb-0">
@@ -130,12 +186,12 @@ export function ListingView({ listing, store, detail, more }: Props) {
         )}
       </div>
 
-      <MobileBuyBar listing={listing} />
+      <MobileBuyBar listing={listing} viewer={viewer} />
     </main>
   );
 }
 
-function Breadcrumb({ listing, detail, title }: { listing: Listing; detail: ListingDetail; title: string }) {
+function Breadcrumb({ listing, detail, title }: { listing: PublicListing; detail: ListingDetail; title: string }) {
   const steps = [listing.category, detail.subcategory].filter(Boolean);
   return (
     <nav aria-label="Breadcrumb" className="hidden desk:block">
@@ -190,13 +246,17 @@ function MobileContent({
   title,
   following,
   onFollow,
+  askHref,
 }: {
-  listing: Listing;
-  store: Store;
+  listing: PublicListing;
+  store: PublicStore;
   detail: ListingDetail;
   title: string;
   following: boolean;
-  onFollow: () => void;
+  /** Left out for the seller's own listing */
+  onFollow?: () => void;
+  /** Null for the seller's own listing */
+  askHref: string | null;
 }) {
   const [allDetails, setAllDetails] = useState(false);
   const [wholeStory, setWholeStory] = useState(false);
@@ -231,7 +291,7 @@ function MobileContent({
         <ShieldCheckIcon size={20} strokeWidth={2.2} className="shrink-0 text-leaf-600" />
         <p className="grow text-sm font-medium text-leaf-900">
           PayPal holds your money until {arrivesPhrase(detail)} and you have had 3 days to check it.{" "}
-          {detail.arrives ? `Arrives ${detail.arrives}.` : `Pickup in ${city(store)}.`}
+          {deliveryTitle(detail, store)}.
         </p>
       </div>
 
@@ -274,9 +334,9 @@ function MobileContent({
             {wholeStory ? "Show less" : "Read the whole story"}
           </button>
         )}
-        {wholeStory && (
+        {wholeStory && askHref && (
           <div className="flex flex-col items-start gap-2 pt-2">
-            <SiteLink href="/messages" className={cn(pill.outline, "h-11 px-5 text-sm font-semibold")}>
+            <SiteLink href={askHref} className={cn(pill.outline, "h-11 px-5 text-sm font-semibold")}>
               Ask a question
             </SiteLink>
             <p className="text-sm text-public-text-muted">{askNote(store)}</p>
@@ -300,17 +360,31 @@ function MobileContent({
 }
 
 /** P9's buy bar. Sticky rather than fixed, so it parks above the footer instead of covering it. */
-function MobileBuyBar({ listing }: { listing: Listing }) {
+function MobileBuyBar({ listing, viewer }: { listing: PublicListing; viewer?: ViewerBuyState }) {
+  const key = buyKey(listing);
+  const accepted = viewer?.accepted ?? null;
   return (
     <div className="sticky bottom-0 z-20 flex gap-2.5 border-t border-public-border bg-public-background px-4 pt-3 pb-[calc(16px+env(safe-area-inset-bottom))] desk:hidden">
-      {listing.openToOffers && (
-        <SiteLink href={`/offer/${listing.slug}`} className={cn(pill.outline, "h-[52px] grow basis-0 text-base")}>
-          Make an offer
+      {listing.sold && !viewer?.own ? (
+        <SoldNote store={{ name: "" }} compact />
+      ) : viewer?.own ? (
+        <OwnListingNote listing={listing} compact />
+      ) : accepted != null ? (
+        <SiteLink href={`/checkout/${key}`} className={cn(pill.buy, "h-[52px] grow basis-0 px-4 text-base")}>
+          Pay {formatPrice(accepted, true)}, your accepted offer
         </SiteLink>
+      ) : (
+        <>
+          {listing.openToOffers && (
+            <SiteLink href={`/offer/${key}`} className={cn(pill.outline, "h-[52px] grow basis-0 text-base")}>
+              Make an offer
+            </SiteLink>
+          )}
+          <SiteLink href={`/checkout/${key}`} className={cn(pill.buy, "h-[52px] grow basis-0 text-base")}>
+            Buy now, {formatPrice(listing.price)}
+          </SiteLink>
+        </>
       )}
-      <SiteLink href={`/checkout/${listing.slug}`} className={cn(pill.buy, "h-[52px] grow basis-0 text-base")}>
-        Buy now, {formatPrice(listing.price)}
-      </SiteLink>
     </div>
   );
 }

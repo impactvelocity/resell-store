@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400">
+  <rect width="400" height="400" fill="#ffdceb"/>
+  <!-- round top handle -->
+  <path d="M152 166 C152 112 174 94 200 94 C226 94 248 112 248 166" fill="none" stroke="#f5be0b" stroke-width="16" stroke-linecap="round"/>
+  <!-- handle tabs -->
+  <rect x="140" y="148" width="24" height="22" rx="6" fill="#f5be0b"/>
+  <rect x="236" y="148" width="24" height="22" rx="6" fill="#f5be0b"/>
+  <!-- structured body -->
+  <path d="M134 160 H266 Q280 160 282 174 L290 274 Q292 294 272 294 H128 Q108 294 110 274 L118 174 Q120 160 134 160 Z" fill="#ff5fa8"/>
+  <!-- base stitching -->
+  <path d="M122 274 H278" fill="none" stroke="#14261d" stroke-width="4" stroke-linecap="round" stroke-dasharray="2 12"/>
+  <!-- flap -->
+  <path d="M134 160 H266 Q280 160 282 174 L285 214 Q200 238 115 214 L118 174 Q120 160 134 160 Z" fill="#f5be0b"/>
+  <!-- clasp -->
+  <rect x="184" y="210" width="32" height="30" rx="9" fill="#14261d"/>
+  <circle cx="200" cy="225" r="6" fill="#f5be0b"/>
+</svg>

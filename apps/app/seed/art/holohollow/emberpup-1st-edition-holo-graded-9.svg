@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400">
+  <rect width="400" height="400" fill="#ffdceb"/>
+  <g transform="translate(200 200) scale(0.8) translate(-200 -200)">
+  <!-- grading case -->
+  <rect x="104" y="30" width="192" height="340" rx="18" fill="#ffffff"/>
+  <rect x="120" y="46" width="160" height="50" rx="8" fill="#ffd934"/>
+  <rect x="134" y="60" width="78" height="8" rx="4" fill="#14261d"/>
+  <rect x="134" y="76" width="50" height="8" rx="4" fill="#14261d"/>
+  <rect x="236" y="56" width="32" height="30" rx="6" fill="#14261d"/>
+  <rect x="244" y="67" width="16" height="8" rx="4" fill="#ffd934"/>
+  <!-- the card -->
+  <rect x="128" y="110" width="144" height="208" rx="10" fill="#ff5fa8"/>
+  <rect x="140" y="124" width="120" height="92" rx="5" fill="#ffd934"/>
+  <!-- Emberpup: flame tail, body, head, ears -->
+  <path d="M232 176 C246 170 246 150 236 140 C244 156 230 158 228 146 C222 160 220 172 232 176 Z" fill="#d9391b"/>
+  <ellipse cx="208" cy="186" rx="30" ry="20" fill="#f5be0b"/>
+  <circle cx="178" cy="170" r="22" fill="#f5be0b"/>
+  <path d="M160 160 L158 136 L174 152 Z M186 150 L198 132 L198 156 Z" fill="#d9391b"/>
+  <circle cx="172" cy="168" r="3.5" fill="#14261d"/>
+  <circle cx="186" cy="168" r="3.5" fill="#14261d"/>
+  <ellipse cx="179" cy="178" rx="5" ry="3" fill="#14261d"/>
+  <rect x="190" y="198" width="10" height="14" rx="5" fill="#f5be0b"/>
+  <rect x="216" y="198" width="10" height="14" rx="5" fill="#f5be0b"/>
+  <!-- holo sparkles -->
+  <path d="M154 196 l3 -9 l3 9 l9 3 l-9 3 l-3 9 l-3 -9 l-9 -3 Z" fill="#ffffff"/>
+  <path d="M246 132 l2 -6 l2 6 l6 2 l-6 2 l-2 6 l-2 -6 l-6 -2 Z" fill="#ffffff"/>
+  <!-- card text -->
+  <rect x="142" y="230" width="96" height="9" rx="4.5" fill="#14261d"/>
+  <rect x="142" y="248" width="116" height="7" rx="3.5" fill="#ffdceb"/>
+  <rect x="142" y="262" width="84" height="7" rx="3.5" fill="#ffdceb"/>
+  <rect x="142" y="290" width="40" height="7" rx="3.5" fill="#c9246f"/>
+  <!-- shine on the case -->
+  <path d="M276 128 L276 176" fill="none" stroke="#ffdceb" stroke-width="5" stroke-linecap="round"/>
+  </g>
+</svg>

@@ -1,0 +1,50 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400">
+  <defs>
+    <!-- five-petal flowers -->
+    <g id="pinkflower" fill="#ff5fa8">
+      <circle cx="0" cy="-6" r="5"/><circle cx="5.7" cy="-1.9" r="5"/><circle cx="3.5" cy="4.9" r="5"/><circle cx="-3.5" cy="4.9" r="5"/><circle cx="-5.7" cy="-1.9" r="5"/>
+      <circle r="3" fill="#c9246f"/>
+    </g>
+    <g id="deepflower" fill="#c9246f">
+      <circle cx="0" cy="-6" r="5"/><circle cx="5.7" cy="-1.9" r="5"/><circle cx="3.5" cy="4.9" r="5"/><circle cx="-3.5" cy="4.9" r="5"/><circle cx="-5.7" cy="-1.9" r="5"/>
+      <circle r="3" fill="#ff5fa8"/>
+    </g>
+    <ellipse id="leaf" rx="6" ry="3" fill="#256b4c" transform="rotate(-35)"/>
+  </defs>
+  <rect width="400" height="400" fill="#ddf0e3"/>
+  <!-- tie straps, knotted at the shoulders -->
+  <path d="M170 110 L162 72 M230 110 L238 72" fill="none" stroke="#ffffff" stroke-width="5" stroke-linecap="round"/>
+  <path d="M162 72 L150 90 M162 72 L172 92 M238 72 L250 90 M238 72 L228 92" fill="none" stroke="#ffffff" stroke-width="4" stroke-linecap="round"/>
+  <circle cx="162" cy="72" r="6" fill="#ffffff"/>
+  <circle cx="238" cy="72" r="6" fill="#ffffff"/>
+  <!-- flowing skirt -->
+  <path d="M170 166 Q200 172 230 166 C252 220 290 280 312 324 Q290 340 256 330 Q228 340 200 332 Q172 340 144 330 Q110 340 88 324 C110 280 148 220 170 166 Z" fill="#ffffff"/>
+  <!-- fitted bodice -->
+  <path d="M164 106 Q182 98 200 112 Q218 98 236 106 L232 170 Q200 178 168 170 Z" fill="#ffffff"/>
+  <path d="M170 170 Q200 177 230 170" fill="none" stroke="#ddf0e3" stroke-width="4" stroke-linecap="round"/>
+  <!-- flowers and leaves -->
+  <use href="#pinkflower" x="186" y="130"/>
+  <use href="#deepflower" x="216" y="152"/>
+  <use href="#deepflower" x="190" y="196"/>
+  <use href="#pinkflower" x="220" y="212"/>
+  <use href="#pinkflower" x="164" y="240"/>
+  <use href="#deepflower" x="236" y="256"/>
+  <use href="#pinkflower" x="200" y="270"/>
+  <use href="#deepflower" x="140" y="286"/>
+  <use href="#pinkflower" x="266" y="296"/>
+  <use href="#deepflower" x="176" y="312"/>
+  <use href="#pinkflower" x="226" y="314"/>
+  <use href="#pinkflower" x="110" y="318"/>
+  <use href="#deepflower" x="290" y="320"/>
+  <use href="#leaf" x="206" y="138"/>
+  <use href="#leaf" x="178" y="160"/>
+  <use href="#leaf" x="208" y="180"/>
+  <use href="#leaf" x="192" y="228"/>
+  <use href="#leaf" x="248" y="232"/>
+  <use href="#leaf" x="168" y="270"/>
+  <use href="#leaf" x="222" y="290"/>
+  <use href="#leaf" x="118" y="300"/>
+  <use href="#leaf" x="282" y="276"/>
+  <use href="#leaf" x="150" y="316"/>
+  <use href="#leaf" x="252" y="320"/>
+</svg>

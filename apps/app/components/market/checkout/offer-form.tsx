@@ -1,6 +1,7 @@
 "use client";
 
 import { useId, useState, type FormEvent } from "react";
+import { useRouter } from "next/navigation";
 import { Button } from "@repo/ui/button";
 import { CheckIcon, ChatIcon, CloseIcon } from "@repo/ui/icons";
 import { cn } from "@repo/ui/lib/utils";
@@ -13,7 +14,9 @@ import {
   shortPrice,
   suggestedOffer,
 } from "../../../lib/mock-checkout";
-import { formatPrice, type Listing, type Store } from "../../../lib/mock-market";
+import { formatPrice, type Listing, type PublicListing, type PublicStore } from "../../../lib/mock-market";
+import { signInHref } from "../../../lib/safe-next";
+import { sendOffer } from "../../../app/actions/commerce";
 import { SiteLink, StoreLink } from "../links";
 import { AmountChip, Sparkle, Switch } from "./controls";
 import { OrderSummary, StepList } from "./order-summary";
@@ -37,18 +40,58 @@ function offerHint(offer: number, price: number, owner: string) {
   return { label: under, detail: "Offers this far under rarely get a yes", tone: "low" } as const;
 }
 
-/** P5: offer, note, optional deposit and agent, with a live summary on the right. */
-export function OfferForm({ listing, store }: { listing: Listing; store: Store }) {
+/** What a real offer needs on top of the listing. Amounts are dollars. */
+export type LiveOffer = {
+  listingId: string;
+  /** Tracked shipping, from the server's rates */
+  shipping: number;
+  /** How long the seller has to answer */
+  hours: number;
+  /** The buyer's offer that's still waiting: a new one replaces it */
+  current: { amount: number; counter: number | null } | null;
+};
+
+/** "Sunday at 3:40 PM", in the buyer's own time zone. */
+const untilFormat = new Intl.DateTimeFormat("en-US", {
+  weekday: "long",
+  hour: "numeric",
+  minute: "2-digit",
+});
+
+/**
+ * P5: offer, note, optional deposit and agent, with a live summary on the right.
+ *
+ * With `live`, sending makes a real offer the seller answers. The deposit is
+ * noted on it but not charged (no PayPal yet), and the agent option is hidden.
+ */
+export function OfferForm({
+  listing,
+  store,
+  live,
+}: {
+  listing: PublicListing;
+  store: PublicStore;
+  live?: LiveOffer;
+}) {
   const ids = useId();
+  const router = useRouter();
   const owner = store.owner;
-  const n = itemNoun(listing);
+  // The prototype's helpers only read the drawing off a mock listing
+  const n = itemNoun(listing as Listing);
+  const shipping = live ? live.shipping : (listing.shipping ?? 0);
+  const hours = live?.hours ?? offerHours;
+  const key = listing.id ?? listing.slug;
 
   const [offerText, setOfferText] = useState(String(suggestedOffer(listing.price)));
   const [note, setNote] = useState<string | null>(null);
-  const [depositOn, setDepositOn] = useState(true);
+  // Nothing is held for real yet, so live deposits start off
+  const [depositOn, setDepositOn] = useState(!live);
   const [depositPick, setDepositPick] = useState(20);
   const [agentOn, setAgentOn] = useState(false);
   const [sent, setSent] = useState(false);
+  const [until, setUntil] = useState<string | null>(null);
+  const [pending, setPending] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   if (!listing.openToOffers) return <NotTakingOffers listing={listing} store={store} />;
 
@@ -64,7 +107,7 @@ export function OfferForm({ listing, store }: { listing: Listing; store: Store }
         ? depositPick
         : deposits[deposits.length - 1]!
       : 0;
-  const totalIfYes = offer + listing.shipping;
+  const totalIfYes = offer + shipping;
   const rest = totalIfYes - deposit;
 
   // The note follows the offer until you write your own
@@ -72,9 +115,30 @@ export function OfferForm({ listing, store }: { listing: Listing; store: Store }
     note ??
     `Hi ${owner}, would you take ${shortPrice(offer)}? I can pay today and I am in no rush on shipping.`;
 
-  function send(e: FormEvent) {
+  async function send(e: FormEvent) {
     e.preventDefault();
     if (!valid) return;
+    if (!live) {
+      setSent(true);
+      window.scrollTo({ top: 0 });
+      return;
+    }
+    if (pending) return;
+    setPending(true);
+    setError(null);
+    const res = await sendOffer({
+      listingId: live.listingId,
+      amount: offer,
+      note: noteText,
+      deposit: deposit || null,
+    });
+    setPending(false);
+    if (!res.ok) {
+      if (res.signin) return router.push(signInHref(`/offer/${live.listingId}`));
+      setError(res.error);
+      return;
+    }
+    setUntil(untilFormat.format(new Date(res.expiresAt)));
     setSent(true);
     window.scrollTo({ top: 0 });
   }
@@ -86,15 +150,15 @@ export function OfferForm({ listing, store }: { listing: Listing; store: Store }
       lines={[
         { label: "Asking price", value: money(listing.price), tone: "struck" },
         { label: "Your offer", value: money(offer), tone: "strong" },
-        { label: "Tracked shipping", value: money(listing.shipping) },
+        { label: "Tracked shipping", value: money(shipping) },
         { label: `Total if ${owner} says yes`, value: money(totalIfYes), tone: "strong" },
       ]}
       footer={
         <div className="flex items-baseline justify-between gap-4">
           <div className="flex flex-col">
-            <span className="text-lg font-bold">Held today</span>
+            <span className="text-lg font-bold">{live ? "Deposit" : "Held today"}</span>
             <span className="text-sm text-public-text-muted">
-              Then {money(rest)} if accepted
+              {live ? "Not charged in test mode" : `Then ${money(rest)} if accepted`}
             </span>
           </div>
           <span className="font-display text-3xl font-extrabold tracking-tight">
@@ -115,25 +179,41 @@ export function OfferForm({ listing, store }: { listing: Listing; store: Store }
             </span>
             <div className="flex flex-col gap-3">
               <h1 className="font-display text-4xl font-extrabold tracking-tight">Offer sent.</h1>
-              <p className="text-lg text-public-text-muted">
-                {owner} usually answers {answersWithin(store.repliesIn)}.
-              </p>
-              <p className="text-base text-public-text-muted">
-                {deposit > 0
-                  ? `PayPal is holding your ${money(deposit)} deposit. `
-                  : ""}
-                {agentOn
-                  ? `If ${owner} counters, ${agent.name} replies for you and checks with you before any money moves.`
-                  : `You will hear back in your messages.`}
-              </p>
+              {live ? (
+                <>
+                  <p className="text-lg text-public-text-muted">
+                    Your {money(offer)} offer is open for {hours} hours
+                    {until ? `, until ${until}` : ""}. {owner} can say yes, say no, or come back
+                    with a counter.
+                  </p>
+                  <p className="text-base text-public-text-muted">
+                    {deposit > 0
+                      ? `Your ${money(deposit)} deposit is noted on it, but nothing is charged in test mode. `
+                      : ""}
+                    The answer shows up in your account. You can take the offer back until then.
+                  </p>
+                </>
+              ) : (
+                <>
+                  <p className="text-lg text-public-text-muted">
+                    {owner} usually answers {answersWithin(store.repliesIn ?? "a day")}.
+                  </p>
+                  <p className="text-base text-public-text-muted">
+                    {deposit > 0 ? `PayPal is holding your ${money(deposit)} deposit. ` : ""}
+                    {agentOn
+                      ? `If ${owner} counters, ${agent.name} replies for you and checks with you before any money moves.`
+                      : `You will hear back in your messages.`}
+                  </p>
+                </>
+              )}
             </div>
             <div className="flex flex-wrap gap-3">
               <SiteLink
-                href="/messages"
+                href={live ? "/account#offers" : "/messages"}
                 className="inline-flex h-14 items-center gap-2 rounded-full bg-leaf-600 px-7 text-base font-bold text-white hover:bg-leaf-900"
               >
-                <ChatIcon size={18} />
-                Go to messages
+                {!live && <ChatIcon size={18} />}
+                {live ? "See it in your account" : "Go to messages"}
               </SiteLink>
               <StoreLink
                 store={store.slug}
@@ -154,6 +234,25 @@ export function OfferForm({ listing, store }: { listing: Listing; store: Store }
                 {owner} is open to offers on this {n.noun}. The asking price is{" "}
                 {shortPrice(listing.price)}.
               </p>
+              {live?.current && (
+                <p className="text-base font-semibold text-leaf-900">
+                  {live.current.counter != null ? (
+                    <>
+                      {owner} countered your {shortPrice(live.current.amount)} with{" "}
+                      {shortPrice(live.current.counter)}.{" "}
+                      <SiteLink href="/account#offers" className="text-leaf-600 underline">
+                        Answer it in your account
+                      </SiteLink>
+                      , or send a new offer here instead.
+                    </>
+                  ) : (
+                    <>
+                      You already offered {shortPrice(live.current.amount)}. Sending a new offer
+                      replaces it.
+                    </>
+                  )}
+                </p>
+              )}
             </div>
 
             {/* Your offer */}
@@ -187,7 +286,7 @@ export function OfferForm({ listing, store }: { listing: Listing; store: Store }
                   </span>
                   <span className="text-sm text-public-text-muted">
                     {offer >= listing.price ? (
-                      <SiteLink href={`/checkout/${listing.slug}`} className="font-semibold text-leaf-600 underline">
+                      <SiteLink href={`/checkout/${key}`} className="font-semibold text-leaf-600 underline">
                         {hint.detail}
                       </SiteLink>
                     ) : (
@@ -247,6 +346,7 @@ export function OfferForm({ listing, store }: { listing: Listing; store: Store }
                       <p className="max-w-[560px] text-base text-public-text-muted">
                         PayPal holds it, not {owner}. If the answer is no, or the offer runs out,
                         you get every dollar back. If it is a yes, it comes off the price.
+                        {live && " In test mode it's noted on your offer, but nothing is charged."}
                       </p>
                     </div>
                     {depositOn && (
@@ -272,6 +372,7 @@ export function OfferForm({ listing, store }: { listing: Listing; store: Store }
                   />
                 </div>
               )}
+              {!live && (
               <div className="flex items-start gap-5 border-b border-public-border py-6">
                 <div className="flex min-w-0 grow basis-0 flex-col gap-1">
                   <h2 id={`${ids}-agent`} className="flex items-start gap-2 text-lg font-bold">
@@ -290,20 +391,34 @@ export function OfferForm({ listing, store }: { listing: Listing; store: Store }
                   className="mt-0.5"
                 />
               </div>
+              )}
             </div>
+
+            {error && (
+              <p role="alert" className="rounded-md bg-berry-500/10 px-4 py-3 text-base font-semibold text-berry-500">
+                {error}
+              </p>
+            )}
 
             <div className="flex flex-col gap-3.5">
               <Button
                 type="submit"
                 variant="secondary"
-                disabled={!valid}
+                disabled={!valid || pending}
                 className="h-[60px] w-full text-lg"
               >
-                {deposit > 0 ? `Send offer and hold ${shortPrice(deposit)}` : "Send offer"}
+                {pending
+                  ? "Sending..."
+                  : deposit > 0
+                    ? live
+                      ? `Send offer with a ${shortPrice(deposit)} deposit`
+                      : `Send offer and hold ${shortPrice(deposit)}`
+                    : "Send offer"}
               </Button>
               <p className="text-center text-sm text-public-text-muted">
-                Your offer stays open for {offerHours} hours. You can take it back any time before{" "}
+                Your offer stays open for {hours} hours. You can take it back any time before{" "}
                 {owner} answers.
+                {live && " Test mode: no money moves yet."}
               </p>
             </div>
           </form>
@@ -336,7 +451,7 @@ export function OfferForm({ listing, store }: { listing: Listing; store: Store }
             {
               marker: <CloseIcon size={14} strokeWidth={3} />,
               markerClass: "bg-public-photo text-text",
-              title: `${owner} says no, or ${offerHours} hours pass`,
+              title: `${owner} says no, or ${hours} hours pass`,
               body:
                 deposit > 0
                   ? `Your ${shortPrice(deposit)} goes straight back to where it came from.`
@@ -358,18 +473,18 @@ function SwapIcon() {
 }
 
 /** For listings the seller hasn't opened to offers. */
-function NotTakingOffers({ listing, store }: { listing: Listing; store: Store }) {
-  const n = itemNoun(listing);
+function NotTakingOffers({ listing, store }: { listing: PublicListing; store: PublicStore }) {
+  const n = itemNoun(listing as Listing);
   return (
     <div className="mx-auto flex max-w-[720px] flex-col items-start gap-6 px-4 pt-10 pb-20 desk:pt-20">
       <h1 className="font-display text-4xl font-extrabold tracking-tight">Make an offer</h1>
       <p className="text-lg text-public-text-muted">
         {store.owner} is not taking offers on this {n.noun}. The price is{" "}
-        {shortPrice(listing.price)}, plus {shortPrice(listing.shipping)} shipping.
+        {shortPrice(listing.price)}, plus {shortPrice(listing.shipping ?? 0)} shipping.
       </p>
       <div className="flex flex-wrap gap-3">
         <SiteLink
-          href={`/checkout/${listing.slug}`}
+          href={`/checkout/${listing.id ?? listing.slug}`}
           className="inline-flex h-14 items-center rounded-full bg-lemon-400 px-7 text-base font-bold text-leaf-900 hover:bg-lemon-300"
         >
           Buy it for {shortPrice(listing.price)}

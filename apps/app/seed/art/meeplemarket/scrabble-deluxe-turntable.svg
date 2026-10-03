@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400">
+  <rect width="400" height="400" fill="#ffdceb"/>
+  <!-- turntable base -->
+  <path d="M96 270 V290 A104 24 0 0 0 304 290 V270 Z" fill="#14261d"/>
+  <ellipse cx="200" cy="270" rx="104" ry="24" fill="#14261d"/>
+  <!-- board, seen from a little above -->
+  <path d="M106 110 H294 L320 266 H80 Z" fill="#c9246f" stroke="#c9246f" stroke-width="10" stroke-linejoin="round"/>
+  <!-- premium squares -->
+  <path d="M118 124 L138.5 124 L136.2 140 L115 140 Z M261.5 124 L282 124 L285 140 L263.8 140 Z M97 236 L122.8 236 L120.5 252 L94 252 Z M277.2 236 L303 236 L306 252 L279.5 252 Z M177.2 172 L200 172 L200 188 L176.5 188 Z M200 188 L223.5 188 L224.2 204 L200 204 Z M176.5 188 L200 188 L200 204 L175.8 204 Z M200 172 L222.8 172 L223.5 188 L200 188 Z" fill="#ff5fa8"/>
+  <path d="M136.2 140 L157.5 140 L156 156 L134 156 Z M242.5 140 L263.8 140 L266 156 L244 156 Z M125 220 L150 220 L148.5 236 L122.8 236 Z M250 220 L275 220 L277.2 236 L251.5 236 Z M156 156 L178 156 L177.2 172 L154.5 172 Z M222 156 L244 156 L245.5 172 L222.8 172 Z" fill="#8cc9a4"/>
+  <!-- raised grid -->
+  <path d="M118 124 L94 252 M138.5 124 L120.5 252 M159 124 L147 252 M179.5 124 L173.5 252 M200 124 L200 252 M220.5 124 L226.5 252 M241 124 L253 252 M261.5 124 L279.5 252 M282 124 L306 252 M118 124 L282 124 M115 140 L285 140 M112 156 L288 156 M109 172 L291 172 M106 188 L294 188 M103 204 L297 204 M100 220 L300 220 M97 236 L303 236 M94 252 L306 252" fill="none" stroke="#ffffff" stroke-width="3" stroke-linecap="round"/>
+  <!-- blank tiles in a line, standing up off the board -->
+  <path d="M155.2 206.6 L171.7 206.6 L171.1 217.4 L154.2 217.4 Z M179.5 206.6 L196.1 206.6 L196 217.4 L179.1 217.4 Z M203.9 206.6 L220.5 206.6 L220.9 217.4 L204 217.4 Z M228.3 206.6 L244.8 206.6 L245.8 217.4 L228.9 217.4 Z" fill="#f5be0b" stroke="#f5be0b" stroke-width="3" stroke-linejoin="round"/>
+  <path d="M155.2 202.6 L171.7 202.6 L171.1 213.4 L154.2 213.4 Z M179.5 202.6 L196.1 202.6 L196 213.4 L179.1 213.4 Z M203.9 202.6 L220.5 202.6 L220.9 213.4 L204 213.4 Z M228.3 202.6 L244.8 202.6 L245.8 213.4 L228.9 213.4 Z" fill="#fff6c2" stroke="#fff6c2" stroke-width="3" stroke-linejoin="round"/>
+</svg>

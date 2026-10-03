@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400">
+  <rect width="400" height="400" fill="#ddf0e3"/>
+  <!-- console: top surface and front edge -->
+  <rect x="66" y="82" width="268" height="152" rx="18" fill="#14261d"/>
+  <path d="M70 200 H330" fill="none" stroke="#ddf0e3" stroke-width="4" stroke-linecap="round"/>
+  <!-- vents -->
+  <g fill="none" stroke="#256b4c" stroke-width="6" stroke-linecap="round">
+    <path d="M92 116 H138 M92 134 H138 M92 152 H138 M92 170 H138"/>
+  </g>
+  <!-- recessed circle and cartridge slot -->
+  <ellipse cx="236" cy="142" rx="72" ry="44" fill="none" stroke="#256b4c" stroke-width="6"/>
+  <ellipse cx="236" cy="142" rx="50" ry="28" fill="none" stroke="#256b4c" stroke-width="4"/>
+  <rect x="204" y="134" width="64" height="16" rx="8" fill="#256b4c"/>
+  <!-- front buttons -->
+  <rect x="92" y="212" width="26" height="9" rx="4.5" fill="#256b4c"/>
+  <rect x="126" y="212" width="26" height="9" rx="4.5" fill="#256b4c"/>
+  <!-- three-button controller -->
+  <g transform="translate(200 290) scale(0.72) translate(-200 -290)">
+    <path d="M130 250 H270 C306 250 318 276 312 300 C306 324 284 332 266 324 C252 318 244 306 230 306 H170 C156 306 148 318 134 324 C116 332 94 324 88 300 C82 276 94 250 130 250 Z" fill="#14261d"/>
+    <circle cx="134" cy="284" r="26" fill="#256b4c"/>
+    <rect x="127" y="266" width="14" height="36" rx="3" fill="#14261d"/>
+    <rect x="116" y="277" width="36" height="14" rx="3" fill="#14261d"/>
+    <rect x="186" y="270" width="28" height="10" rx="5" fill="#ffd934"/>
+    <circle cx="238" cy="292" r="12" fill="#ff5fa8"/>
+    <circle cx="262" cy="280" r="12" fill="#ff5fa8"/>
+    <circle cx="286" cy="268" r="12" fill="#ff5fa8"/>
+  </g>
+</svg>

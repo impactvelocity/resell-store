@@ -2,26 +2,35 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useRef, useState } from "react";
+import { useRef, useState, useTransition } from "react";
 import { Chip, ChipGroup } from "@repo/ui/chip";
 import { CheckIcon, ChevronLeftIcon, CloseIcon } from "@repo/ui/icons";
 import { useToast } from "@repo/ui/toast";
 import { cn } from "@repo/ui/lib/utils";
 import type { ShopVisibility } from "../../lib/mock";
 import { takenLinks } from "../../lib/mock-shops";
-import { CameraOutlineIcon, VisibilityPicker, roundButton } from "./parts";
+import { createShop } from "../../app/actions/shops";
+import {
+  CameraOutlineIcon,
+  VisibilityPicker,
+  roundButton,
+  useLinkCheck,
+  type LinkCheck,
+} from "./parts";
 
 /*
- * B1 Create shop. Fake: "Open my shop" shows a toast and lands on
- * Maya's closet, since there's no backend to keep the new shop.
+ * B1 Create shop. With `live`, "Open my shop" saves the shop (link checked
+ * as you type) and goes to it. Without it (the mock), it shows a toast and
+ * lands on Maya's closet.
  */
 
+/** The picker colours; `key` is what the shop keeps (shop.tone). */
 const colours = [
-  { name: "Lemon", bg: "bg-lemon-400", fg: "text-text" },
-  { name: "Mint", bg: "bg-leaf-300", fg: "text-text" },
-  { name: "Pink", bg: "bg-pink-400", fg: "text-text" },
-  { name: "Leaf", bg: "bg-leaf-600", fg: "text-on-secondary" },
-  { name: "Blush", bg: "bg-pink-100", fg: "text-text" },
+  { key: "lemon", name: "Lemon", bg: "bg-lemon-400", fg: "text-text" },
+  { key: "mint", name: "Mint", bg: "bg-leaf-300", fg: "text-text" },
+  { key: "pink", name: "Pink", bg: "bg-pink-400", fg: "text-text" },
+  { key: "leaf", name: "Leaf", bg: "bg-leaf-600", fg: "text-on-secondary" },
+  { key: "blush", name: "Blush", bg: "bg-pink-100", fg: "text-text" },
 ] as const;
 
 const categories = [
@@ -49,25 +58,42 @@ function slugify(value: string) {
     .slice(0, 32);
 }
 
-export function CreateShop() {
+export type CreateShopLive = {
+  /** Starting name, e.g. "Dylan's shop" for a first shop; "" otherwise. */
+  suggestedName: string;
+  /** No shops yet: the screen says so and welcomes them in. */
+  firstShop: boolean;
+  /** Where Back and Cancel go. */
+  backHref: string;
+};
+
+export function CreateShop({ live }: { live?: CreateShopLive } = {}) {
   const router = useRouter();
   const toast = useToast();
-  const [name, setName] = useState("Billy's collectibles");
-  const [link, setLink] = useState("billy-collectibles");
+  const initialName = live ? live.suggestedName : "Billy's collectibles";
+  const [name, setName] = useState(initialName);
+  const [link, setLink] = useState(live ? slugify(initialName) : "billy-collectibles");
   const [linkEdited, setLinkEdited] = useState(false);
   const [colour, setColour] = useState(1);
   const [picture, setPicture] = useState<string | null>(null);
-  const [category, setCategory] = useState("Collectibles");
+  const [pictureFile, setPictureFile] = useState<File | null>(null);
+  const [category, setCategory] = useState(live ? "" : "Collectibles");
   const [visibility, setVisibility] = useState<ShopVisibility>("link");
+  const [opening, startOpening] = useTransition();
   const fileRef = useRef<HTMLInputElement>(null);
 
-  const linkState: "empty" | "taken" | "free" = !link
-    ? "empty"
-    : takenLinks.includes(link)
-      ? "taken"
-      : "free";
+  const serverLink = useLinkCheck(link, { enabled: !!live });
+  const linkState: LinkCheck = live
+    ? serverLink
+    : !link
+      ? "empty"
+      : takenLinks.includes(link)
+        ? "taken"
+        : "free";
   const canOpen = name.trim().length > 0 && linkState === "free";
   const swatch = colours[colour] ?? colours[1];
+  const backHref = live?.backHref ?? "/me";
+  const closeHref = live?.backHref ?? "/shops/mayas-closet";
 
   function onName(value: string) {
     setName(value);
@@ -77,13 +103,38 @@ export function CreateShop() {
   function open() {
     if (!canOpen) {
       toast.add({
-        title: !name.trim() ? "Give your shop a name first." : "Pick a link that's free.",
+        title: !name.trim()
+          ? "Give your shop a name first."
+          : linkState === "checking"
+            ? "One moment, checking that link."
+            : "Pick a link that's free.",
       });
       return;
     }
-    toast.add({ title: `${name.trim()} is open. Time to list something.` });
-    router.push("/shops/mayas-closet");
+    if (!live) {
+      toast.add({ title: `${name.trim()} is open. Time to list something.` });
+      router.push("/shops/mayas-closet");
+      return;
+    }
+    const form = new FormData();
+    form.set("name", name.trim());
+    form.set("slug", link);
+    form.set("tone", swatch.key);
+    if (category) form.set("category", category);
+    form.set("visibility", visibility);
+    if (pictureFile) form.set("picture", pictureFile);
+    startOpening(async () => {
+      // Redirects to the new shop on success
+      const result = await createShop(form);
+      if (result?.error) toast.add({ title: result.error });
+      else toast.add({ title: `${name.trim()} is open. Time to list something.` });
+    });
   }
+
+  const heading = live?.firstShop ? "Open your first shop" : "Set up your shop";
+  const subheading = live?.firstShop
+    ? "Name it, pick a colour, and you're in. You can change all of it later."
+    : "Takes a minute. You can change all of it later.";
 
   const pictureRow = (
     <div className="flex items-center gap-4">
@@ -107,7 +158,10 @@ export function CreateShop() {
         className="hidden"
         onChange={(event) => {
           const file = event.currentTarget.files?.[0];
-          if (file) setPicture(URL.createObjectURL(file));
+          if (file) {
+            setPicture(URL.createObjectURL(file));
+            setPictureFile(file);
+          }
         }}
       />
       <div className="flex min-w-0 flex-1 flex-col gap-2.5">
@@ -125,6 +179,7 @@ export function CreateShop() {
                 onClick={() => {
                   setColour(i);
                   setPicture(null);
+                  setPictureFile(null);
                 }}
                 className={cn(
                   "flex shrink-0 cursor-pointer items-center justify-center rounded-full outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-secondary",
@@ -164,8 +219,9 @@ export function CreateShop() {
         className={cn(
           "flex h-[54px] items-center gap-0.5 rounded-md bg-surface pr-3.5 pl-[18px]",
           linkState === "free" && "border-2 border-secondary",
-          linkState === "taken" && "border-2 border-danger",
-          linkState === "empty" && "border-[1.5px] border-border focus-within:border-secondary",
+          (linkState === "taken" || linkState === "invalid") && "border-2 border-danger",
+          (linkState === "empty" || linkState === "checking") &&
+            "border-[1.5px] border-border focus-within:border-secondary",
         )}
       >
         <input
@@ -190,11 +246,17 @@ export function CreateShop() {
         aria-live="polite"
         className={cn(
           "px-1 text-sm font-medium",
-          linkState === "taken" ? "text-danger" : "text-secondary",
+          linkState === "taken" || linkState === "invalid"
+            ? "text-danger"
+            : linkState === "checking"
+              ? "text-text-muted"
+              : "text-secondary",
         )}
       >
         {linkState === "free" && "That link is free. It's yours."}
-        {linkState === "taken" && "Someone has that one. Try another."}
+        {linkState === "taken" && "That link isn't available. Try another."}
+        {linkState === "invalid" && "Letters, numbers and dashes. No dash at the start or end."}
+        {linkState === "checking" && "Checking that link…"}
         {linkState === "empty" && " "}
       </p>
     </div>
@@ -205,19 +267,17 @@ export function CreateShop() {
       {/* ---------- Phone ---------- */}
       <div className="flex flex-col desk:hidden">
         <div className="flex items-center justify-between px-4 pt-[max(12px,env(safe-area-inset-top))]">
-          <Link href="/me" aria-label="Back" className={roundButton}>
+          <Link href={backHref} aria-label="Back" className={roundButton}>
             <ChevronLeftIcon />
           </Link>
           <h1 className="text-base font-bold">New shop</h1>
-          <Link href="/shops/mayas-closet" aria-label="Close" className={roundButton}>
+          <Link href={closeHref} aria-label="Close" className={roundButton}>
             <CloseIcon size={18} strokeWidth={2.2} />
           </Link>
         </div>
         <div className="flex flex-col gap-2 px-5 pt-6">
-          <h2 className="font-display text-3xl font-extrabold tracking-tight">Set up your shop</h2>
-          <p className="text-base text-text-muted">
-            Takes a minute. You can change all of it later.
-          </p>
+          <h2 className="font-display text-3xl font-extrabold tracking-tight">{heading}</h2>
+          <p className="text-base text-text-muted">{subheading}</p>
         </div>
         <div className="px-4 pt-6">{pictureRow}</div>
         <div className="flex flex-col gap-[18px] px-4 pt-6">
@@ -239,9 +299,10 @@ export function CreateShop() {
           <button
             type="button"
             onClick={open}
-            className="flex h-[60px] w-full cursor-pointer items-center justify-center rounded-full bg-primary text-base font-bold text-on-primary transition-colors hover:bg-lemon-300"
+            disabled={opening}
+            className="flex h-[60px] w-full cursor-pointer items-center justify-center rounded-full bg-primary text-base font-bold text-on-primary transition-colors hover:bg-lemon-300 disabled:cursor-wait disabled:opacity-70"
           >
-            Open my shop
+            {opening ? "Opening…" : "Open my shop"}
           </button>
         </div>
       </div>
@@ -249,10 +310,8 @@ export function CreateShop() {
       {/* ---------- Desktop ---------- */}
       <div className="hidden w-full flex-col gap-7 px-12 pt-10 pb-14 desk:flex">
         <div className="flex flex-col gap-1.5">
-          <h1 className="font-display text-3xl font-extrabold tracking-tight">Set up your shop</h1>
-          <p className="text-base text-text-muted">
-            Takes a minute. You can change all of it later.
-          </p>
+          <h1 className="font-display text-3xl font-extrabold tracking-tight">{heading}</h1>
+          <p className="text-base text-text-muted">{subheading}</p>
         </div>
         <div className="flex flex-col items-start gap-6 xl:flex-row">
           <div className="flex w-full flex-[1.25] flex-col gap-6 rounded-xl border border-border bg-surface p-7">
@@ -264,7 +323,7 @@ export function CreateShop() {
             <div className="flex flex-col gap-2.5">
               <span className="px-1 text-sm font-semibold">What will you sell here?</span>
               <ChipGroup
-                value={[category]}
+                value={category ? [category] : []}
                 onValueChange={(value) => {
                   const next = value[0];
                   if (typeof next === "string") setCategory(next);
@@ -289,7 +348,7 @@ export function CreateShop() {
             </div>
             <div className="flex items-center justify-end gap-2">
               <Link
-                href="/shops/mayas-closet"
+                href={closeHref}
                 className="flex h-14 items-center rounded-full px-5 text-base font-bold text-secondary transition-colors hover:bg-secondary-soft"
               >
                 Cancel
@@ -297,9 +356,10 @@ export function CreateShop() {
               <button
                 type="button"
                 onClick={open}
-                className="flex h-14 cursor-pointer items-center rounded-full bg-primary px-8 text-base font-bold text-on-primary transition-colors hover:bg-lemon-300"
+                disabled={opening}
+                className="flex h-14 cursor-pointer items-center rounded-full bg-primary px-8 text-base font-bold text-on-primary transition-colors hover:bg-lemon-300 disabled:cursor-wait disabled:opacity-70"
               >
-                Open my shop
+                {opening ? "Opening…" : "Open my shop"}
               </button>
             </div>
           </div>

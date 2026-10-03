@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400">
+  <rect width="400" height="400" fill="#ddf0e3"/>
+  <g transform="translate(200 200) scale(0.86) translate(-200 -204)">
+  <!-- controller body with two grips -->
+  <path d="M120 150 H280 C316 150 330 180 326 214 C322 248 300 262 280 256 C262 250 250 236 236 232 H164 C150 236 138 250 120 256 C100 262 78 248 74 214 C70 180 84 150 120 150 Z" fill="#14261d"/>
+  <!-- round button pad -->
+  <circle cx="126" cy="200" r="36" fill="#8cc9a4"/>
+  <rect x="118" y="176" width="16" height="48" rx="4" fill="#14261d"/>
+  <rect x="102" y="192" width="48" height="16" rx="4" fill="#14261d"/>
+  <!-- start button -->
+  <rect x="184" y="184" width="32" height="12" rx="6" fill="#8cc9a4"/>
+  <!-- three face buttons -->
+  <circle cx="246" cy="214" r="14" fill="#ff5fa8"/>
+  <circle cx="274" cy="198" r="14" fill="#ff5fa8"/>
+  <circle cx="302" cy="182" r="14" fill="#ff5fa8"/>
+  </g>
+</svg>

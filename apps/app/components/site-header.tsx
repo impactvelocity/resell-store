@@ -1,44 +1,61 @@
 import Link from "next/link";
-import { Show, UserButton } from "@clerk/nextjs";
 import { Button } from "@repo/ui/button";
 import { Wordmark } from "@repo/ui/logo";
+import { getSession } from "../lib/server/session";
 
-export function SiteHeader() {
+const links = [
+  { label: "How it works", href: "/#how-it-works" },
+  { label: "Your seller agent", href: "/#seller-agent" },
+  { label: "Shopping sidekick", href: "/#sidekick" },
+  { label: "Marketplace", href: "/discover" },
+];
+
+/** L1 nav: wordmark, section links, log in and the lemon CTA. */
+export async function SiteHeader() {
+  const session = await getSession();
   return (
     <header>
-      <div className="mx-auto flex h-20 max-w-page items-center justify-between px-4 md:px-6">
+      <div className="mx-auto flex max-w-[1440px] items-center justify-between gap-6 px-4 py-5 md:px-12 md:py-7 xl:px-24">
         <Link href="/" aria-label="resell.store home" className="rounded-full">
-          <Wordmark size="sm" />
+          <Wordmark size="md" className="max-sm:text-xl" />
         </Link>
-        <div className="flex items-center gap-2">
-          <Show when="signed-out">
-            <Button
-              variant="ghost"
-              size="md"
-              render={<Link href="/sign-in" />}
-              nativeButton={false}
+        <nav aria-label="Main" className="hidden items-center gap-9 lg:flex">
+          {links.map((link) => (
+            <Link
+              key={link.label}
+              href={link.href}
+              className="text-base font-semibold hover:text-secondary"
             >
-              Sign in
-            </Button>
+              {link.label}
+            </Link>
+          ))}
+        </nav>
+        <div className="flex items-center gap-3">
+          {session ? (
             <Button
-              size="md"
-              render={<Link href="/sign-up" />}
-              nativeButton={false}
-            >
-              Open your shop
-            </Button>
-          </Show>
-          <Show when="signed-in">
-            <Button
-              variant="soft"
-              size="md"
-              render={<Link href="/dashboard" />}
+              className="h-12 px-6"
+              render={<Link href="/home" />}
               nativeButton={false}
             >
               Your shop
             </Button>
-            <UserButton />
-          </Show>
+          ) : (
+            <>
+              <Link
+                href="/welcome"
+                className="hidden px-3 text-base font-semibold hover:text-secondary sm:block"
+              >
+                Log in
+              </Link>
+              <Button
+                className="h-12 px-6"
+                render={<Link href="/welcome" />}
+                nativeButton={false}
+              >
+                Open your shop
+              </Button>
+            </>
+          )}
         </div>
       </div>
     </header>

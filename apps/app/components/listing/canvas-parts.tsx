@@ -93,7 +93,8 @@ export function CanvasColumns({
   );
 }
 
-export function PhotosCard({ count = 1 }: { count?: number }) {
+export function PhotosCard({ count = 1, photos }: { count?: number; photos?: string[] }) {
+  if (photos) count = photos.length;
   return (
     <div
       data-field="photos"
@@ -108,9 +109,14 @@ export function PhotosCard({ count = 1 }: { count?: number }) {
           i < count ? (
             <div
               key={i}
-              className="flex h-[72px] flex-1 items-center justify-center rounded-md bg-leaf-100"
+              className="flex h-[72px] flex-1 items-center justify-center overflow-hidden rounded-md bg-leaf-100"
             >
-              <PotIllustration size={48} />
+              {photos?.[i] ? (
+                // eslint-disable-next-line @next/next/no-img-element -- uploads are served from /api/files
+                <img src={photos[i]} alt="" className="size-full object-cover" />
+              ) : (
+                <PotIllustration size={48} />
+              )}
             </div>
           ) : (
             <div key={i} className="h-[72px] flex-1 rounded-md bg-surface-muted" />
@@ -121,7 +127,7 @@ export function PhotosCard({ count = 1 }: { count?: number }) {
   );
 }
 
-export function WordsCard() {
+export function WordsCard({ step = 4 }: { step?: number } = {}) {
   return (
     <div
       data-field="words"
@@ -129,7 +135,7 @@ export function WordsCard() {
     >
       <div className="text-base font-bold">Words</div>
       <p className="text-base text-text-muted">
-        Title, one-liner and description. I write these in step 4.
+        Title, one-liner and description. I write these in step {step}.
       </p>
     </div>
   );

@@ -9,6 +9,7 @@ import {
   periods,
   phoneShopLabel,
   statsByShop,
+  type ShopStats,
   type StatsPeriod,
 } from "../../lib/mock-shops";
 import { SourceBars, WeeklyBars, WeeklyTable } from "./charts";
@@ -17,29 +18,63 @@ import { FlowBar, Menu, MenuItem, SparkleSolid, roundButton } from "./parts";
 /*
  * B4 Shop stats. `?shop=<slug>` picks the shop (default Maya's closet,
  * `all` for every shop). The period picker is local state.
+ *
+ * With `live`, the numbers are real (lib/server/stats.ts, every period at
+ * once) and the agent card is left out until the agent handles buyers.
  */
+
+/** Real stats for the signed-in seller: their shops, and each period's numbers. */
+export type LiveStatsView = {
+  shops: { slug: string; name: string }[];
+  byPeriod: Record<StatsPeriod, ShopStats & { chartTitle?: string }>;
+};
 
 function money(n: number) {
   return `$${n.toLocaleString("en-US")}`;
 }
 
-export function StatsView({ selected }: { selected: string }) {
+export function StatsView({
+  selected,
+  live,
+}: {
+  selected: string;
+  live?: LiveStatsView;
+}) {
   const [period, setPeriod] = useState<StatsPeriod>("30d");
   const [asTable, setAsTable] = useState(false);
-  const stats = statsByShop[selected] ?? statsByShop["mayas-closet"]!;
+  const stats = live
+    ? live.byPeriod[period]
+    : (statsByShop[selected] ?? statsByShop["mayas-closet"]!);
   const periodInfo = periods.find((p) => p.value === period) ?? periods[1]!;
+  const chartTitle =
+    (live && live.byPeriod[period].chartTitle) || "Earned each week";
 
-  // Shops with something to count, plus whichever one is open.
-  const chipShops = shops.filter((s) => s.live > 0 || s.slug === selected);
-  const chips = [
-    { slug: "all", href: "/stats?shop=all", label: "All shops", phone: "All shops" },
-    ...chipShops.map((s) => ({
-      slug: s.slug,
-      href: `/stats?shop=${s.slug}`,
-      label: s.name,
-      phone: phoneShopLabel[s.slug] ?? s.shortName,
-    })),
-  ];
+  // Shops with something to count, plus whichever one is open. One live shop needs no picker.
+  const chipShops = live
+    ? live.shops.length > 1
+      ? live.shops.map((s) => ({
+          slug: s.slug,
+          name: s.name,
+          shortName: s.name,
+        }))
+      : []
+    : shops.filter((s) => s.live > 0 || s.slug === selected);
+  const chips = chipShops.length
+    ? [
+        {
+          slug: "all",
+          href: "/stats?shop=all",
+          label: "All shops",
+          phone: "All shops",
+        },
+        ...chipShops.map((s) => ({
+          slug: s.slug,
+          href: `/stats?shop=${s.slug}`,
+          label: s.name,
+          phone: phoneShopLabel[s.slug] ?? s.shortName,
+        })),
+      ]
+    : [];
 
   const periodMenu = (phone: boolean) => (
     <Menu
@@ -67,7 +102,9 @@ export function StatsView({ selected }: { selected: string }) {
 
   const change =
     stats.made === 0 ? (
-      <span className="text-sm text-text-muted">Nothing sold in this period yet.</span>
+      <span className="text-sm text-text-muted">
+        Nothing sold in this period yet.
+      </span>
     ) : (
       <>
         <span className="flex h-7 items-center gap-1 rounded-full bg-secondary-soft pr-3 pl-2 text-sm font-semibold text-secondary desk:gap-1.5 desk:px-2.5 desk:font-bold">
@@ -129,7 +166,7 @@ export function StatsView({ selected }: { selected: string }) {
         </section>
         <section className="px-4 pt-6">
           <div className="flex flex-col gap-4 rounded-lg border border-border bg-surface p-5">
-            <h2 className="text-base font-bold">Earned each week</h2>
+            <h2 className="text-base font-bold">{chartTitle}</h2>
             <WeeklyBars weeks={stats.weeks} size="phone" />
           </div>
         </section>
@@ -139,7 +176,9 @@ export function StatsView({ selected }: { selected: string }) {
               key={tile.label}
               className="flex flex-col gap-0.5 rounded-lg border border-border bg-surface px-[18px] py-4"
             >
-              <span className="text-sm font-medium text-text-muted">{tile.label}</span>
+              <span className="text-sm font-medium text-text-muted">
+                {tile.label}
+              </span>
               <span className="font-display text-2xl font-extrabold tracking-tight">
                 {tile.value}
               </span>
@@ -152,29 +191,34 @@ export function StatsView({ selected }: { selected: string }) {
             <SourceBars sources={stats.sources} size="phone" />
           </div>
         </section>
-        <section className="px-4 pt-3 pb-9">
-          <Link
-            href="/inbox"
-            className="flex flex-col gap-3.5 rounded-lg bg-secondary-soft p-5"
-          >
-            <span className="flex items-center gap-2.5">
-              <span className="flex size-8 shrink-0 items-center justify-center rounded-full bg-accent text-text">
-                <SparkleSolid size={16} />
-              </span>
-              <span className="text-base font-bold">What your agent did</span>
-            </span>
-            <span className="flex w-full">
-              {agentNumbers.map((n) => (
-                <span key={n.label} className="flex flex-1 flex-col">
-                  <span className="font-display text-2xl font-extrabold tracking-tight">
-                    {n.value}
-                  </span>
-                  <span className="text-sm font-medium text-text-muted">{n.label}</span>
+        {!live && (
+          <section className="px-4 pt-3 pb-9">
+            <Link
+              href="/inbox"
+              className="flex flex-col gap-3.5 rounded-lg bg-secondary-soft p-5"
+            >
+              <span className="flex items-center gap-2.5">
+                <span className="flex size-8 shrink-0 items-center justify-center rounded-full bg-accent text-text">
+                  <SparkleSolid size={16} />
                 </span>
-              ))}
-            </span>
-          </Link>
-        </section>
+                <span className="text-base font-bold">What your agent did</span>
+              </span>
+              <span className="flex w-full">
+                {agentNumbers.map((n) => (
+                  <span key={n.label} className="flex flex-1 flex-col">
+                    <span className="font-display text-2xl font-extrabold tracking-tight">
+                      {n.value}
+                    </span>
+                    <span className="text-sm font-medium text-text-muted">
+                      {n.label}
+                    </span>
+                  </span>
+                ))}
+              </span>
+            </Link>
+          </section>
+        )}
+        {live && <div className="pb-9" />}
       </div>
 
       {/* ---------- Desktop ---------- */}
@@ -220,7 +264,12 @@ export function StatsView({ selected }: { selected: string }) {
               {[
                 { label: "Things sold", value: String(stats.thingsSold) },
                 { label: "Average sale", value: money(stats.averageSale) },
-                { label: "Days to sell, typically", value: stats.daysToSell ? String(stats.daysToSell) : "None yet" },
+                {
+                  label: "Days to sell, typically",
+                  value: stats.daysToSell
+                    ? String(stats.daysToSell)
+                    : "None yet",
+                },
               ].map((row, i) => (
                 <div
                   key={row.label}
@@ -238,7 +287,7 @@ export function StatsView({ selected }: { selected: string }) {
           <div className="flex flex-[1.7] flex-col gap-5 rounded-xl border border-border bg-surface p-7">
             <div className="flex items-center justify-between">
               <h2 className="font-display text-xl font-extrabold tracking-tight">
-                Earned each week
+                {chartTitle}
               </h2>
               <button
                 type="button"
@@ -256,7 +305,12 @@ export function StatsView({ selected }: { selected: string }) {
           </div>
         </div>
 
-        <div className="grid grid-cols-2 gap-5 lg:grid-cols-4">
+        <div
+          className={cn(
+            "grid grid-cols-2 gap-5",
+            stats.tiles.length > 4 ? "lg:grid-cols-3" : "lg:grid-cols-4",
+          )}
+        >
           {stats.tiles.map((tile) => (
             <div
               key={tile.label}
@@ -290,49 +344,60 @@ export function StatsView({ selected }: { selected: string }) {
               stats.mostLooked.map((item, i) => (
                 <Link
                   key={item.title}
-                  href="/listings/linen-dress"
+                  href={item.href ?? "/listings/linen-dress"}
                   className={cn(
                     "group flex items-center justify-between gap-4 border-t border-border",
                     i < stats.mostLooked.length - 1 ? "py-2.5" : "pt-2.5",
                   )}
                 >
                   <span className="flex flex-col">
-                    <span className="text-base font-bold group-hover:underline">{item.title}</span>
+                    <span className="text-base font-bold group-hover:underline">
+                      {item.title}
+                    </span>
                     <span className="text-sm text-text-muted">{item.note}</span>
                   </span>
-                  <span className="shrink-0 text-base font-bold">{item.views} views</span>
+                  <span className="shrink-0 text-base font-bold">
+                    {item.views} {item.views === 1 ? "view" : "views"}
+                  </span>
                 </Link>
               ))
             )}
           </div>
         </div>
 
-        <Link
-          href="/inbox"
-          className="flex flex-col gap-6 rounded-xl bg-secondary-soft px-7 py-6 lg:flex-row lg:items-center lg:gap-8"
-        >
-          <span className="flex flex-1 items-center gap-3">
-            <span className="flex size-10 shrink-0 items-center justify-center rounded-full bg-accent text-text">
-              <SparkleSolid size={20} />
-            </span>
-            <span className="flex flex-col">
-              <span className="font-display text-xl font-extrabold tracking-tight">
-                What your agent did
+        {!live && (
+          <Link
+            href="/inbox"
+            className="flex flex-col gap-6 rounded-xl bg-secondary-soft px-7 py-6 lg:flex-row lg:items-center lg:gap-8"
+          >
+            <span className="flex flex-1 items-center gap-3">
+              <span className="flex size-10 shrink-0 items-center justify-center rounded-full bg-accent text-text">
+                <SparkleSolid size={20} />
               </span>
-              <span className="text-sm text-text-muted">Everything it said is in your inbox.</span>
-            </span>
-          </span>
-          <span className="flex gap-8">
-            {agentNumbers.map((n) => (
-              <span key={n.label} className="flex w-[150px] shrink-0 flex-col">
-                <span className="font-display text-2xl leading-[36px] font-extrabold tracking-tight">
-                  {n.value}
+              <span className="flex flex-col">
+                <span className="font-display text-xl font-extrabold tracking-tight">
+                  What your agent did
                 </span>
-                <span className="text-sm text-text-muted">{n.label}</span>
+                <span className="text-sm text-text-muted">
+                  Everything it said is in your inbox.
+                </span>
               </span>
-            ))}
-          </span>
-        </Link>
+            </span>
+            <span className="flex gap-8">
+              {agentNumbers.map((n) => (
+                <span
+                  key={n.label}
+                  className="flex w-[150px] shrink-0 flex-col"
+                >
+                  <span className="font-display text-2xl leading-[36px] font-extrabold tracking-tight">
+                    {n.value}
+                  </span>
+                  <span className="text-sm text-text-muted">{n.label}</span>
+                </span>
+              ))}
+            </span>
+          </Link>
+        )}
       </div>
     </>
   );

@@ -34,6 +34,9 @@ export type ShopListing = {
   thumb: ThumbKind;
   tone: ThumbTone;
   status: "live" | "draft" | "sold";
+  /** Live data: where the row goes, and the cover photo (null = none yet). */
+  href?: string;
+  photo?: string | null;
 };
 
 export type ShopData = {
@@ -42,6 +45,10 @@ export type ShopData = {
   madeThisWeek: number;
   offersWaiting: number;
   viewsThisWeek: number;
+  /** Live shops only: the mini stats line under the tiles. */
+  followers?: number;
+  likes?: number;
+  shares?: number;
   listings: ShopListing[];
 };
 
@@ -124,7 +131,7 @@ export type ShopStats = {
   daysToSell: number;
   tiles: { label: string; value: string; note: string }[];
   sources: { label: string; percent: number }[];
-  mostLooked: { title: string; note: string; views: number }[];
+  mostLooked: { title: string; note: string; views: number; href?: string }[];
   agent: { questions: number; offers: number; hours: string };
 };
 

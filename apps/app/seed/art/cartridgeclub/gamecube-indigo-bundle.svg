@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400">
+  <rect width="400" height="400" fill="#ddf0e3"/>
+  <!-- carrying handle at the back -->
+  <path d="M206 102 C200 62 270 70 262 120" fill="none" stroke="#14261d" stroke-width="12" stroke-linecap="round"/>
+  <!-- cube -->
+  <path d="M190 92 L274 122 V210 L190 240 L106 210 V122 Z" fill="#c9246f" stroke="#c9246f" stroke-width="6" stroke-linejoin="round"/>
+  <!-- edges between the faces -->
+  <path d="M108 123 L190 152 L272 123 M190 152 V238" fill="none" stroke="#ddf0e3" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+  <!-- round disc lid -->
+  <ellipse cx="190" cy="122" rx="44" ry="17" fill="none" stroke="#ff5fa8" stroke-width="6"/>
+  <!-- controller ports -->
+  <g fill="none" stroke="#14261d" stroke-width="7" stroke-linecap="round">
+    <path d="M120 206 L130 210 M146 215 L156 219 M224 219 L234 215 M250 210 L260 206"/>
+  </g>
+  <!-- controller with two handles -->
+  <path d="M160 268 C172 252 268 252 280 268 L302 304 C310 320 296 334 282 328 C272 324 266 314 258 306 H182 C174 314 168 324 158 328 C144 334 130 320 138 304 Z" fill="#c9246f"/>
+  <circle cx="178" cy="282" r="11" fill="#14261d"/>
+  <circle cx="222" cy="298" r="7" fill="#ffd934"/>
+  <circle cx="258" cy="282" r="11" fill="#8cc9a4"/>
+  <circle cx="240" cy="294" r="6" fill="#d9391b"/>
+  <circle cx="276" cy="276" r="5" fill="#ffd934"/>
+  <circle cx="256" cy="264" r="5" fill="#ffd934"/>
+</svg>

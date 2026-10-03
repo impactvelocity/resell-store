@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400">
+  <rect width="400" height="400" fill="#ddf0e3"/>
+  <!-- wide legs, flaring a little at the hem -->
+  <path d="M136 86 H264 L302 328 Q303 338 293 338 H214 Q206 338 206 330 L200 160 L194 330 Q194 338 186 338 H107 Q97 338 98 328 Z" fill="#ffffff"/>
+  <!-- smooth waistband -->
+  <rect x="134" y="62" width="132" height="28" rx="7" fill="#ffffff"/>
+  <path d="M138 90 H262" fill="none" stroke="#f5be0b" stroke-width="4" stroke-linecap="round"/>
+  <!-- slanted side pockets -->
+  <path d="M162 94 L140 138 M238 94 L260 138" fill="none" stroke="#f5be0b" stroke-width="4" stroke-linecap="round"/>
+  <!-- front seam -->
+  <path d="M200 94 V156" fill="none" stroke="#f5be0b" stroke-width="4" stroke-linecap="round"/>
+  <!-- soft creases -->
+  <g fill="none" stroke="#f5be0b" stroke-width="4" stroke-linecap="round">
+    <path d="M160 180 Q166 206 160 232"/><path d="M138 238 Q144 266 136 292"/><path d="M170 270 Q176 296 170 322"/>
+    <path d="M240 180 Q234 206 240 232"/><path d="M262 238 Q256 266 264 292"/><path d="M230 270 Q224 296 230 322"/>
+  </g>
+</svg>

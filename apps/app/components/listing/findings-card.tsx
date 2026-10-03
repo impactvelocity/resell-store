@@ -16,6 +16,7 @@ import {
   findingFacts,
   findingSources,
   priceRange,
+  type PriceRange,
   type Source,
 } from "../../lib/mock-listing";
 import { RangeBar } from "./range-bar";
@@ -30,6 +31,17 @@ import { RangeBar } from "./range-bar";
  */
 
 export type FindingsState = "working" | "ready" | "rough" | "nothing";
+
+/** What the research found. Defaults to the dutch oven (the mock). */
+export type FindingsData = {
+  price: PriceRange;
+  facts: { label: string; value: string }[];
+  sources: (Omit<Source, "items"> & {
+    items: { title: string; detail: string; value?: string; url?: string }[];
+  })[];
+};
+
+const mockData: FindingsData = { price: priceRange, facts: findingFacts, sources: findingSources };
 
 /** The "Price" card while the research runs (C2). */
 export function PriceWorkingCard({
@@ -60,7 +72,7 @@ export function PriceWorkingCard({
   );
 }
 
-function SourceSheet({ source }: { source: Source }) {
+function SourceSheet({ source }: { source: FindingsData["sources"][number] }) {
   const toast = useToast();
   return (
     <Dialog>
@@ -82,11 +94,13 @@ function SourceSheet({ source }: { source: Source }) {
         </div>
         <ul className="flex flex-col">
           {source.items.map((item) => (
-            <li key={item.title} className="border-t border-border first:border-t-0">
+            <li key={`${item.title}-${item.detail}-${item.value}`} className="border-t border-border first:border-t-0">
               <button
                 type="button"
                 onClick={() =>
-                  toast.add({ title: "Links to the real page once this is live" })
+                  item.url
+                    ? window.open(item.url, "_blank", "noopener,noreferrer")
+                    : toast.add({ title: "Links to the real page once this is live" })
                 }
                 className="flex w-full cursor-pointer items-center gap-3 py-3 text-left"
               >
@@ -107,7 +121,15 @@ function SourceSheet({ source }: { source: Source }) {
   );
 }
 
-function Headline({ state, compact }: { state: FindingsState; compact: boolean }) {
+function Headline({
+  state,
+  compact,
+  price,
+}: {
+  state: FindingsState;
+  compact: boolean;
+  price: PriceRange;
+}) {
   return (
     <div className="flex flex-col gap-0.5">
       <div className="text-sm font-semibold tracking-wide text-text-muted uppercase">
@@ -121,13 +143,21 @@ function Headline({ state, compact }: { state: FindingsState; compact: boolean }
       >
         {state === "nothing"
           ? "No sales found"
-          : `$${priceRange.bandLow} to $${priceRange.bandHigh}`}
+          : `$${price.bandLow} to $${price.bandHigh}`}
       </div>
     </div>
   );
 }
 
-function Bar({ state, compact }: { state: FindingsState; compact: boolean }) {
+function Bar({
+  state,
+  compact,
+  price,
+}: {
+  state: FindingsState;
+  compact: boolean;
+  price: PriceRange;
+}) {
   if (state === "nothing") {
     return (
       <p className="text-sm text-text-muted">
@@ -139,13 +169,13 @@ function Bar({ state, compact }: { state: FindingsState; compact: boolean }) {
   return (
     <div className="flex flex-col gap-2">
       <RangeBar
-        range={priceRange}
-        value={priceRange.suggested}
+        range={price}
+        value={price.suggested}
         size={compact ? "sm" : "lg"}
         showBand={state !== "rough"}
         middle={
           <span className="font-bold text-secondary">
-            Suggested ${priceRange.suggested}
+            Suggested ${price.suggested}
           </span>
         }
       />
@@ -161,9 +191,11 @@ function Bar({ state, compact }: { state: FindingsState; compact: boolean }) {
 export function FindingsCard({
   state = "ready",
   variant = "wide",
+  data = mockData,
   className,
 }: {
   state?: FindingsState;
+  data?: FindingsData;
   /** wide: two columns with "Where this came from" (desktop canvas). compact: stacked (phone thread). */
   variant?: "wide" | "compact";
   className?: string;
@@ -176,7 +208,7 @@ export function FindingsCard({
       {!compact && (
         <span className="text-sm font-medium text-text-muted">Where this came from</span>
       )}
-      {findingSources.map((source) => (
+      {data.sources.map((source) => (
         <SourceSheet key={source.key} source={source} />
       ))}
     </div>
@@ -191,10 +223,10 @@ export function FindingsCard({
           className,
         )}
       >
-        <Headline state={state} compact />
-        <Bar state={state} compact />
+        <Headline state={state} compact price={data.price} />
+        <Bar state={state} compact price={data.price} />
         <div className="flex w-full flex-col">
-          {findingFacts.map((fact) => (
+          {data.facts.map((fact) => (
             <div
               key={fact.label}
               className="flex justify-between gap-3 border-t border-border py-2.5 text-sm last:border-b"
@@ -219,16 +251,16 @@ export function FindingsCard({
     >
       <div className="flex w-full flex-col gap-5 xl:flex-row xl:gap-10">
         <div className="flex flex-1 flex-col gap-3.5">
-          <Headline state={state} compact={false} />
-          <Bar state={state} compact={false} />
+          <Headline state={state} compact={false} price={data.price} />
+          <Bar state={state} compact={false} price={data.price} />
         </div>
         <div className="flex flex-1 flex-col">
-          {findingFacts.map((fact, i) => (
+          {data.facts.map((fact, i) => (
             <div
                 key={fact.label}
                 className={cn(
                   "flex justify-between gap-3 py-[9px] text-sm",
-                  i < findingFacts.length - 1 && "border-b border-border",
+                  i < data.facts.length - 1 && "border-b border-border",
                 )}
               >
                 <span className="font-medium text-text-muted">{fact.label}</span>
@@ -237,7 +269,7 @@ export function FindingsCard({
           ))}
         </div>
       </div>
-      <div className="border-t border-border pt-4">{sources}</div>
+      {data.sources.length > 0 && <div className="border-t border-border pt-4">{sources}</div>}
     </div>
   );
 }

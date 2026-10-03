@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400">
+  <rect width="400" height="400" fill="#ffdceb"/>
+  <!-- open binder cover and spine -->
+  <rect x="60" y="86" width="280" height="228" rx="14" fill="#ff5fa8"/>
+  <rect x="192" y="86" width="16" height="228" fill="#c9246f"/>
+  <!-- pages -->
+  <rect x="72" y="98" width="120" height="204" rx="6" fill="#ffffff"/>
+  <rect x="208" y="98" width="120" height="204" rx="6" fill="#ffffff"/>
+  <!-- left page: nine pockets, a card in each -->
+  <rect x="78" y="114" width="32" height="46" rx="4" fill="#8cc9a4"/><circle cx="94" cy="138" r="9" fill="#ffffff"/><circle cx="90.5" cy="137" r="1.8" fill="#14261d"/><circle cx="97.5" cy="137" r="1.8" fill="#14261d"/>
+  <rect x="116" y="114" width="32" height="46" rx="4" fill="#ffd934"/><circle cx="132" cy="138" r="9" fill="#f5be0b"/><circle cx="128.5" cy="137" r="1.8" fill="#14261d"/><circle cx="135.5" cy="137" r="1.8" fill="#14261d"/>
+  <rect x="154" y="114" width="32" height="46" rx="4" fill="#256b4c"/><circle cx="170" cy="138" r="9" fill="#8cc9a4"/><circle cx="166.5" cy="137" r="1.8" fill="#14261d"/><circle cx="173.5" cy="137" r="1.8" fill="#14261d"/>
+  <rect x="78" y="176" width="32" height="46" rx="4" fill="#f5be0b"/><circle cx="94" cy="200" r="9" fill="#ffd934"/><circle cx="90.5" cy="199" r="1.8" fill="#14261d"/><circle cx="97.5" cy="199" r="1.8" fill="#14261d"/>
+  <rect x="116" y="176" width="32" height="46" rx="4" fill="#ff5fa8"/><circle cx="132" cy="200" r="9" fill="#ffdceb"/><circle cx="128.5" cy="199" r="1.8" fill="#14261d"/><circle cx="135.5" cy="199" r="1.8" fill="#14261d"/>
+  <rect x="154" y="176" width="32" height="46" rx="4" fill="#8cc9a4"/><circle cx="170" cy="200" r="9" fill="#ffffff"/><circle cx="166.5" cy="199" r="1.8" fill="#14261d"/><circle cx="173.5" cy="199" r="1.8" fill="#14261d"/>
+  <rect x="78" y="238" width="32" height="46" rx="4" fill="#ffd934"/><circle cx="94" cy="262" r="9" fill="#f5be0b"/><circle cx="90.5" cy="261" r="1.8" fill="#14261d"/><circle cx="97.5" cy="261" r="1.8" fill="#14261d"/>
+  <rect x="116" y="238" width="32" height="46" rx="4" fill="#256b4c"/><circle cx="132" cy="262" r="9" fill="#8cc9a4"/><circle cx="128.5" cy="261" r="1.8" fill="#14261d"/><circle cx="135.5" cy="261" r="1.8" fill="#14261d"/>
+  <rect x="154" y="238" width="32" height="46" rx="4" fill="#f5be0b"/><circle cx="170" cy="262" r="9" fill="#ffd934"/><circle cx="166.5" cy="261" r="1.8" fill="#14261d"/><circle cx="173.5" cy="261" r="1.8" fill="#14261d"/>
+  <!-- right page: nine pockets, a card in each -->
+  <rect x="214" y="114" width="32" height="46" rx="4" fill="#ff5fa8"/><circle cx="230" cy="138" r="9" fill="#ffdceb"/><circle cx="226.5" cy="137" r="1.8" fill="#14261d"/><circle cx="233.5" cy="137" r="1.8" fill="#14261d"/>
+  <rect x="252" y="114" width="32" height="46" rx="4" fill="#f5be0b"/><circle cx="268" cy="138" r="9" fill="#ffd934"/><circle cx="264.5" cy="137" r="1.8" fill="#14261d"/><circle cx="271.5" cy="137" r="1.8" fill="#14261d"/>
+  <rect x="290" y="114" width="32" height="46" rx="4" fill="#8cc9a4"/><circle cx="306" cy="138" r="9" fill="#ffffff"/><circle cx="302.5" cy="137" r="1.8" fill="#14261d"/><circle cx="309.5" cy="137" r="1.8" fill="#14261d"/>
+  <rect x="214" y="176" width="32" height="46" rx="4" fill="#256b4c"/><circle cx="230" cy="200" r="9" fill="#8cc9a4"/><circle cx="226.5" cy="199" r="1.8" fill="#14261d"/><circle cx="233.5" cy="199" r="1.8" fill="#14261d"/>
+  <rect x="252" y="176" width="32" height="46" rx="4" fill="#ffd934"/><circle cx="268" cy="200" r="9" fill="#f5be0b"/><circle cx="264.5" cy="199" r="1.8" fill="#14261d"/><circle cx="271.5" cy="199" r="1.8" fill="#14261d"/>
+  <rect x="290" y="176" width="32" height="46" rx="4" fill="#ff5fa8"/><circle cx="306" cy="200" r="9" fill="#ffdceb"/><circle cx="302.5" cy="199" r="1.8" fill="#14261d"/><circle cx="309.5" cy="199" r="1.8" fill="#14261d"/>
+  <rect x="214" y="238" width="32" height="46" rx="4" fill="#8cc9a4"/><circle cx="230" cy="262" r="9" fill="#ffffff"/><circle cx="226.5" cy="261" r="1.8" fill="#14261d"/><circle cx="233.5" cy="261" r="1.8" fill="#14261d"/>
+  <rect x="252" y="238" width="32" height="46" rx="4" fill="#f5be0b"/><circle cx="268" cy="262" r="9" fill="#ffd934"/><circle cx="264.5" cy="261" r="1.8" fill="#14261d"/><circle cx="271.5" cy="261" r="1.8" fill="#14261d"/>
+  <rect x="290" y="238" width="32" height="46" rx="4" fill="#256b4c"/><circle cx="306" cy="262" r="9" fill="#8cc9a4"/><circle cx="302.5" cy="261" r="1.8" fill="#14261d"/><circle cx="309.5" cy="261" r="1.8" fill="#14261d"/>
+  <!-- rings -->
+  <g fill="#14261d">
+    <rect x="184" y="128" width="32" height="12" rx="6"/>
+    <rect x="184" y="194" width="32" height="12" rx="6"/>
+    <rect x="184" y="260" width="32" height="12" rx="6"/>
+  </g>
+</svg>

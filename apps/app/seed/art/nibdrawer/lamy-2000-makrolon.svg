@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400">
+  <rect width="400" height="400" fill="#ddf0e3"/>
+  <!-- the pen, capped, rising gently to the right -->
+  <g transform="rotate(-14 200 200)">
+    <!-- seamless cigar body -->
+    <path d="M62 200 C62 187 88 176 130 176 H278 C316 176 338 187 338 200 C338 213 316 224 278 224 H130 C88 224 62 213 62 200 Z" fill="#14261d"/>
+    <!-- brushed finish, broken at the cap seam -->
+    <g fill="none" stroke="#256b4c" stroke-width="3" stroke-linecap="round">
+      <path d="M92 192 H170 M92 208 H170"/>
+      <path d="M182 192 H316 M182 208 H316"/>
+    </g>
+    <!-- springy clip, lying along the cap -->
+    <rect x="88" y="170" width="18" height="14" rx="5" fill="#ffffff"/>
+    <rect x="92" y="168" width="82" height="10" rx="5" fill="#ffffff"/>
+  </g>
+</svg>

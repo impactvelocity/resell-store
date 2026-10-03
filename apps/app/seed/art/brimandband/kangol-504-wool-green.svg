@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400">
+  <rect width="400" height="400" fill="#ddf0e3"/>
+  <!-- soft domed body, three-quarter front -->
+  <path d="M104 236 C92 178 136 134 214 132 C290 130 324 172 316 226 C314 246 300 256 278 256 H128 C112 256 106 248 104 236 Z" fill="#256b4c"/>
+  <!-- crown seam and band stitching -->
+  <path d="M132 186 C170 162 250 160 300 184" fill="none" stroke="#8cc9a4" stroke-width="4" stroke-linecap="round" stroke-dasharray="2 12"/>
+  <path d="M120 236 Q210 224 304 232" fill="none" stroke="#8cc9a4" stroke-width="4" stroke-linecap="round" stroke-dasharray="2 12"/>
+  <!-- embroidered mark on the back -->
+  <circle cx="296" cy="212" r="7" fill="#ffd934"/>
+  <!-- underside of the peak -->
+  <path d="M90 244 C124 236 186 240 222 254 C210 272 150 282 112 278 C92 276 80 256 90 244 Z" fill="#14261d"/>
+  <!-- short stiff peak -->
+  <path d="M94 236 C126 228 190 232 226 248 C214 262 150 270 114 268 C94 266 82 250 94 236 Z" fill="#256b4c"/>
+  <path d="M100 248 C130 240 180 242 206 252" fill="none" stroke="#8cc9a4" stroke-width="4" stroke-linecap="round" stroke-dasharray="2 12"/>
+</svg>

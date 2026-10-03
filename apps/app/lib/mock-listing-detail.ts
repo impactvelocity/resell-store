@@ -7,7 +7,13 @@
 import type { ArtKey } from "../components/market/art";
 import type { Listing, Store } from "./mock-market";
 
-export type PhotoView = { art: ArtKey; caption: string };
+/** One view in the gallery: a drawing in the prototype, a real photo or video when live. */
+export type PhotoView = {
+  art?: ArtKey;
+  url?: string;
+  video?: boolean;
+  caption: string;
+};
 
 export type DetailRow = {
   label: string;
@@ -31,6 +37,11 @@ export type ListingDetail = {
   listedNote: string;
   /** Delivery window, or null when the item is pickup only */
   arrives: string | null;
+  /**
+   * Live listings don't know a delivery window yet, so `arrives` is null for them
+   * too; this says whether that means pickup. Unset: pickup when `arrives` is null.
+   */
+  pickup?: boolean;
 };
 
 const camera: ListingDetail = {

@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400">
+  <rect width="400" height="400" fill="#ddf0e3"/>
+  <g transform="translate(0 4)">
+  <!-- hook -->
+  <path d="M200 132 V110 C200 102 214 100 214 90 C214 80 200 76 191 84" fill="none" stroke="#14261d" stroke-width="6" stroke-linecap="round"/>
+  <!-- wooden hanger, behind the shirt -->
+  <path d="M100 170 Q150 136 200 128 Q250 136 300 170" fill="none" stroke="#256b4c" stroke-width="14" stroke-linecap="round"/>
+  <!-- shirt -->
+  <path d="M180 134 L136 152 Q122 158 118 172 L100 226 L128 236 L140 202 V302 Q140 310 148 310 H252 Q260 310 260 302 V202 L272 236 L300 226 L282 172 Q278 158 264 152 L220 134 Z" fill="#8cc9a4"/>
+  <!-- collar points -->
+  <path d="M178 132 L200 150 L190 168 L168 142 Z M222 132 L200 150 L210 168 L232 142 Z" fill="#256b4c" stroke="#256b4c" stroke-width="4" stroke-linejoin="round"/>
+  <!-- button placket -->
+  <path d="M200 162 V306" fill="none" stroke="#256b4c" stroke-width="4" stroke-linecap="round"/>
+  <g fill="#14261d">
+    <circle cx="208" cy="184" r="4"/><circle cx="208" cy="214" r="4"/><circle cx="208" cy="244" r="4"/><circle cx="208" cy="274" r="4"/>
+  </g>
+  <!-- chest pocket -->
+  <path d="M226 190 V214 Q226 220 232 220 H246 Q252 220 252 214 V190 Z" fill="none" stroke="#256b4c" stroke-width="4" stroke-linejoin="round"/>
+  <!-- sleeve hems -->
+  <path d="M106 210 L132 220 M294 210 L268 220" fill="none" stroke="#256b4c" stroke-width="4" stroke-linecap="round"/>
+  </g>
+</svg>

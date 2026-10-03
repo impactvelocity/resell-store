@@ -1,0 +1,51 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400">
+  <rect width="400" height="400" fill="#fff6c2"/>
+  <!-- a heap of loose bricks; back and top first, front row last -->
+  <!-- top: a single 1x1 -->
+  <g transform="translate(190 168) rotate(-14)" fill="#f5be0b">
+    <rect x="0" y="0" width="20" height="24" rx="3"/><rect x="4" y="-6" width="12" height="8" rx="3"/>
+  </g>
+  <!-- fourth row -->
+  <g transform="translate(148 200) rotate(-6)" fill="#ff5fa8">
+    <rect x="0" y="0" width="40" height="24" rx="3"/><rect x="4" y="-6" width="12" height="8" rx="3"/><rect x="24" y="-6" width="12" height="8" rx="3"/>
+  </g>
+  <g transform="translate(206 194) rotate(9)" fill="#256b4c">
+    <rect x="0" y="0" width="40" height="24" rx="3"/><rect x="4" y="-6" width="12" height="8" rx="3"/><rect x="24" y="-6" width="12" height="8" rx="3"/>
+  </g>
+  <!-- third row -->
+  <g transform="translate(120 232) rotate(-8)" fill="#8cc9a4">
+    <rect x="0" y="0" width="40" height="24" rx="3"/><rect x="4" y="-6" width="12" height="8" rx="3"/><rect x="24" y="-6" width="12" height="8" rx="3"/>
+  </g>
+  <g transform="translate(166 228)" fill="#d9391b">
+    <rect x="0" y="0" width="60" height="24" rx="3"/><rect x="4" y="-6" width="12" height="8" rx="3"/><rect x="24" y="-6" width="12" height="8" rx="3"/><rect x="44" y="-6" width="12" height="8" rx="3"/>
+  </g>
+  <g transform="translate(234 226) rotate(7)" fill="#ffffff">
+    <rect x="0" y="0" width="40" height="24" rx="3"/><rect x="4" y="-6" width="12" height="8" rx="3"/><rect x="24" y="-6" width="12" height="8" rx="3"/>
+  </g>
+  <!-- second row -->
+  <g transform="translate(92 262) rotate(-4)" fill="#ffffff">
+    <rect x="0" y="0" width="60" height="24" rx="3"/><rect x="4" y="-6" width="12" height="8" rx="3"/><rect x="24" y="-6" width="12" height="8" rx="3"/><rect x="44" y="-6" width="12" height="8" rx="3"/>
+  </g>
+  <g transform="translate(156 258)" fill="#f5be0b">
+    <rect x="0" y="0" width="40" height="24" rx="3"/><rect x="4" y="-6" width="12" height="8" rx="3"/><rect x="24" y="-6" width="12" height="8" rx="3"/>
+  </g>
+  <g transform="translate(200 258) rotate(3)" fill="#ff5fa8">
+    <rect x="0" y="0" width="60" height="24" rx="3"/><rect x="4" y="-6" width="12" height="8" rx="3"/><rect x="24" y="-6" width="12" height="8" rx="3"/><rect x="44" y="-6" width="12" height="8" rx="3"/>
+  </g>
+  <g transform="translate(264 262) rotate(6)" fill="#256b4c">
+    <rect x="0" y="0" width="40" height="24" rx="3"/><rect x="4" y="-6" width="12" height="8" rx="3"/><rect x="24" y="-6" width="12" height="8" rx="3"/>
+  </g>
+  <!-- front row -->
+  <g transform="translate(70 290)" fill="#d9391b">
+    <rect x="0" y="0" width="80" height="24" rx="3"/><rect x="4" y="-6" width="12" height="8" rx="3"/><rect x="24" y="-6" width="12" height="8" rx="3"/><rect x="44" y="-6" width="12" height="8" rx="3"/><rect x="64" y="-6" width="12" height="8" rx="3"/>
+  </g>
+  <g transform="translate(153 290)" fill="#8cc9a4">
+    <rect x="0" y="0" width="40" height="24" rx="3"/><rect x="4" y="-6" width="12" height="8" rx="3"/><rect x="24" y="-6" width="12" height="8" rx="3"/>
+  </g>
+  <g transform="translate(196 290)" fill="#ffd934">
+    <rect x="0" y="0" width="60" height="24" rx="3"/><rect x="4" y="-6" width="12" height="8" rx="3"/><rect x="24" y="-6" width="12" height="8" rx="3"/><rect x="44" y="-6" width="12" height="8" rx="3"/>
+  </g>
+  <g transform="translate(259 290)" fill="#f5be0b">
+    <rect x="0" y="0" width="60" height="24" rx="3"/><rect x="4" y="-6" width="12" height="8" rx="3"/><rect x="24" y="-6" width="12" height="8" rx="3"/><rect x="44" y="-6" width="12" height="8" rx="3"/>
+  </g>
+</svg>

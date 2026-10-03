@@ -1,0 +1,500 @@
+import type { CSSProperties, ReactNode } from "react";
+import type { StoreTone } from "../../lib/mock-market";
+import {
+  forSaleLabel,
+  initialOf,
+  og,
+  OG_SIZE,
+  SITE_HEADLINE,
+  SITE_LINE,
+  toneColors,
+  TRUST_LINE,
+  truncate,
+} from "../../lib/og";
+
+/*
+ * The share images, drawn by next/og (Satori). Satori is a small subset of
+ * CSS: inline styles only, flexbox only (every element with more than one
+ * child needs display: flex), no CSS variables, so colours come from lib/og.
+ * Photos arrive as data URLs (lib/server/og-photos.ts) or null.
+ */
+
+const display = "Bricolage Grotesque";
+const body = "Figtree";
+
+const flex = (style: CSSProperties = {}): CSSProperties => ({ display: "flex", ...style });
+
+/** "resell.store" with the period drawn as a yellow dot, like the site's Wordmark. */
+export function OgWordmark({ size = 40, color = og.text }: { size?: number; color?: string }) {
+  return (
+    <div
+      style={flex({
+        alignItems: "baseline",
+        fontFamily: display,
+        fontWeight: 800,
+        fontSize: size,
+        letterSpacing: -0.03 * size,
+        color,
+        lineHeight: 1,
+      })}
+    >
+      <span>resell</span>
+      <div
+        style={{
+          width: 0.34 * size,
+          height: 0.34 * size,
+          margin: `0 ${0.07 * size}px`,
+          borderRadius: 999,
+          background: og.lemon400,
+          // Satori sits an empty box on the descender line; lift it onto the baseline
+          position: "relative",
+          top: -0.13 * size,
+        }}
+      />
+      <span>store</span>
+    </div>
+  );
+}
+
+/** The pink-and-yellow flower from @repo/ui/whimsy. */
+function Flower({ size }: { size: number }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 64 64">
+      <g fill={og.pink400}>
+        <circle cx="32" cy="18" r="11" />
+        <circle cx="45.3" cy="27.7" r="11" />
+        <circle cx="40.2" cy="43.3" r="11" />
+        <circle cx="23.8" cy="43.3" r="11" />
+        <circle cx="18.7" cy="27.7" r="11" />
+      </g>
+      <circle cx="32" cy="32" r="8" fill={og.lemon400} />
+    </svg>
+  );
+}
+
+function Check({ size, background, color }: { size: number; background: string; color: string }) {
+  return (
+    <div
+      style={flex({
+        width: size,
+        height: size,
+        borderRadius: 999,
+        background,
+        alignItems: "center",
+        justifyContent: "center",
+        flexShrink: 0,
+      })}
+    >
+      <svg width={size * 0.58} height={size * 0.58} viewBox="0 0 24 24">
+        <path d="M5 12.5l4.5 4.5L19 7.5" fill="none" stroke={color} strokeWidth="3.2" strokeLinecap="round" strokeLinejoin="round" />
+      </svg>
+    </div>
+  );
+}
+
+/** A photo, or the tone-coloured tile with an initial when there isn't one Satori can draw. */
+function PhotoOrTile({
+  photo,
+  label,
+  tone,
+  width,
+  height,
+  radius = 0,
+  initialSize,
+}: {
+  photo: string | null;
+  label: string;
+  tone: StoreTone;
+  width: number;
+  height: number;
+  radius?: number;
+  initialSize?: number;
+}) {
+  if (photo) {
+    return (
+      // eslint-disable-next-line @next/next/no-img-element -- Satori draws <img>, not next/image
+      <img
+        src={photo}
+        alt=""
+        width={width}
+        height={height}
+        style={{ width, height, objectFit: "cover", borderRadius: radius, flexShrink: 0 }}
+      />
+    );
+  }
+  const colors = toneColors(tone);
+  return (
+    <div
+      style={flex({
+        width,
+        height,
+        borderRadius: radius,
+        background: colors.background,
+        color: colors.color,
+        alignItems: "center",
+        justifyContent: "center",
+        fontFamily: display,
+        fontWeight: 800,
+        fontSize: initialSize ?? Math.round(Math.min(width, height) * 0.45),
+        lineHeight: 1,
+        flexShrink: 0,
+      })}
+    >
+      {initialOf(label)}
+    </div>
+  );
+}
+
+function Avatar({ picture, name, tone, size }: { picture: string | null; name: string; tone: StoreTone; size: number }) {
+  return (
+    <PhotoOrTile
+      photo={picture}
+      label={name}
+      tone={tone}
+      width={size}
+      height={size}
+      radius={size}
+      initialSize={Math.round(size * 0.46)}
+    />
+  );
+}
+
+function Canvas({ children, background = og.background }: { children: ReactNode; background?: string }) {
+  return (
+    <div
+      style={flex({
+        position: "relative",
+        width: OG_SIZE.width,
+        height: OG_SIZE.height,
+        background,
+        color: og.text,
+        fontFamily: body,
+        overflow: "hidden",
+      })}
+    >
+      {children}
+    </div>
+  );
+}
+
+/* Site: the default for the landing page, /discover, /stores and anything without its own */
+
+export function SiteCard() {
+  return (
+    <Canvas>
+      <div
+        style={{
+          position: "absolute",
+          right: -150,
+          bottom: -260,
+          width: 620,
+          height: 620,
+          borderRadius: 999,
+          background: og.lemon300,
+        }}
+      />
+      <div style={flex({ position: "absolute", top: 54, right: 84, transform: "rotate(-14deg)" })}>
+        <Flower size={128} />
+      </div>
+      <div
+        style={flex({
+          flexDirection: "column",
+          justifyContent: "space-between",
+          width: "100%",
+          height: "100%",
+          padding: "64px 72px 60px",
+        })}
+      >
+        <OgWordmark size={46} />
+        <div style={flex({ flexDirection: "column", gap: 26 })}>
+          <div
+            style={{
+              fontFamily: display,
+              fontWeight: 800,
+              fontSize: 84,
+              lineHeight: 0.98,
+              letterSpacing: -2.9,
+              maxWidth: 820,
+            }}
+          >
+            {SITE_HEADLINE}
+          </div>
+          <div style={{ fontSize: 32, lineHeight: 1.3, fontWeight: 500, color: og.muted, maxWidth: 760 }}>
+            {SITE_LINE}
+          </div>
+        </div>
+        <div
+          style={flex({
+            alignSelf: "flex-start",
+            alignItems: "center",
+            gap: 14,
+            height: 64,
+            padding: "0 28px 0 16px",
+            borderRadius: 999,
+            background: og.text,
+            color: og.background,
+            fontSize: 26,
+            fontWeight: 700,
+          })}
+        >
+          <Check size={36} background={og.lemon400} color={og.text} />
+          Every payment runs through PayPal
+        </div>
+      </div>
+    </Canvas>
+  );
+}
+
+/* Store: maya.resell.store */
+
+export type StoreCardProps = {
+  name: string;
+  domain: string;
+  tone: StoreTone;
+  picture: string | null;
+  location?: string;
+  forSale: number;
+  tagline?: string;
+  /** Up to three things: listed first, then sold ones. */
+  items: { title: string; photo: string | null; sold?: boolean }[];
+};
+
+const STRIP_HEIGHT = 268;
+const STRIP_GAP = 24;
+const STRIP_WIDTH = OG_SIZE.width - 2 * 56;
+const TILE_WIDTH = Math.floor((STRIP_WIDTH - 2 * STRIP_GAP) / 3);
+
+function SoldTag() {
+  return (
+    <div
+      style={flex({
+        position: "absolute",
+        top: 16,
+        left: 16,
+        padding: "4px 16px",
+        borderRadius: 999,
+        background: og.pink400,
+        color: og.text,
+        fontFamily: display,
+        fontWeight: 800,
+        fontSize: 24,
+      })}
+    >
+      Sold
+    </div>
+  );
+}
+
+export function StoreCard({ name, domain, tone, picture, location, forSale, tagline, items }: StoreCardProps) {
+  const facts = [location, forSaleLabel(forSale) || "New on resell.store"].filter(Boolean) as string[];
+  const shown = items.slice(0, 3);
+  const colors = toneColors(tone);
+  const nameSize = name.length > 22 ? 54 : 66;
+  // Fewer than three things: the rest of the strip is a tone panel with the store's line
+  const panelWidth = STRIP_WIDTH - shown.length * (TILE_WIDTH + STRIP_GAP);
+
+  return (
+    <Canvas>
+      <div style={flex({ flexDirection: "column", width: "100%", height: "100%", padding: "52px 56px 44px" })}>
+        <div style={flex({ alignItems: "center", gap: 30 })}>
+          <Avatar picture={picture} name={name} tone={tone} size={116} />
+          <div style={flex({ flexDirection: "column", gap: 8, minWidth: 0 })}>
+            <div
+              style={{
+                fontFamily: display,
+                fontWeight: 800,
+                fontSize: nameSize,
+                lineHeight: 1.02,
+                letterSpacing: -0.03 * nameSize,
+              }}
+            >
+              {truncate(name, 34)}
+            </div>
+            <div style={flex({ gap: 14, fontSize: 28, fontWeight: 500, color: og.muted })}>
+              {facts.map((f, i) => (
+                <div key={f} style={flex({ gap: 14 })}>
+                  {i > 0 && <span>·</span>}
+                  <span>{f}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        <div style={flex({ gap: STRIP_GAP, marginTop: 36, height: STRIP_HEIGHT })}>
+          {shown.map((item, i) => (
+            <div key={i} style={flex({ position: "relative", width: TILE_WIDTH, height: STRIP_HEIGHT })}>
+              <PhotoOrTile
+                photo={item.photo}
+                label={item.title}
+                tone={tone}
+                width={TILE_WIDTH}
+                height={STRIP_HEIGHT}
+                radius={26}
+                initialSize={110}
+              />
+              {item.sold && <SoldTag />}
+            </div>
+          ))}
+          {panelWidth > 0 && (
+            <div
+              style={flex({
+                width: panelWidth,
+                height: STRIP_HEIGHT,
+                borderRadius: 26,
+                background: shown.length ? og.surfaceMuted : colors.background,
+                color: shown.length ? og.text : colors.color,
+                alignItems: "center",
+                padding: "0 44px",
+                fontFamily: display,
+                fontWeight: 800,
+                fontSize: panelWidth > 700 ? 48 : 40,
+                lineHeight: 1.1,
+                letterSpacing: -1.2,
+              })}
+            >
+              {truncate(tagline || "Opening soon. Follow along for the first things.", panelWidth > 700 ? 70 : 56)}
+            </div>
+          )}
+        </div>
+
+        <div style={flex({ marginTop: "auto", alignItems: "center", justifyContent: "space-between" })}>
+          <div
+            style={flex({
+              alignItems: "center",
+              height: 52,
+              padding: "0 24px",
+              borderRadius: 999,
+              background: og.surface,
+              border: `2px solid ${og.border}`,
+              fontSize: 26,
+              fontWeight: 700,
+            })}
+          >
+            {domain}
+          </div>
+          <OgWordmark size={34} />
+        </div>
+      </div>
+    </Canvas>
+  );
+}
+
+/* Listing: maya.resell.store/linen-wrap-dress */
+
+export type ListingCardProps = {
+  title: string;
+  price: string;
+  sold: boolean;
+  /** The seller's one-liner, under the price. */
+  blurb?: string;
+  photo: string | null;
+  shop: { name: string; tone: StoreTone; picture: string | null };
+};
+
+const PHOTO_WIDTH = 560;
+
+export function ListingCard({ title, price, sold, blurb, photo, shop }: ListingCardProps) {
+  const t = truncate(title, 70);
+  const titleSize = t.length <= 22 ? 70 : t.length <= 40 ? 58 : 48;
+
+  return (
+    <Canvas background={og.surface}>
+      <div style={flex({ position: "relative", width: PHOTO_WIDTH, height: OG_SIZE.height, background: og.surfaceMuted })}>
+        <PhotoOrTile
+          photo={photo}
+          label={title}
+          tone={shop.tone}
+          width={PHOTO_WIDTH}
+          height={OG_SIZE.height}
+          initialSize={240}
+        />
+        {sold && (
+          <div
+            style={flex({
+              position: "absolute",
+              top: 40,
+              left: 36,
+              alignItems: "center",
+              padding: "10px 30px",
+              borderRadius: 999,
+              background: og.pink400,
+              color: og.text,
+              fontFamily: display,
+              fontWeight: 800,
+              fontSize: 44,
+              transform: "rotate(-5deg)",
+            })}
+          >
+            Sold
+          </div>
+        )}
+      </div>
+
+      <div
+        style={flex({
+          flexDirection: "column",
+          flex: 1,
+          height: "100%",
+          padding: "50px 56px 46px 52px",
+          background: og.background,
+        })}
+      >
+        <div style={flex({ alignItems: "center", gap: 16 })}>
+          <Avatar picture={shop.picture} name={shop.name} tone={shop.tone} size={56} />
+          <div style={{ fontSize: 28, fontWeight: 700 }}>{truncate(shop.name, 28)}</div>
+        </div>
+
+        <div
+          style={{
+            marginTop: 34,
+            fontFamily: display,
+            fontWeight: 800,
+            fontSize: titleSize,
+            lineHeight: 1.02,
+            letterSpacing: -0.03 * titleSize,
+          }}
+        >
+          {t}
+        </div>
+
+        <div style={flex({ marginTop: 28, alignItems: "center" })}>
+          {sold ? (
+            <div style={{ fontSize: 36, fontWeight: 700, color: og.muted }}>{price ? `Sold for ${price}` : "Sold"}</div>
+          ) : (
+            price && (
+              <div
+                style={flex({
+                  padding: "6px 24px 10px",
+                  borderRadius: 20,
+                  background: og.lemon400,
+                  fontFamily: display,
+                  fontWeight: 800,
+                  fontSize: 68,
+                  lineHeight: 1,
+                  letterSpacing: -1.6,
+                })}
+              >
+                {price}
+              </div>
+            )
+          )}
+        </div>
+
+        {blurb?.trim() && (
+          <div style={{ marginTop: 24, fontSize: 27, lineHeight: 1.3, fontWeight: 500, color: og.muted }}>
+            {truncate(blurb, 90)}
+          </div>
+        )}
+
+        <div style={flex({ marginTop: "auto", flexDirection: "column", gap: 26 })}>
+          <div style={flex({ alignItems: "center", gap: 14, fontSize: 25, fontWeight: 700 })}>
+            <Check size={38} background={og.leaf600} color="#ffffff" />
+            {TRUST_LINE}
+          </div>
+          <OgWordmark size={32} />
+        </div>
+      </div>
+    </Canvas>
+  );
+}

@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400">
+  <rect width="400" height="400" fill="#ddf0e3"/>
+  <!-- underside of the brim, seen at the back -->
+  <path d="M54 244 Q120 214 200 214 Q280 214 346 244 Q300 236 200 236 Q100 236 54 244 Z" fill="#f5be0b"/>
+  <!-- crown with the cattleman crease -->
+  <path d="M128 246 C122 190 132 140 160 112 C176 126 188 124 200 116 C212 124 224 126 240 112 C268 140 278 190 272 246 Z" fill="#ffffff"/>
+  <path d="M200 126 V176" fill="none" stroke="#ddf0e3" stroke-width="8" stroke-linecap="round"/>
+  <!-- ribbon band and bow -->
+  <path d="M126 214 Q200 226 274 214 L273 246 Q200 256 127 246 Z" fill="#14261d"/>
+  <path d="M152 230 L132 208 V252 Z M152 230 L172 208 V252 Z" fill="#14261d" stroke="#14261d" stroke-width="6" stroke-linejoin="round"/>
+  <rect x="145" y="221" width="14" height="18" rx="5" fill="#256b4c"/>
+  <!-- brim, curling up at the sides -->
+  <path d="M44 236 C60 228 74 240 100 248 Q200 272 300 248 C326 240 340 228 356 236 C352 270 300 300 200 300 C100 300 48 270 44 236 Z" fill="#ffffff"/>
+  <path d="M80 262 Q200 296 320 262" fill="none" stroke="#f5be0b" stroke-width="5" stroke-linecap="round"/>
+</svg>

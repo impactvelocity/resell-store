@@ -1,0 +1,1 @@
+ALTER TABLE "paypal_account" ADD COLUMN "demo" boolean DEFAULT false NOT NULL;

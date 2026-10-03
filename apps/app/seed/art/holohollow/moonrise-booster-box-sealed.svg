@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400">
+  <rect width="400" height="400" fill="#ffdceb"/>
+  <g transform="translate(2 -16)">
+  <!-- box: top, side, front -->
+  <path d="M76 150 L120 112 H320 L276 150 Z" fill="#256b4c" stroke="#256b4c" stroke-width="4" stroke-linejoin="round"/>
+  <path d="M276 150 L320 112 V282 L276 320 Z" fill="#14261d" stroke="#14261d" stroke-width="4" stroke-linejoin="round"/>
+  <rect x="76" y="150" width="200" height="170" fill="#14261d" stroke="#14261d" stroke-width="4" stroke-linejoin="round"/>
+  <path d="M276 152 V318" fill="none" stroke="#256b4c" stroke-width="3" stroke-linecap="round"/>
+  <!-- logo bars -->
+  <rect x="96" y="166" width="92" height="10" rx="5" fill="#ffffff"/>
+  <rect x="96" y="182" width="56" height="8" rx="4" fill="#ffffff"/>
+  <!-- crescent moon -->
+  <path d="M124.2 210 A58 58 0 1 0 227.8 210 A52 52 0 1 1 124.2 210 Z" fill="#ffd934"/>
+  <!-- sleepy fox curled in the moon -->
+  <path d="M146 236 L144 220 L156 230 Z M154 230 L166 220 L164 236 Z" fill="#ff5fa8" stroke="#ff5fa8" stroke-width="3" stroke-linejoin="round"/>
+  <ellipse cx="184" cy="252" rx="34" ry="14" fill="#ff5fa8"/>
+  <circle cx="154" cy="244" r="14" fill="#ff5fa8"/>
+  <path d="M144 246 L130 254 L148 256 Z" fill="#ff5fa8" stroke="#ff5fa8" stroke-width="3" stroke-linejoin="round"/>
+  <circle cx="131" cy="254" r="2.5" fill="#14261d"/>
+  <path d="M146 246 q4 3 8 0" fill="none" stroke="#14261d" stroke-width="3" stroke-linecap="round"/>
+  <path d="M210 250 C232 244 234 266 208 264 H186" fill="none" stroke="#ff5fa8" stroke-width="12" stroke-linecap="round"/>
+  <circle cx="186" cy="264" r="6" fill="#ffffff"/>
+  <!-- stars -->
+  <g fill="#ffffff">
+    <path d="M244 214 l3 -9 l3 9 l9 3 l-9 3 l-3 9 l-3 -9 l-9 -3 Z"/>
+    <path d="M100 206 l2 -6 l2 6 l6 2 l-6 2 l-2 6 l-2 -6 l-6 -2 Z"/>
+    <path d="M246 282 l2 -6 l2 6 l6 2 l-6 2 l-2 6 l-2 -6 l-6 -2 Z"/>
+    <circle cx="214" cy="190" r="3"/>
+    <circle cx="96" cy="294" r="3"/>
+    <circle cx="258" cy="252" r="2.5"/>
+  </g>
+  <!-- shine on the shrink wrap -->
+  <path d="M228 160 L266 198" fill="none" stroke="#ffffff" stroke-width="3" stroke-linecap="round"/>
+  </g>
+</svg>

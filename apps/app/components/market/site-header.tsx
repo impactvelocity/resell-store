@@ -5,7 +5,8 @@ import { usePathname, useSearchParams } from "next/navigation";
 import { cn } from "@repo/ui/lib/utils";
 import { ChatIcon, HeartIcon, SearchIcon } from "@repo/ui/icons";
 import { Wordmark } from "@repo/ui/logo";
-import { siteUrl } from "../../lib/urls";
+import { signInUrl } from "../../lib/safe-next";
+import { siteUrl, storeUrl } from "../../lib/urls";
 import { SiteLink, useCurrentStore } from "./links";
 
 const nav = [
@@ -20,12 +21,29 @@ const signedInPaths = ["/account", "/messages"];
 /**
  * The marketplace header, shared by resell.store and every store subdomain.
  * Desktop: logo, search, nav, account. Under 900px the search drops to its own row.
+ *
+ * Live layouts pass `signedIn` (and the person's initial) from the session; the
+ * prototype under app/mock passes nothing and fakes it from the path.
  */
-export function MarketHeader({ signedIn: signedInProp }: { signedIn?: boolean }) {
+export function MarketHeader({
+  signedIn: signedInProp,
+  initial,
+  unread,
+}: {
+  signedIn?: boolean;
+  /** The signed-in person's initial for the account button. */
+  initial?: string;
+  /** Unread messages, for the dot on the chat button. */
+  unread?: number;
+}) {
   const pathname = usePathname();
-  const inStore = useCurrentStore() !== null;
+  const store = useCurrentStore();
+  const inStore = store !== null;
+  const live = signedInProp !== undefined;
   const signedIn =
     signedInProp ?? signedInPaths.some((p) => pathname.startsWith(p));
+  // The prototype's buyer is Maya with two unread
+  const unreadCount = live ? (unread ?? 0) : 2;
   const active = inStore ? null : nav.find((n) => pathname.startsWith(n.href));
 
   return (
@@ -36,7 +54,7 @@ export function MarketHeader({ signedIn: signedInProp }: { signedIn?: boolean })
           aria-label="resell.store"
           className="shrink-0 rounded-full"
         >
-          <Wordmark size="sm" className="gap-2.5 [&_svg]:size-8" />
+          <Wordmark size="sm" />
         </SiteLink>
 
         <SearchBox className="hidden desk:flex" />
@@ -61,7 +79,7 @@ export function MarketHeader({ signedIn: signedInProp }: { signedIn?: boolean })
 
         <div className="ml-auto flex shrink-0 items-center gap-3 desk:ml-0">
           <SiteLink
-            href="/account#favourites"
+            href="/account#saved"
             aria-label="Favourites"
             className="flex size-11 items-center justify-center rounded-full border border-public-border hover:bg-public-photo"
           >
@@ -71,28 +89,40 @@ export function MarketHeader({ signedIn: signedInProp }: { signedIn?: boolean })
             <>
               <SiteLink
                 href="/messages"
-                aria-label="Messages, 2 unread"
+                aria-label={unreadCount ? `Messages, ${unreadCount} unread` : "Messages"}
                 className="relative flex size-11 items-center justify-center rounded-full bg-leaf-900 text-white"
               >
                 <ChatIcon size={18} />
-                <span className="absolute top-0.5 right-0.5 size-2.5 rounded-full border-2 border-public-background bg-pink-400" />
+                {unreadCount > 0 && (
+                  <span className="absolute top-0.5 right-0.5 size-2.5 rounded-full border-2 border-public-background bg-pink-400" />
+                )}
               </SiteLink>
               <SiteLink
                 href="/account"
                 aria-label="Your account"
                 className="flex size-11 items-center justify-center rounded-full bg-lemon-400 font-display text-xl font-extrabold"
               >
-                M
+                {live ? (initial ?? "?") : "M"}
               </SiteLink>
             </>
           ) : (
             <>
-              <SiteLink
-                href="/sign-in"
-                className="hidden px-2 text-base font-semibold hover:underline sm:block"
-              >
-                Log in
-              </SiteLink>
+              {store ? (
+                // On a store, sign in on the marketplace and come back to this page
+                <a
+                  href={signInUrl(storeUrl(store, storePath(pathname, store)))}
+                  className="hidden px-2 text-base font-semibold hover:underline sm:block"
+                >
+                  Log in
+                </a>
+              ) : (
+                <SiteLink
+                  href="/sign-in"
+                  className="hidden px-2 text-base font-semibold hover:underline sm:block"
+                >
+                  Log in
+                </SiteLink>
+              )}
               <SiteLink
                 href="/welcome"
                 className="flex h-11 items-center rounded-full bg-leaf-900 px-4 text-sm font-semibold text-white hover:bg-leaf-600 sm:px-5 sm:text-base"
@@ -126,8 +156,17 @@ export function MarketHeader({ signedIn: signedInProp }: { signedIn?: boolean })
   );
 }
 
+/** The path as the store's visitor sees it, in case we're handed the rewritten one. */
+function storePath(pathname: string, store: string) {
+  const inner = pathname.replace(/^\/mock(?=\/)/, "");
+  const prefix = `/store/${store}`;
+  if (inner === prefix) return "/";
+  return inner.startsWith(`${prefix}/`) ? inner.slice(prefix.length) : pathname;
+}
+
 function SearchBox({ className }: { className?: string }) {
-  const inStore = useCurrentStore() !== null;
+  const store = useCurrentStore();
+  const inStore = store !== null;
   return (
     <form
       role="search"

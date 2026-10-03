@@ -6,6 +6,12 @@
       "runtimeExecutable": "pnpm",
       "runtimeArgs": ["--filter", "app", "dev"],
       "port": 5689
+    },
+    {
+      "name": "email",
+      "runtimeExecutable": "pnpm",
+      "runtimeArgs": ["--filter", "@repo/email", "preview"],
+      "port": 5690
     }
   ]
 }

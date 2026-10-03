@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400">
+  <rect width="400" height="400" fill="#ffdceb"/>
+  <!-- long flat box -->
+  <rect x="60" y="88" width="280" height="180" rx="10" fill="#14261d"/>
+  <!-- title -->
+  <rect x="80" y="102" width="104" height="10" rx="5" fill="#ffffff"/>
+  <rect x="192" y="102" width="40" height="10" rx="5" fill="#ffffff"/>
+  <!-- the sea -->
+  <rect x="74" y="124" width="252" height="130" rx="4" fill="#ddf0e3"/>
+  <!-- continents -->
+  <path d="M90 146 C104 134 140 132 160 142 C168 148 158 160 150 164 C140 168 138 182 128 188 C118 182 112 172 100 168 C90 162 84 154 90 146 Z" fill="#256b4c"/>
+  <path d="M134 196 C146 192 160 198 162 208 C162 222 150 232 142 244 C136 232 130 218 130 206 C130 200 132 197 134 196 Z" fill="#ffd934"/>
+  <path d="M190 146 C198 138 212 138 220 144 C224 152 216 160 206 162 C198 164 190 158 190 146 Z" fill="#ff5fa8"/>
+  <path d="M194 172 C208 166 230 168 236 180 C240 192 232 202 226 212 C222 224 216 234 210 240 C202 230 200 216 196 206 C188 198 186 182 194 172 Z" fill="#f5be0b"/>
+  <path d="M230 142 C248 132 288 132 310 142 C316 152 310 166 298 172 C288 178 278 174 268 182 C260 188 248 182 242 172 C234 166 226 154 230 142 Z" fill="#256b4c"/>
+  <path d="M282 206 C292 200 308 202 312 212 C314 222 304 228 292 226 C282 224 278 214 282 206 Z" fill="#ff5fa8"/>
+  <!-- wooden cubes -->
+  <rect x="112" y="290" width="26" height="26" rx="4" transform="rotate(-8 125 303)" fill="#ff5fa8"/>
+  <rect x="152" y="294" width="26" height="26" rx="4" transform="rotate(6 165 307)" fill="#8cc9a4"/>
+  <rect x="222" y="292" width="26" height="26" rx="4" transform="rotate(12 235 305)" fill="#ffd934"/>
+  <rect x="262" y="288" width="26" height="26" rx="4" transform="rotate(-4 275 301)" fill="#ffffff"/>
+</svg>

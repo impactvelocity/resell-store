@@ -1,32 +1,86 @@
 "use client";
 
-import { useId } from "react";
+import { useId, useRef, useState } from "react";
 import { Chip, ChipGroup } from "@repo/ui/chip";
 import { Input } from "@repo/ui/input";
+import { useToast } from "@repo/ui/toast";
 import { cn } from "@repo/ui/lib/utils";
+import { uploadAvatar } from "../../app/actions/profile";
 import { interests, notifyRows, profile, reachBy } from "../../lib/mock-inbox";
-import type { ProfileData } from "./profile-context";
+import { useProfile, type ProfileData } from "./profile-context";
 
 /* Form pieces shared by A7 Edit profile (phone) and Profile and settings (desktop). */
 
 export function ProfileAvatar({
   name,
+  image,
   className,
 }: {
   name: string;
+  /** The uploaded photo, shown instead of the initial. */
+  image?: string | null;
   /** Size and text size. */
   className?: string;
 }) {
   return (
     <span
       className={cn(
-        "flex size-[72px] shrink-0 items-center justify-center rounded-full bg-primary font-display text-3xl font-extrabold tracking-tight text-on-primary",
+        "flex size-[72px] shrink-0 items-center justify-center rounded-full bg-primary bg-cover bg-center font-display text-3xl font-extrabold tracking-tight text-on-primary",
         className,
       )}
+      style={image ? { backgroundImage: `url(${image})` } : undefined}
     >
-      {name.trim().charAt(0).toUpperCase() || "?"}
+      {!image && (name.trim().charAt(0).toUpperCase() || "?")}
     </span>
   );
+}
+
+/**
+ * "Change photo": a file picker that saves the photo straight away when live.
+ * Render `input` once and call `pick` from any button.
+ */
+export function useAvatarPicker() {
+  const { account, setImage } = useProfile();
+  const toast = useToast();
+  const ref = useRef<HTMLInputElement>(null);
+  const [busy, setBusy] = useState(false);
+
+  async function onFile(file: File | undefined) {
+    if (!file) return;
+    setBusy(true);
+    try {
+      const form = new FormData();
+      form.set("photo", file);
+      const result = await uploadAvatar(form);
+      if ("error" in result) toast.add({ title: result.error });
+      else {
+        setImage(result.url);
+        toast.add({ title: "New photo saved" });
+      }
+    } catch {
+      toast.add({ title: "That photo didn't upload. Try again in a moment." });
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  return {
+    busy,
+    pick: () =>
+      account.live ? ref.current?.click() : toast.add({ title: "Photo picker opens here" }),
+    input: account.live ? (
+      <input
+        ref={ref}
+        type="file"
+        accept="image/*"
+        className="hidden"
+        onChange={(event) => {
+          void onFile(event.currentTarget.files?.[0]);
+          event.currentTarget.value = "";
+        }}
+      />
+    ) : null,
+  };
 }
 
 const labelClass = "text-sm font-semibold text-text";
@@ -111,12 +165,7 @@ export function LocationField({
       <label htmlFor={id} className={cn(labelClass, "px-1 desk:px-0")}>
         Location
       </label>
-      <div
-        className={cn(
-          boxClass,
-          "flex h-[54px] items-center gap-3 px-[18px] desk:h-[52px]",
-        )}
-      >
+      <div className={cn(boxClass, "flex h-[54px] items-center gap-3 px-[18px] desk:h-[52px]")}>
         <input
           id={id}
           value={value}
@@ -124,9 +173,7 @@ export function LocationField({
           autoComplete="address-level2"
           className="h-full min-w-0 flex-1 bg-transparent text-base font-medium text-text outline-none"
         />
-        <span className="shrink-0 text-sm text-text-muted max-desk:font-medium">
-          {hint}
-        </span>
+        <span className="shrink-0 text-sm text-text-muted max-desk:font-medium">{hint}</span>
       </div>
     </div>
   );
@@ -205,12 +252,8 @@ export function NotifyRows({
             className="flex w-full items-center gap-3 border-b border-border py-[14px] last:border-b-0 desk:gap-4 desk:py-4 desk:last:border-b"
           >
             <div className="flex min-w-0 flex-1 flex-col">
-              <div className="text-base font-semibold text-text desk:font-bold">
-                {row.label}
-              </div>
-              <div className="text-sm text-text-muted">
-                {on ? row.when : "Off"}
-              </div>
+              <div className="text-base font-semibold text-text desk:font-bold">{row.label}</div>
+              <div className="text-sm text-text-muted">{on ? row.when : "Off"}</div>
             </div>
             <Switch
               checked={on}

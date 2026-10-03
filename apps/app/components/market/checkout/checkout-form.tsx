@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, type FormEvent, type KeyboardEvent } from "react";
+import { useEffect, useState, type FormEvent, type KeyboardEvent } from "react";
+import { useRouter } from "next/navigation";
 import { Button } from "@repo/ui/button";
 import { ShieldCheckIcon } from "@repo/ui/icons";
 import { cn } from "@repo/ui/lib/utils";
@@ -13,9 +14,15 @@ import {
   payLaterInstalments,
   shortPrice,
   type DeliveryId,
+  type DeliveryOption,
   type PayMethod,
 } from "../../../lib/mock-checkout";
-import { formatPrice, type Listing, type Store } from "../../../lib/mock-market";
+import { formatPrice, type Listing, type PublicListing, type PublicStore } from "../../../lib/mock-market";
+import { toDollars } from "../../../lib/money";
+import { signInHref } from "../../../lib/safe-next";
+import { buyListing } from "../../../app/actions/commerce";
+import type { SandboxLogin as Login } from "../../../lib/server/paypal";
+import { SandboxLogin } from "../../sandbox-login";
 import { SiteLink } from "../links";
 import { RadioCard, Sparkle } from "./controls";
 import { OrderItem, OrderSummary, StepList, SummaryLines, type SummaryLine } from "./order-summary";
@@ -25,26 +32,93 @@ const money = (n: number) => formatPrice(n, true);
 /** Drop a trailing Canadian postal code for the one-line phone version. */
 const shortAddress = (a: string) => a.replace(/\s+[A-Z]\d[A-Z]\s?\d[A-Z]\d$/i, "");
 
+type ShipTo = { name: string; address: string; country: string };
+
+/** What a real checkout needs on top of the listing. Amounts are dollars. */
+export type LiveCheckout = {
+  listingId: string;
+  asking: number;
+  /** The buyer's accepted offer: they pay its price instead of asking. */
+  offer: { id: string; amount: number } | null;
+  /** Tracked and express, from the server's shipping rates */
+  shipping: { tracked: number; express: number };
+  /** Last address used, else just the buyer's name to start from */
+  shipTo: ShipTo | null;
+  name: string;
+  /** Already bought: the page reloads into the paid state. */
+  paid: { item: number; total: number; delivery: DeliveryId; method: "paypal" | "card" } | null;
+  /** "paypal": paying sends the buyer to PayPal. "test": no keys, nothing moves. */
+  payments: "paypal" | "test";
+  /** Back from PayPal without paying: why (cancelled, declined…). */
+  notice?: string | null;
+  /** PayPal's test system: say so, with the shared test buyer to sign in as. */
+  sandbox?: { buyer: Login | null } | null;
+};
+
+/** Live delivery times are rough until a rate service gives real dates. */
+const liveArrives = { tracked: "in 4 to 8 days", express: "in 2 to 3 days" } as const;
+
 /**
  * P4 checkout (desktop) and P10 (phone) as one responsive form. Everything is
  * worked out from the listing price and the chosen delivery and payment.
+ *
+ * With `live`, it's a real checkout: PayPal or card only, the address is the
+ * buyer's own. Paying goes to PayPal and back (or, with no PayPal keys, places
+ * a test order on the spot). Without `live`, the prototype.
  */
-export function CheckoutForm({ listing, store }: { listing: Listing; store: Store }) {
+export function CheckoutForm({
+  listing,
+  store,
+  live,
+}: {
+  listing: PublicListing;
+  store: PublicStore;
+  live?: LiveCheckout;
+}) {
   const toast = useToast();
-  const options = deliveryOptions(listing);
-  const [deliveryId, setDeliveryId] = useState<DeliveryId>("tracked");
-  const [method, setMethod] = useState<PayMethod>("paypal");
-  const [shipTo, setShipTo] = useState({ name: buyer.name, address: buyer.address });
-  const [editingAddress, setEditingAddress] = useState(false);
+  const router = useRouter();
+  // The prototype's helpers only read the drawing and shipping off a mock listing
+  const mockListing = { ...listing, shipping: listing.shipping ?? 0 } as Listing;
+  const options: DeliveryOption[] = live
+    ? (["tracked", "express"] as const).map((id) => ({
+        id,
+        label: id === "tracked" ? "Tracked" : "Express",
+        arrives: liveArrives[id],
+        price: live.shipping[id],
+      }))
+    : deliveryOptions(mockListing);
+  const [deliveryId, setDeliveryId] = useState<DeliveryId>(live?.paid?.delivery ?? "tracked");
+  const [method, setMethod] = useState<PayMethod>(live?.paid?.method ?? "paypal");
+  const [shipTo, setShipTo] = useState<ShipTo>(
+    live
+      ? (live.shipTo ?? { name: live.name, address: "", country: "" })
+      : { name: buyer.name, address: buyer.address, country: buyer.country },
+  );
+  // A first-time buyer starts with the address open
+  const [editingAddress, setEditingAddress] = useState(!!live && !live.shipTo && !live.paid);
   const [deliveryOpen, setDeliveryOpen] = useState(false);
-  const [paid, setPaid] = useState(false);
+  const [paid, setPaid] = useState(!!live?.paid);
+  const [paidTotal, setPaidTotal] = useState<number | null>(live?.paid?.total ?? null);
+  const [pending, setPending] = useState(false);
+  const [error, setError] = useState<string | null>(live?.notice ?? null);
+  // A real checkout without PayPal keys: the order is real, no money moves
+  const test = live?.payments === "test";
+
+  // Back from PayPal with the browser's back button: the page comes back as it was left
+  useEffect(() => {
+    const reset = (e: PageTransitionEvent) => e.persisted && setPending(false);
+    window.addEventListener("pageshow", reset);
+    return () => window.removeEventListener("pageshow", reset);
+  }, []);
 
   const delivery = options.find((o) => o.id === deliveryId)!;
-  const total = listing.price + delivery.price;
+  const itemPrice = live ? (live.paid?.item ?? live.offer?.amount ?? live.asking) : listing.price;
+  const total = paidTotal ?? itemPrice + delivery.price;
   const today = Math.round((total / payLaterInstalments) * 100) / 100;
   const overLimit = total > agent.limit;
-  const n = itemNoun(listing);
+  const n = itemNoun(mockListing);
   const owner = store.owner;
+  const shipsIn = store.shipsIn ?? "";
 
   const payLabel = {
     paypal: `Pay ${money(total)} with PayPal`,
@@ -54,36 +128,93 @@ export function CheckoutForm({ listing, store }: { listing: Listing; store: Stor
   }[method];
 
   const untilInHands = `Nothing reaches the seller until the ${n.noun} ${n.is} in your hands.`;
-  const payNote = {
-    paypal: `You confirm in PayPal. ${untilInHands}`,
-    later: `You confirm in PayPal. ${untilInHands}`,
-    card: `Your card is charged now and PayPal holds it. ${untilInHands}`,
-    agent: `${agent.name} checks with you before it pays. ${untilInHands}`,
-  }[method];
-  const payNoteShort = {
-    paypal: "You confirm in PayPal before anything is charged.",
-    later: "You confirm in PayPal before anything is charged.",
-    card: "PayPal holds the money until it arrives.",
-    agent: `${agent.name} asks you before it pays.`,
-  }[method];
+  const testNote = "Test checkout: no money moves yet. PayPal is next.";
+  const payNote = test
+    ? testNote
+    : {
+        paypal: `You confirm in PayPal. ${untilInHands}`,
+        later: `You confirm in PayPal. ${untilInHands}`,
+        card: `Your card is charged now and PayPal holds it. ${untilInHands}`,
+        agent: `${agent.name} checks with you before it pays. ${untilInHands}`,
+      }[method];
+  const payNoteShort = test
+    ? "Test checkout: no money moves yet."
+    : {
+        paypal: "You confirm in PayPal before anything is charged.",
+        later: "You confirm in PayPal before anything is charged.",
+        card: "PayPal holds the money until it arrives.",
+        agent: `${agent.name} asks you before it pays.`,
+      }[method];
 
   const lines: SummaryLine[] = [
-    { label: n.label, value: money(listing.price) },
+    ...(live?.offer && !live.paid
+      ? ([
+          { label: "Asking price", value: money(live.asking), tone: "struck" },
+          { label: "Your accepted offer", value: money(live.offer.amount), tone: "strong" },
+        ] as SummaryLine[])
+      : [{ label: n.label, value: money(itemPrice) }]),
     { label: `${delivery.label} shipping`, value: money(delivery.price) },
-    { label: "Buyer protection", value: "Included", tone: "good" },
+    test
+      ? { label: "Payment", value: "Test, nothing charged" }
+      : { label: "Buyer protection", value: "Included", tone: "good" },
   ];
 
-  function pay(e: FormEvent) {
+  async function pay(e: FormEvent) {
     e.preventDefault();
+    if (!live) {
+      setPaid(true);
+      window.scrollTo({ top: 0 });
+      return;
+    }
+    if (pending) return;
+    if (editingAddress || !shipTo.address) {
+      setError("Save where it's going first, then pay.");
+      return;
+    }
+    setPending(true);
+    setError(null);
+    const res = await buyListing({
+      listingId: live.listingId,
+      offerId: live.offer?.id ?? null,
+      delivery: deliveryId,
+      payMethod: method === "card" ? "card" : "paypal",
+      shipTo,
+    });
+    if (!res.ok) {
+      setPending(false);
+      if (res.signin) return router.push(signInHref(`/checkout/${live.listingId}`));
+      setError(res.error);
+      return;
+    }
+    // Off to PayPal; it sends them back to the paid page. Stay "pending" until the page goes
+    if (res.redirect) return window.location.assign(res.redirect);
+    setPending(false);
+    setPaidTotal(toDollars(res.totalCents) ?? total);
     setPaid(true);
     window.scrollTo({ top: 0 });
   }
 
-  function saveAddress(next: { name: string; address: string }) {
-    setShipTo({
-      name: next.name.trim() || shipTo.name,
-      address: next.address.trim() || shipTo.address,
-    });
+  function saveAddress(next: ShipTo) {
+    const clean = {
+      name: next.name.trim(),
+      address: next.address.trim(),
+      country: next.country.trim(),
+    };
+    if (live) {
+      // A real parcel needs all three
+      if (!clean.name || clean.address.length < 5 || clean.country.length < 2) {
+        toast.add({ title: "Add a name, the full address and the country." });
+        return;
+      }
+      setShipTo(clean);
+      setError(null);
+    } else {
+      setShipTo({
+        name: clean.name || shipTo.name,
+        address: clean.address || shipTo.address,
+        country: shipTo.country,
+      });
+    }
     setEditingAddress(false);
     toast.add({ title: "Address updated." });
   }
@@ -111,7 +242,15 @@ export function CheckoutForm({ listing, store }: { listing: Listing; store: Stor
     <div className="mx-auto flex max-w-[1440px] flex-col px-4 pt-5 pb-40 desk:flex-row desk:items-start desk:gap-12 desk:px-16 desk:pt-14 desk:pb-20 xl:gap-24">
       <div className="flex min-w-0 grow basis-0 flex-col">
         {paid ? (
-          <PaidState method={method} total={total} today={today} owner={owner} store={store} />
+          <PaidState
+            method={method}
+            total={total}
+            today={today}
+            owner={owner}
+            shipsIn={shipsIn}
+            live={!!live}
+            test={test}
+          />
         ) : (
             <form onSubmit={pay} className="flex flex-col gap-7 desk:gap-10">
               <h1 className="sr-only font-display text-4xl font-extrabold tracking-tight desk:not-sr-only">
@@ -122,10 +261,18 @@ export function CheckoutForm({ listing, store }: { listing: Listing; store: Stor
                 <OrderItem listing={listing} storeName={store.name} size="sm" />
               </div>
 
+              {live?.offer && (
+                <p className="flex items-center gap-2.5 rounded-md bg-leaf-100 px-4 py-3.5 text-base font-semibold text-leaf-900">
+                  <ShieldCheckIcon size={20} strokeWidth={2.2} className="shrink-0 text-leaf-600" />
+                  Your offer of {money(live.offer.amount)} was accepted. That&apos;s what you pay.
+                </p>
+              )}
+
               <div className="flex flex-col desk:gap-10">
                 {/* 1. Ship to */}
                 {editingAddress ? (
                   <AddressEditor
+                    withCountry={!!live}
                     defaultValue={shipTo}
                     onSave={saveAddress}
                     onCancel={() => setEditingAddress(false)}
@@ -141,7 +288,7 @@ export function CheckoutForm({ listing, store }: { listing: Listing; store: Stor
                     <div className="hidden flex-col rounded-md bg-public-photo px-5 py-[18px] desk:flex">
                       <p className="text-base font-semibold">{shipTo.name}</p>
                       <p className="text-base text-public-text-muted">
-                        {shipTo.address}, {buyer.country}
+                        {shipTo.address}, {shipTo.country}
                       </p>
                     </div>
                     <MobileRow
@@ -210,10 +357,15 @@ export function CheckoutForm({ listing, store }: { listing: Listing; store: Stor
                     detail={
                       <Responsive
                         short="Balance, bank or card"
-                        long={`Pay from your balance, bank or card. Signed in as ${buyer.email}.`}
+                        long={
+                          live
+                            ? "Pay from your balance, bank or card."
+                            : `Pay from your balance, bank or card. Signed in as ${buyer.email}.`
+                        }
                       />
                     }
                   />
+                  {!live && (
                   <RadioCard
                     name="method"
                     value="later"
@@ -232,6 +384,7 @@ export function CheckoutForm({ listing, store }: { listing: Listing; store: Stor
                       </span>
                     }
                   />
+                  )}
                   <RadioCard
                     name="method"
                     value="card"
@@ -245,6 +398,7 @@ export function CheckoutForm({ listing, store }: { listing: Listing; store: Stor
                       />
                     }
                   />
+                  {!live && (
                   <RadioCard
                     name="method"
                     value="agent"
@@ -272,6 +426,7 @@ export function CheckoutForm({ listing, store }: { listing: Listing; store: Stor
                       </>
                     }
                   />
+                  )}
                 </div>
               </section>
 
@@ -279,10 +434,13 @@ export function CheckoutForm({ listing, store }: { listing: Listing; store: Stor
               <div className="flex gap-3 rounded-md bg-leaf-100 px-4 py-3.5 text-sm text-leaf-900 desk:hidden">
                 <ShieldCheckIcon size={20} strokeWidth={2.2} className="shrink-0 text-leaf-600" />
                 <div className="flex flex-col gap-0.5">
-                  <p className="font-bold">Your money waits with PayPal</p>
+                  <p className="font-bold">
+                    {test ? "Test checkout: no money moves yet" : "Your money waits with PayPal"}
+                  </p>
                   <p>
-                    {owner} is paid only after the {n.noun} {n.arrives} and you have had 3 days to
-                    check it.
+                    {test
+                      ? `PayPal is next. Then it holds your money until the ${n.noun} ${n.arrives} and you have had 3 days to check it.`
+                      : `${owner} is paid only after the ${n.noun} ${n.arrives} and you have had 3 days to check it.`}
                   </p>
                 </div>
               </div>
@@ -296,17 +454,31 @@ export function CheckoutForm({ listing, store }: { listing: Listing; store: Stor
                 </div>
               </div>
 
+              {live?.sandbox && !test && (
+                <SandboxLogin title="Sandbox mode: no real money" login={live.sandbox.buyer}>
+                  {live.sandbox.buyer
+                    ? "Payments go through PayPal's test system, so your real PayPal login won't work. In PayPal, sign in as the demo buyer:"
+                    : "Payments go through PayPal's test system, so sign in to PayPal with a sandbox buyer account."}
+                </SandboxLogin>
+              )}
+
+              {error && (
+                <p role="alert" className="rounded-md bg-berry-500/10 px-4 py-3 text-base font-semibold text-berry-500">
+                  {error}
+                </p>
+              )}
+
               <div className="hidden flex-col gap-3.5 desk:flex">
-                <Button type="submit" className="h-[60px] w-full text-lg text-leaf-900">
-                  {payLabel}
+                <Button type="submit" disabled={pending} className="h-[60px] w-full text-lg text-leaf-900">
+                  {pending ? (test ? "Paying..." : "Opening PayPal...") : payLabel}
                 </Button>
                 <p className="text-center text-sm text-public-text-muted">{payNote}</p>
               </div>
 
               {/* Phone: pay bar pinned to the bottom */}
               <div className="fixed inset-x-0 bottom-0 z-10 flex flex-col gap-2.5 border-t border-public-border bg-public-background px-4 pt-3 pb-[max(28px,env(safe-area-inset-bottom))] desk:hidden">
-                <Button type="submit" className="h-14 w-full text-lg text-leaf-900">
-                  {payLabel}
+                <Button type="submit" disabled={pending} className="h-14 w-full text-lg text-leaf-900">
+                  {pending ? (test ? "Paying..." : "Opening PayPal...") : payLabel}
                 </Button>
                 <p className="text-center text-xs text-public-text-muted">{payNoteShort}</p>
               </div>
@@ -323,16 +495,20 @@ export function CheckoutForm({ listing, store }: { listing: Listing; store: Stor
               {
                 marker: 1,
                 markerClass: "bg-leaf-600 text-white",
-                title: "Today: you pay, PayPal holds it",
-                body: `${owner} can see the order but not the money.`,
+                title: test ? "Today: you order" : "Today: you pay, PayPal holds it",
+                body: test
+                  ? `${owner} sees the order. This is a test checkout, so no money moves yet.`
+                  : `${owner} can see the order but not the money.`,
               },
               {
                 marker: 2,
                 markerClass: "bg-leaf-100 text-leaf-600",
-                title: /day/.test(store.shipsIn)
-                  ? `Within ${store.shipsIn}: it ships`
+                title: /day/.test(shipsIn)
+                  ? `Within ${shipsIn}: it ships`
                   : `Next: it ${n.ships}`,
-                body: "You get a tracking link by email and in your account.",
+                body: live
+                  ? "You see it in your account, with tracking if they add it."
+                  : "You get a tracking link by email and in your account.",
               },
               {
                 marker: 3,
@@ -343,7 +519,7 @@ export function CheckoutForm({ listing, store }: { listing: Listing; store: Stor
               {
                 marker: 4,
                 markerClass: "bg-leaf-100 text-leaf-600",
-                title: `You say it is good: ${owner} gets paid`,
+                title: test ? `You say it is good: it's done` : `You say it is good: ${owner} gets paid`,
                 body: "Or the 3 days pass with no problem reported.",
               },
             ]}
@@ -420,11 +596,14 @@ function MobileRow({
 /** Inline edit for the shipping address. Enter saves rather than paying. */
 function AddressEditor({
   defaultValue,
+  withCountry,
   onSave,
   onCancel,
 }: {
-  defaultValue: { name: string; address: string };
-  onSave: (next: { name: string; address: string }) => void;
+  defaultValue: ShipTo;
+  /** Live checkout asks for the country on its own line */
+  withCountry?: boolean;
+  onSave: (next: ShipTo) => void;
   onCancel: () => void;
 }) {
   const [value, setValue] = useState(defaultValue);
@@ -459,16 +638,32 @@ function AddressEditor({
           onChange={(e) => setValue({ ...value, address: e.target.value })}
           onKeyDown={onKeyDown}
           autoComplete="street-address"
+          placeholder={withCountry ? "Street, apartment, city, postcode" : undefined}
           className={field}
         />
       </label>
+      {withCountry && (
+        <label className="flex flex-col gap-1.5 text-sm font-semibold">
+          Country
+          <input
+            value={value.country}
+            onChange={(e) => setValue({ ...value, country: e.target.value })}
+            onKeyDown={onKeyDown}
+            autoComplete="country-name"
+            className={field}
+          />
+        </label>
+      )}
       <div className="flex gap-2 pb-4 desk:pb-0">
         <Button type="button" variant="secondary" size="md" onClick={() => onSave(value)}>
           Save address
         </Button>
-        <Button type="button" variant="ghost" size="md" onClick={onCancel}>
-          Cancel
-        </Button>
+        {/* Nothing to go back to the first time */}
+        {(!withCountry || defaultValue.address) && (
+          <Button type="button" variant="ghost" size="md" onClick={onCancel}>
+            Cancel
+          </Button>
+        )}
       </div>
     </section>
   );
@@ -480,21 +675,27 @@ function PaidState({
   total,
   today,
   owner,
-  store,
+  shipsIn,
+  live,
+  test,
 }: {
   method: PayMethod;
   total: number;
   today: number;
   owner: string;
-  store: Store;
+  shipsIn: string;
+  live?: boolean;
+  test?: boolean;
 }) {
-  const [title, body] = {
-    paypal: ["Paid.", `PayPal is holding ${money(total)} until it arrives.`],
-    card: ["Paid.", `PayPal is holding ${money(total)} until it arrives.`],
-    later: ["Paid.", `You paid ${money(today)} today. PayPal is holding it until it arrives.`],
-    agent: [`Sent to ${agent.name}.`, `It will ask you before it pays ${money(total)}.`],
-  }[method];
-  const ships = /day/.test(store.shipsIn) ? ` and ships within ${store.shipsIn}` : "";
+  const [title, body] = test
+    ? ["Paid.", `${money(total)} on a test checkout, so no money actually moved. The order is real.`]
+    : {
+        paypal: ["Paid.", `PayPal is holding ${money(total)} until it arrives.`],
+        card: ["Paid.", `PayPal is holding ${money(total)} until it arrives.`],
+        later: ["Paid.", `You paid ${money(today)} today. PayPal is holding it until it arrives.`],
+        agent: [`Sent to ${agent.name}.`, `It will ask you before it pays ${money(total)}.`],
+      }[method];
+  const ships = /day/.test(shipsIn) ? ` and ships within ${shipsIn}` : "";
 
   return (
     <section aria-live="polite" className="flex flex-col items-start gap-6 desk:pt-2">
@@ -505,7 +706,9 @@ function PaidState({
         <h1 className="font-display text-4xl font-extrabold tracking-tight">{title}</h1>
         <p className="text-lg text-public-text-muted">{body}</p>
         <p className="text-base text-public-text-muted">
-          {owner} has the order{ships}. You get a tracking link by email and in your account.
+          {live
+            ? `${owner} has the order. Follow it in your account, and say it's all good once it's in your hands.`
+            : `${owner} has the order${ships}. You get a tracking link by email and in your account.`}
         </p>
       </div>
       <div className="flex flex-wrap gap-3">

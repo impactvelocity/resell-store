@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400">
+  <rect width="400" height="400" fill="#ddf0e3"/>
+  <!-- cartridge with rounded top corners -->
+  <path d="M78 296 V140 Q78 104 114 104 H286 Q322 104 322 140 V296 Q322 304 314 304 H86 Q78 304 78 296 Z" fill="#ffffff"/>
+  <!-- side grips -->
+  <g fill="none" stroke="#8cc9a4" stroke-width="5" stroke-linecap="round">
+    <path d="M88 212 H102 M88 228 H102 M88 244 H102 M88 260 H102 M88 276 H102"/>
+    <path d="M298 212 H312 M298 228 H312 M298 244 H312 M298 260 H312 M298 276 H312"/>
+  </g>
+  <!-- label -->
+  <rect x="116" y="126" width="168" height="134" rx="6" fill="#c9246f"/>
+  <rect x="130" y="138" width="86" height="9" rx="4.5" fill="#ffffff"/>
+  <rect x="130" y="153" width="52" height="7" rx="3.5" fill="#ffffff"/>
+  <!-- pocket watch: chain, bow, case, face, hands -->
+  <path d="M200 176 C232 176 250 196 262 228" fill="none" stroke="#f5be0b" stroke-width="4" stroke-linecap="round" stroke-dasharray="1 8"/>
+  <circle cx="200" cy="176" r="7" fill="none" stroke="#f5be0b" stroke-width="5"/>
+  <rect x="194" y="182" width="12" height="10" rx="3" fill="#f5be0b"/>
+  <circle cx="200" cy="222" r="34" fill="#f5be0b"/>
+  <circle cx="200" cy="222" r="26" fill="#ffd934"/>
+  <path d="M200 222 V204 M200 222 L212 230" fill="none" stroke="#f5be0b" stroke-width="5" stroke-linecap="round"/>
+  <!-- lip at the bottom -->
+  <path d="M110 284 H290" fill="none" stroke="#8cc9a4" stroke-width="5" stroke-linecap="round"/>
+</svg>

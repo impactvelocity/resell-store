@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400">
+  <rect width="400" height="400" fill="#ffdceb"/>
+  <!-- long shoulder strap, behind -->
+  <path d="M124 160 C124 60 160 34 200 34 C240 34 276 60 276 160" fill="none" stroke="#f5be0b" stroke-width="9" stroke-linecap="round"/>
+  <!-- top handle -->
+  <path d="M164 156 C164 108 180 96 200 96 C220 96 236 108 236 156" fill="none" stroke="#f5be0b" stroke-width="16" stroke-linecap="round"/>
+  <!-- body -->
+  <path d="M110 150 H290 L306 300 Q309 334 276 334 H124 Q91 334 94 300 Z" fill="#f5be0b"/>
+  <!-- base stitching -->
+  <path d="M102 300 H298" fill="none" stroke="#14261d" stroke-width="4" stroke-linecap="round" stroke-dasharray="2 12"/>
+  <!-- flap -->
+  <path d="M110 150 H290 L295 214 Q200 252 105 214 Z" fill="#ffd934"/>
+  <path d="M118 210 Q200 242 282 210" fill="none" stroke="#14261d" stroke-width="4" stroke-linecap="round" stroke-dasharray="2 12"/>
+  <!-- turn-lock -->
+  <rect x="184" y="214" width="32" height="34" rx="9" fill="#14261d"/>
+  <circle cx="200" cy="231" r="7" fill="#ffd934"/>
+  <!-- hang tag -->
+  <path d="M236 156 L252 186" fill="none" stroke="#14261d" stroke-width="3" stroke-linecap="round"/>
+  <rect x="240" y="184" width="26" height="34" rx="6" transform="rotate(-14 253 201)" fill="#ffffff"/>
+  <circle cx="250" cy="192" r="3" fill="#14261d"/>
+</svg>

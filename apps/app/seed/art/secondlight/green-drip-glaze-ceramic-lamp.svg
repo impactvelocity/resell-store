@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400">
+  <rect width="400" height="400" fill="#fff6c2"/>
+  <!-- cord -->
+  <path d="M236 318 C270 330 290 316 316 328 C326 332 334 334 340 334" fill="none" stroke="#14261d" stroke-width="5" stroke-linecap="round"/>
+  <!-- finial and neck -->
+  <rect x="196" y="66" width="8" height="20" rx="4" fill="#ffd934"/>
+  <circle cx="200" cy="66" r="9" fill="#ffd934"/>
+  <rect x="184" y="176" width="32" height="34" rx="6" fill="#256b4c"/>
+  <!-- drum shade -->
+  <rect x="116" y="82" width="168" height="100" rx="10" fill="#ffffff"/>
+  <path d="M126 90 H274 M126 174 H274" fill="none" stroke="#ffd934" stroke-width="5" stroke-linecap="round"/>
+  <!-- round ceramic base and foot -->
+  <rect x="170" y="316" width="60" height="16" rx="6" fill="#256b4c"/>
+  <circle cx="200" cy="262" r="64" fill="#256b4c"/>
+  <!-- drip glaze running down from the shoulder -->
+  <path d="M145 229 A64 64 0 0 1 255 229 C255 240 250 246 245 242 C240 238 240 264 231 264 C222 264 224 242 216 244 C208 246 210 276 200 276 C190 276 194 246 184 246 C176 246 178 260 170 260 C162 260 164 240 156 240 C150 240 148 244 145 238 Z" fill="#8cc9a4"/>
+</svg>

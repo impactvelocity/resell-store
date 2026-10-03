@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useRef, useState, type ReactNode } from "react";
+import { useRef, useState, useTransition, type ReactNode } from "react";
 import { Button } from "@repo/ui/button";
 import {
   Dialog,
@@ -15,6 +15,8 @@ import { ChevronLeftIcon, ChevronRightIcon } from "@repo/ui/icons";
 import { useToast } from "@repo/ui/toast";
 import { cn } from "@repo/ui/lib/utils";
 import type { Shop, ShopVisibility } from "../../lib/mock";
+import { deleteShop, setShopPaused, updateShop } from "../../app/actions/shops";
+import { shopsHref, useViewer } from "../viewer";
 import {
   FlowBar,
   RadioDot,
@@ -23,9 +25,24 @@ import {
   VisibilityPicker,
   roundButton,
   softPill,
+  useLinkCheck,
 } from "./parts";
 
-/* B3 Shop settings. Everything is local state; Save shows a toast. */
+/*
+ * B3 Shop settings. With `live`, Save, Pause and Delete go to the server;
+ * without it (the mock) everything is local state and Save shows a toast.
+ */
+
+export type ShopSettingsLive = {
+  about: string;
+  answerQuestions: boolean;
+  haggle: boolean;
+  lowestPercent: number;
+  askHold: boolean;
+  /** The uploaded picture's URL. */
+  picture: string | null;
+  paused: boolean;
+};
 
 type Settings = {
   name: string;
@@ -47,7 +64,20 @@ const about: Record<string, string> = {
 
 const lowestOptions = [5, 10, 15, 20, 25];
 
-function initialSettings(shop: Shop): Settings {
+function initialSettings(shop: Shop, live?: ShopSettingsLive): Settings {
+  if (live) {
+    return {
+      name: shop.name,
+      link: shop.slug,
+      about: live.about,
+      visibility: shop.visibility,
+      answerQuestions: live.answerQuestions,
+      haggle: live.haggle,
+      lowest: live.lowestPercent,
+      askHold: live.askHold,
+      picture: live.picture,
+    };
+  }
   return {
     name: shop.name,
     link: shop.domain.replace(".resell.store", ""),
@@ -76,37 +106,124 @@ function Label({ children, htmlFor }: { children: ReactNode; htmlFor: string }) 
 const fieldBox =
   "rounded-md border-[1.5px] border-border bg-surface transition-colors focus-within:border-secondary focus-within:shadow-[0_0_0_0.5px_var(--color-secondary)]";
 
-export function ShopSettings({ shop }: { shop: Shop }) {
+export function ShopSettings({ shop, live }: { shop: Shop; live?: ShopSettingsLive }) {
   const toast = useToast();
   const router = useRouter();
-  const [saved, setSaved] = useState(() => initialSettings(shop));
+  const viewer = useViewer();
+  const [saved, setSaved] = useState(() => initialSettings(shop, live));
   const [s, setS] = useState(saved);
-  const [paused, setPaused] = useState(false);
+  const [paused, setPaused] = useState(live?.paused ?? false);
   const [lowestOpen, setLowestOpen] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
+  const [pictureFile, setPictureFile] = useState<File | null>(null);
+  const [busy, startBusy] = useTransition();
   const fileRef = useRef<HTMLInputElement>(null);
 
   const changes = countChanges(s, saved);
   const set = <K extends keyof Settings>(key: K, value: Settings[K]) =>
     setS((prev) => ({ ...prev, [key]: value }));
 
+  const linkState = useLinkCheck(s.link, { enabled: !!live, currentSlug: shop.slug });
+  const linkProblem =
+    !!live && (linkState === "taken" || linkState === "invalid" || linkState === "empty");
+
   function save() {
-    setSaved(s);
-    toast.add({
-      title: changes ? "Saved. Your shop is up to date." : "Nothing new to save.",
+    if (!live) {
+      setSaved(s);
+      toast.add({
+        title: changes ? "Saved. Your shop is up to date." : "Nothing new to save.",
+      });
+      return;
+    }
+    if (!changes) {
+      toast.add({ title: "Nothing new to save." });
+      return;
+    }
+    if (!s.name.trim()) {
+      toast.add({ title: "Give your shop a name first." });
+      return;
+    }
+    if (linkProblem) {
+      toast.add({ title: "Pick a link that's free." });
+      return;
+    }
+    const form = new FormData();
+    form.set("name", s.name.trim());
+    form.set("slug", s.link);
+    form.set("about", s.about);
+    form.set("visibility", s.visibility);
+    form.set("answerQuestions", String(s.answerQuestions));
+    form.set("haggle", String(s.haggle));
+    form.set("lowestPercent", String(s.lowest));
+    form.set("askHold", String(s.askHold));
+    if (pictureFile) form.set("picture", pictureFile);
+    startBusy(async () => {
+      const result = await updateShop(shop.slug, form);
+      if (!result) {
+        // The link changed and the server moved us to the new settings page
+        toast.add({ title: "Saved. Your shop is up to date." });
+        return;
+      }
+      if ("error" in result) {
+        toast.add({ title: result.error });
+        return;
+      }
+      const next = {
+        ...s,
+        name: s.name.trim(),
+        link: result.shop.slug,
+        picture: result.shop.picture,
+      };
+      setSaved(next);
+      setS(next);
+      setPictureFile(null);
+      toast.add({ title: "Saved. Your shop is up to date." });
     });
   }
 
   function togglePause() {
+    if (live) {
+      startBusy(async () => {
+        const result = await setShopPaused(shop.slug, !paused);
+        if ("error" in result) {
+          toast.add({ title: result.error });
+          return;
+        }
+        setPaused(result.paused);
+        toast.add({
+          title: result.paused ? "Shop paused. Everything's kept." : "Your shop is open again.",
+        });
+      });
+      return;
+    }
     setPaused((p) => !p);
     toast.add({
       title: paused ? "Your shop is open again." : "Shop paused. Everything's kept.",
     });
   }
 
+  function remove() {
+    setDeleteOpen(false);
+    if (!live) {
+      toast.add({ title: `${shop.name} is deleted.` });
+      router.push("/me");
+      return;
+    }
+    startBusy(async () => {
+      const result = await deleteShop(shop.slug);
+      if ("error" in result) {
+        toast.add({ title: result.error });
+        return;
+      }
+      toast.add({ title: `${shop.name} is deleted.` });
+      router.push(result.next);
+    });
+  }
+
   function onPicture(file: File | undefined) {
     if (!file) return;
     set("picture", URL.createObjectURL(file));
+    setPictureFile(file);
   }
 
   const picture = (
@@ -144,7 +261,13 @@ export function ShopSettings({ shop }: { shop: Shop }) {
       </div>
       <div className="flex flex-col gap-2">
         <Label htmlFor={`${idPrefix}-link`}>Shop link</Label>
-        <div className={cn(fieldBox, "flex h-[54px] items-center gap-0.5 px-[18px]")}>
+        <div
+          className={cn(
+            fieldBox,
+            "flex h-[54px] items-center gap-0.5 px-[18px]",
+            linkProblem && "border-danger focus-within:border-danger",
+          )}
+        >
           <input
             id={`${idPrefix}-link`}
             value={s.link}
@@ -156,6 +279,25 @@ export function ShopSettings({ shop }: { shop: Shop }) {
           />
           <span className="flex-1 text-base text-text-muted">.resell.store</span>
         </div>
+        {live && s.link !== shop.slug && (
+          <p
+            aria-live="polite"
+            className={cn(
+              "px-1 text-sm font-medium",
+              linkProblem
+                ? "text-danger"
+                : linkState === "checking"
+                  ? "text-text-muted"
+                  : "text-secondary",
+            )}
+          >
+            {linkState === "free" && "That link is free. The old one stops working when you save."}
+            {linkState === "taken" && "That link isn't available. Try another."}
+            {linkState === "invalid" && "Letters, numbers and dashes. No dash at the start or end."}
+            {linkState === "empty" && "Your shop needs a link."}
+            {linkState === "checking" && "Checking that link…"}
+          </p>
+        )}
       </div>
       <div className="flex flex-col gap-2">
         <Label htmlFor={`${idPrefix}-about`}>About this shop</Label>
@@ -183,14 +325,14 @@ export function ShopSettings({ shop }: { shop: Shop }) {
 
   const agentRows = (
     <div className="flex flex-col rounded-lg border border-border bg-surface px-4 py-0.5">
-      <AgentRow title="Answer buyers' questions" note="Only from what's in your listings">
+      <AgentRow title="Answer buyers' questions" note="Right away, from your listings. Hands you the rest.">
         <Switch
           label="Answer buyers' questions"
           checked={s.answerQuestions}
           onChange={(v) => set("answerQuestions", v)}
         />
       </AgentRow>
-      <AgentRow title="Haggle on offers" note="Counters for you. You still say yes to the sale.">
+      <AgentRow title="Haggle on offers" note="Counters lowball offers, never under your lowest. Good offers wait for your yes.">
         <Switch label="Haggle on offers" checked={s.haggle} onChange={(v) => set("haggle", v)} />
       </AgentRow>
       <button
@@ -205,7 +347,11 @@ export function ShopSettings({ shop }: { shop: Shop }) {
         <span className="text-base font-bold">{s.lowest}% off</span>
         <ChevronRightIcon size={18} strokeWidth={2.2} className="text-text-muted" />
       </button>
-      <AgentRow title="Ask for a hold with offers" note="A small deposit, so offers are serious" last>
+      <AgentRow
+        title="Ask for a hold with offers"
+        note="A small deposit, so offers are serious"
+        last
+      >
         <Switch
           label="Ask for a hold with offers"
           checked={s.askHold}
@@ -241,7 +387,8 @@ export function ShopSettings({ shop }: { shop: Shop }) {
             <button
               type="button"
               onClick={save}
-              className="flex h-10 shrink-0 cursor-pointer items-center rounded-full bg-primary px-[18px] text-sm font-bold text-on-primary transition-colors hover:bg-lemon-300"
+              disabled={busy}
+              className="flex h-10 shrink-0 cursor-pointer items-center rounded-full bg-primary px-[18px] text-sm font-bold text-on-primary transition-colors hover:bg-lemon-300 disabled:cursor-wait disabled:opacity-70"
             >
               Save
             </button>
@@ -262,7 +409,12 @@ export function ShopSettings({ shop }: { shop: Shop }) {
           {agentRows}
         </section>
         <section className="flex flex-col items-center gap-1 px-4 pt-7 pb-9">
-          <button type="button" onClick={togglePause} className={cn(softPill, "h-[52px] w-full text-base")}>
+          <button
+            type="button"
+            onClick={togglePause}
+            disabled={busy}
+            className={cn(softPill, "h-[52px] w-full text-base")}
+          >
             {paused ? "Open this shop again" : "Pause this shop"}
           </button>
           <button
@@ -277,8 +429,11 @@ export function ShopSettings({ shop }: { shop: Shop }) {
 
       {/* ---------- Desktop ---------- */}
       <div className="hidden w-full flex-col gap-7 px-12 pt-8 pb-14 desk:flex">
-        <nav aria-label="Breadcrumb" className="flex items-center gap-2 text-sm font-medium text-text-muted">
-          <Link href="/shops/mayas-closet" className="hover:text-text">
+        <nav
+          aria-label="Breadcrumb"
+          className="flex items-center gap-2 text-sm font-medium text-text-muted"
+        >
+          <Link href={shopsHref(viewer)} className="hover:text-text">
             Shops
           </Link>
           <ChevronRightIcon size={14} strokeWidth={2.4} />
@@ -299,7 +454,8 @@ export function ShopSettings({ shop }: { shop: Shop }) {
             <button
               type="button"
               onClick={save}
-              className="flex h-12 cursor-pointer items-center rounded-full bg-primary px-7 text-base font-bold text-on-primary transition-colors hover:bg-lemon-300"
+              disabled={busy}
+              className="flex h-12 cursor-pointer items-center rounded-full bg-primary px-7 text-base font-bold text-on-primary transition-colors hover:bg-lemon-300 disabled:cursor-wait disabled:opacity-70"
             >
               Save changes
             </button>
@@ -323,7 +479,7 @@ export function ShopSettings({ shop }: { shop: Shop }) {
                     : "Pausing hides the shop and keeps everything."}
                 </span>
               </div>
-              <button type="button" onClick={togglePause} className={softPill}>
+              <button type="button" onClick={togglePause} disabled={busy} className={softPill}>
                 {paused ? "Open shop" : "Pause shop"}
               </button>
               <button
@@ -387,19 +543,15 @@ export function ShopSettings({ shop }: { shop: Shop }) {
         <DialogContent>
           <DialogTitle>Delete {shop.name}?</DialogTitle>
           <DialogDescription>
-            Its listings come down and the link stops working. This can't be undone. Pausing
-            keeps everything instead.
+            Its listings come down and the link stops working. This can't be undone. Pausing keeps
+            everything instead.
           </DialogDescription>
           <div className="mt-6 flex flex-wrap justify-end gap-2">
             <DialogClose render={<Button variant="soft" size="md" />}>Keep it</DialogClose>
             <Button
               size="md"
               className="bg-danger text-on-secondary hover:bg-danger/90"
-              onClick={() => {
-                setDeleteOpen(false);
-                toast.add({ title: `${shop.name} is deleted.` });
-                router.push("/me");
-              }}
+              onClick={remove}
             >
               Delete shop
             </Button>

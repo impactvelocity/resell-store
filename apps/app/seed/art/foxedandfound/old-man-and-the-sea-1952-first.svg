@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400">
+  <rect width="400" height="400" fill="#ffdceb"/>
+  <!-- jacket, front cover straight-on -->
+  <rect x="124" y="70" width="152" height="260" rx="8" fill="#8cc9a4"/>
+  <!-- spine edge -->
+  <path d="M132 70 H142 V330 H132 Q124 330 124 322 V78 Q124 70 132 70 Z" fill="#14261d"/>
+  <!-- title bars -->
+  <rect x="162" y="94" width="82" height="10" rx="5" fill="#14261d"/>
+  <rect x="162" y="114" width="52" height="8" rx="4" fill="#14261d"/>
+  <!-- the little sailboat -->
+  <path d="M208 230 V164" fill="none" stroke="#14261d" stroke-width="4" stroke-linecap="round"/>
+  <path d="M213 168 L213 224 L250 224 Z" fill="#ffffff" stroke="#ffffff" stroke-width="3" stroke-linejoin="round"/>
+  <path d="M203 178 L203 224 L178 224 Z" fill="#ffffff" stroke="#ffffff" stroke-width="3" stroke-linejoin="round"/>
+  <path d="M176 230 H242 Q238 242 228 244 H190 Q180 242 176 230 Z" fill="#14261d"/>
+  <!-- the sea -->
+  <g fill="none" stroke="#256b4c" stroke-width="6" stroke-linecap="round">
+    <path d="M160 258 q10 -9 20 0 t20 0 t20 0 t20 0 t20 0"/>
+    <path d="M160 280 q10 -9 20 0 t20 0 t20 0 t20 0 t20 0"/>
+    <path d="M160 302 q10 -9 20 0 t20 0 t20 0 t20 0 t20 0"/>
+  </g>
+</svg>

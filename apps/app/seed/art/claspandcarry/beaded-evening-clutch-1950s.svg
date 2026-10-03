@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400">
+  <rect width="400" height="400" fill="#ffdceb"/>
+  <!-- short chain looped beside the frame -->
+  <path d="M110 194 C74 176 72 120 112 112 C142 106 152 136 146 170" fill="none" stroke="#ffd934" stroke-width="7" stroke-linecap="round" stroke-dasharray="7 7"/>
+  <!-- beaded body -->
+  <path d="M106 190 H294 C322 190 330 222 324 258 C316 304 276 316 200 316 C124 316 84 304 76 258 C70 222 78 190 106 190 Z" fill="#ffffff"/>
+  <!-- bead swirls -->
+  <g fill="none" stroke="#ff5fa8" stroke-width="5" stroke-linecap="round" stroke-dasharray="0.1 11">
+    <path d="M140 258 C140 246 156 246 156 258 C156 274 128 274 126 256 C124 234 160 230 168 252"/>
+    <path d="M200 268 C200 256 216 256 216 268 C216 284 188 284 186 266 C184 244 220 240 228 262"/>
+    <path d="M262 254 C262 242 278 242 278 254 C278 270 250 270 248 252 C246 230 282 226 290 248"/>
+    <path d="M100 222 Q200 236 300 222"/>
+    <path d="M110 296 Q200 306 290 296"/>
+  </g>
+  <!-- kiss-lock frame -->
+  <path d="M96 198 Q200 172 304 198" fill="none" stroke="#ffd934" stroke-width="12" stroke-linecap="round"/>
+  <circle cx="96" cy="198" r="9" fill="#ffd934"/>
+  <circle cx="304" cy="198" r="9" fill="#ffd934"/>
+  <!-- the two kiss-lock beads -->
+  <circle cx="189" cy="172" r="12" fill="#f5be0b"/>
+  <circle cx="211" cy="172" r="12" fill="#f5be0b"/>
+</svg>

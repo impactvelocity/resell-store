@@ -199,7 +199,7 @@ function FieldRow({
     >
       <div
         className={cn(
-          "w-[84px] shrink-0 text-sm font-medium whitespace-nowrap text-text-muted",
+          "w-[96px] shrink-0 text-sm leading-5 font-medium text-pretty break-words text-text-muted",
           field.justChanged && "pt-0.5",
         )}
       >

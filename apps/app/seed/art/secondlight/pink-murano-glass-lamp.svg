@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400">
+  <rect width="400" height="400" fill="#fff6c2"/>
+  <!-- finial -->
+  <rect x="196" y="66" width="8" height="20" rx="4" fill="#ffd934"/>
+  <circle cx="200" cy="66" r="9" fill="#ffd934"/>
+  <!-- neck -->
+  <rect x="190" y="178" width="20" height="28" rx="5" fill="#c9246f"/>
+  <!-- empire shade -->
+  <path d="M166 84 H234 Q240 84 243 90 L290 176 Q294 186 282 186 H118 Q106 186 110 176 L157 90 Q160 84 166 84 Z" fill="#ffdceb"/>
+  <!-- pleats -->
+  <g fill="none" stroke="#ff5fa8" stroke-width="3" stroke-linecap="round">
+    <path d="M176 94 L138 176"/>
+    <path d="M188 94 L168 176"/>
+    <path d="M200 94 V176"/>
+    <path d="M212 94 L232 176"/>
+    <path d="M224 94 L262 176"/>
+  </g>
+  <!-- foot -->
+  <rect x="164" y="312" width="72" height="20" rx="8" fill="#c9246f"/>
+  <!-- ribbed glass base, swirling up like a shell -->
+  <path d="M200 198 C172 212 140 240 140 270 C140 302 166 318 200 318 C234 318 260 302 260 270 C260 240 228 212 200 198 Z" fill="#ff5fa8"/>
+  <g fill="none" stroke="#c9246f" stroke-width="5" stroke-linecap="round">
+    <path d="M152 292 C162 256 182 228 200 206"/>
+    <path d="M176 312 C186 270 198 236 202 212"/>
+    <path d="M208 314 C220 278 220 240 206 214"/>
+    <path d="M240 304 C252 270 238 238 212 214"/>
+  </g>
+</svg>

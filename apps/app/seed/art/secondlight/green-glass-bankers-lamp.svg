@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400">
+  <rect width="400" height="400" fill="#fff6c2"/>
+  <!-- upright arm, curving up to the shade -->
+  <path d="M200 296 V250 C200 230 214 220 214 200 V186" fill="none" stroke="#f5be0b" stroke-width="14" stroke-linecap="round" stroke-linejoin="round"/>
+  <!-- oval base -->
+  <rect x="112" y="290" width="176" height="36" rx="18" fill="#f5be0b"/>
+  <rect x="164" y="284" width="72" height="14" rx="7" fill="#f5be0b"/>
+  <!-- pull chain with bead -->
+  <path d="M262 196 V242" fill="none" stroke="#f5be0b" stroke-width="4" stroke-linecap="round" stroke-dasharray="1 7"/>
+  <circle cx="262" cy="250" r="7" fill="#f5be0b"/>
+  <!-- half-cylinder glass shade, white inner edge -->
+  <path d="M92 196 C92 136 136 112 200 112 C264 112 308 136 308 196 Z" fill="#256b4c"/>
+  <rect x="86" y="186" width="228" height="16" rx="8" fill="#ffffff"/>
+  <!-- finial on the shade -->
+  <circle cx="200" cy="112" r="9" fill="#f5be0b"/>
+</svg>

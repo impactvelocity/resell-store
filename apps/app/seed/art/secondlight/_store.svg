@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400">
+  <rect width="400" height="400" fill="#fff6c2"/>
+  <!-- glow spilling from under the shade -->
+  <g fill="none" stroke="#f5be0b" stroke-width="6" stroke-linecap="round">
+    <path d="M110 210 L92 226"/>
+    <path d="M126 222 L114 244"/>
+    <path d="M290 210 L308 226"/>
+    <path d="M274 222 L286 244"/>
+  </g>
+  <!-- stem and base -->
+  <rect x="190" y="180" width="20" height="100" rx="6" fill="#f5be0b"/>
+  <rect x="148" y="274" width="104" height="26" rx="13" fill="#f5be0b"/>
+  <!-- bulb glow under the shade -->
+  <ellipse cx="200" cy="194" rx="56" ry="14" fill="#ffd934"/>
+  <!-- cone shade -->
+  <path d="M164 98 H236 L282 182 Q286 190 276 190 H124 Q114 190 118 182 Z" fill="#ffd934"/>
+  <rect x="112" y="178" width="176" height="14" rx="7" fill="#14261d"/>
+  <!-- finial -->
+  <circle cx="200" cy="90" r="9" fill="#14261d"/>
+</svg>

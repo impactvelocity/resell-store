@@ -22,13 +22,13 @@ type Sort = "newest" | "price-asc" | "price-desc";
 type Price = "any" | "under-25" | "25-100" | "over-100";
 type ShipsTo = "canada" | "us" | "anywhere";
 
-const sortOptions: DropOption<Sort>[] = [
+export const sortOptions: DropOption<Sort>[] = [
   { value: "newest", label: "Newest first" },
   { value: "price-asc", label: "Price, low to high" },
   { value: "price-desc", label: "Price, high to low" },
 ];
 
-const priceOptions: DropOption<Price>[] = [
+export const priceOptions: DropOption<Price>[] = [
   { value: "any", label: "Any price" },
   { value: "under-25", label: "Under $25" },
   { value: "25-100", label: "$25 to $100" },
@@ -281,7 +281,7 @@ export function DiscoverView({
   );
 }
 
-function CategoryChip({
+export function CategoryChip({
   active,
   onClick,
   children,
@@ -308,7 +308,7 @@ function CategoryChip({
 }
 
 /** Looks like a filter dropdown; the prototype doesn't have these filters yet. */
-function FakeDrop({
+export function FakeDrop({
   onClick,
   children,
 }: {

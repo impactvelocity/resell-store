@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400">
+  <rect width="400" height="400" fill="#ffdceb"/>
+  <!-- cloth binding, straight-on -->
+  <rect x="124" y="70" width="152" height="260" rx="8" fill="#256b4c"/>
+  <!-- spine edge -->
+  <path d="M132 70 H142 V330 H132 Q124 330 124 322 V78 Q124 70 132 70 Z" fill="#14261d"/>
+  <!-- gilt frame with corner flourishes -->
+  <rect x="160" y="96" width="94" height="208" rx="10" fill="none" stroke="#ffd934" stroke-width="5"/>
+  <g fill="#ffd934">
+    <circle cx="160" cy="96" r="8"/><circle cx="254" cy="96" r="8"/><circle cx="160" cy="304" r="8"/><circle cx="254" cy="304" r="8"/>
+    <circle cx="207" cy="96" r="5"/><circle cx="207" cy="304" r="5"/>
+  </g>
+  <path d="M176 116 H238 M176 284 H238" fill="none" stroke="#ffd934" stroke-width="3" stroke-linecap="round" stroke-dasharray="1 8"/>
+  <!-- rabbit, sitting up -->
+  <g fill="#ffd934">
+    <ellipse cx="206" cy="228" rx="22" ry="28"/>
+    <circle cx="200" cy="186" r="15"/>
+    <ellipse cx="192" cy="160" rx="5" ry="16" transform="rotate(-10 192 160)"/>
+    <ellipse cx="206" cy="158" rx="5" ry="16" transform="rotate(8 206 158)"/>
+    <circle cx="228" cy="246" r="7"/>
+    <ellipse cx="198" cy="256" rx="14" ry="6"/>
+  </g>
+  <circle cx="195" cy="184" r="2.5" fill="#256b4c"/>
+</svg>

@@ -1,0 +1,29 @@
+{
+  "name": "@repo/mcp",
+  "version": "0.1.0",
+  "private": true,
+  "description": "MCP servers for resell.store, built on the public API: one for running your shops, one for shopping.",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "bin": {
+    "resell-mcp": "./dist/stdio.js"
+  },
+  "scripts": {
+    "build": "esbuild src/stdio.ts --bundle --platform=node --format=esm --target=node20 --outfile=dist/stdio.js --banner:js=\"#!/usr/bin/env node\"",
+    "check-types": "tsc --noEmit",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/server": "2.3.0",
+    "zod": "^4.6.5"
+  },
+  "devDependencies": {
+    "@repo/typescript-config": "workspace:*",
+    "@types/node": "26.4.1",
+    "esbuild": "^0.25.0",
+    "typescript": "7.0.2",
+    "vitest": "^5.0.3"
+  }
+}

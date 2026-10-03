@@ -14,11 +14,10 @@ import {
 } from "@repo/ui/icons";
 import { useToast } from "@repo/ui/toast";
 import { cn } from "@repo/ui/lib/utils";
-import { shops } from "../../lib/mock";
-import { profile } from "../../lib/mock-inbox";
+import { shopsHref, useViewer } from "../viewer";
 import { useProfile } from "./profile-context";
 import { ProfileAvatar } from "./profile-fields";
-import { publicProfileHref, useLogOut } from "./profile-settings";
+import { useLogOut } from "./profile-settings";
 
 /*
  * A6 Me, phone only. On a phone, Shops, Sales, Stats and all Tools live here
@@ -75,25 +74,17 @@ function MenuRow({ row }: { row: Row }) {
   const inner = (
     <>
       <span
-        className={cn(
-          "flex size-9 shrink-0 items-center justify-center rounded-full",
-          row.tile,
-        )}
+        className={cn("flex size-9 shrink-0 items-center justify-center rounded-full", row.tile)}
       >
         {row.icon}
       </span>
       <span
-        className={cn(
-          "flex-1 text-base font-semibold",
-          row.danger ? "text-danger" : "text-text",
-        )}
+        className={cn("flex-1 text-base font-semibold", row.danger ? "text-danger" : "text-text")}
       >
         {row.label}
       </span>
       {row.trailing}
-      {!row.danger && (
-        <ChevronRightIcon size={18} strokeWidth={2.2} className="text-text-muted" />
-      )}
+      {!row.danger && <ChevronRightIcon size={18} strokeWidth={2.2} className="text-text-muted" />}
     </>
   );
   const cls =
@@ -124,33 +115,29 @@ function MenuSection({ label, rows }: { label: string; rows: Row[] }) {
   );
 }
 
-const muted = (text: string) => (
-  <span className="text-sm font-medium text-text-muted">{text}</span>
-);
+const muted = (text: string) => <span className="text-sm font-medium text-text-muted">{text}</span>;
 
 export function MeMenu({ className }: { className?: string }) {
-  const { saved } = useProfile();
+  const { saved, account: profileAccount } = useProfile();
+  const viewer = useViewer();
   const toast = useToast();
   const logOut = useLogOut();
+  const { shops } = viewer;
 
   const selling: Row[] = [
     {
-      label: "Your shops",
+      label: shops.length ? "Your shops" : "Open a shop",
       icon: <BagIcon size={18} />,
       tile: "bg-primary-soft",
-      href: `/shops/${shops[0]!.slug}`,
-      trailing: muted(String(shops.length)),
+      href: shopsHref(viewer),
+      trailing: shops.length ? muted(String(shops.length)) : undefined,
     },
     {
       label: "Sales and payouts",
-      icon: (
-        <span className="font-display text-lg leading-6 font-extrabold text-secondary">
-          $
-        </span>
-      ),
+      icon: <span className="font-display text-lg leading-6 font-extrabold text-secondary">$</span>,
       tile: "bg-secondary-soft",
       href: "/sales",
-      trailing: muted("1 to ship"),
+      trailing: profileAccount.live ? undefined : muted("1 to ship"),
     },
     {
       label: "Stats",
@@ -166,7 +153,7 @@ export function MeMenu({ className }: { className?: string }) {
       icon: <PlugIcon size={18} strokeWidth={2.2} className="text-secondary" />,
       tile: "bg-secondary-soft",
       href: "/tools/connections",
-      trailing: muted("PayPal, Instagram"),
+      trailing: profileAccount.live ? undefined : muted("PayPal, Instagram"),
     },
     {
       label: "Connect your agent",
@@ -222,13 +209,13 @@ export function MeMenu({ className }: { className?: string }) {
   return (
     <div className={cn("w-full flex-col pb-4", className)}>
       <div className="flex w-full items-center gap-4 px-5 pt-[max(16px,env(safe-area-inset-top))]">
-        <ProfileAvatar name={saved.name} />
+        <ProfileAvatar name={saved.name} image={profileAccount.image} />
         <div className="flex min-w-0 flex-1 flex-col gap-0.5">
           <h1 className="font-display text-2xl font-extrabold tracking-tight text-text">
             {saved.name}
           </h1>
           <p className="text-sm text-text-muted">
-            {saved.location}. {profile.since}
+            {saved.location ? `${saved.location}. ${profileAccount.since}` : profileAccount.since}
           </p>
         </div>
       </div>
@@ -242,15 +229,17 @@ export function MeMenu({ className }: { className?: string }) {
         >
           Edit profile
         </Button>
-        <Button
-          variant="soft"
-          size="md"
-          className="flex-1"
-          render={<Link href={publicProfileHref} />}
-          nativeButton={false}
-        >
-          See public profile
-        </Button>
+        {profileAccount.publicHref && (
+          <Button
+            variant="soft"
+            size="md"
+            className="flex-1"
+            render={<Link href={profileAccount.publicHref} />}
+            nativeButton={false}
+          >
+            See public profile
+          </Button>
+        )}
       </div>
       <MenuSection label="Selling" rows={selling} />
       <MenuSection label="Tools" rows={tools} />

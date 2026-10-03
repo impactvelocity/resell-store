@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400">
+  <rect width="400" height="400" fill="#ddf0e3"/>
+  <g transform="translate(200 200) scale(0.8) translate(-200 -200)">
+  <!-- body, with the big rounded corner -->
+  <path d="M130 32 H270 Q288 32 288 50 V308 Q288 368 228 368 H130 Q112 368 112 350 V50 Q112 32 130 32 Z" fill="#ffffff"/>
+  <path d="M112 54 H288" fill="none" stroke="#ddf0e3" stroke-width="3"/>
+  <!-- screen bezel and screen -->
+  <path d="M138 70 H262 Q270 70 270 78 V164 Q270 184 250 184 H138 Q130 184 130 176 V78 Q130 70 138 70 Z" fill="#14261d"/>
+  <circle cx="145" cy="118" r="4" fill="#ff5fa8"/>
+  <rect x="160" y="84" width="88" height="80" rx="3" fill="#8cc9a4"/>
+  <!-- falling blocks -->
+  <g fill="#256b4c">
+    <rect x="196" y="94" width="10" height="10"/><rect x="206" y="94" width="10" height="10"/><rect x="206" y="104" width="10" height="10"/><rect x="216" y="104" width="10" height="10"/>
+    <rect x="166" y="144" width="10" height="10"/><rect x="176" y="144" width="10" height="10"/><rect x="186" y="144" width="10" height="10"/><rect x="176" y="134" width="10" height="10"/>
+    <rect x="216" y="144" width="10" height="10"/><rect x="226" y="144" width="10" height="10"/><rect x="226" y="134" width="10" height="10"/><rect x="236" y="144" width="10" height="10"/>
+  </g>
+  <!-- d-pad -->
+  <rect x="146" y="226" width="16" height="48" rx="3" fill="#14261d"/>
+  <rect x="130" y="242" width="48" height="16" rx="3" fill="#14261d"/>
+  <!-- A and B -->
+  <circle cx="258" cy="236" r="15" fill="#c9246f"/>
+  <circle cx="226" cy="254" r="15" fill="#c9246f"/>
+  <!-- select and start -->
+  <rect x="166" y="294" width="26" height="9" rx="4.5" transform="rotate(-25 179 298)" fill="#14261d"/>
+  <rect x="202" y="294" width="26" height="9" rx="4.5" transform="rotate(-25 215 298)" fill="#14261d"/>
+  <!-- speaker -->
+  <g stroke="#14261d" stroke-width="5" stroke-linecap="round">
+    <path d="M236 340 L262 306"/><path d="M248 342 L272 310"/><path d="M226 334 L250 302"/>
+  </g>
+  </g>
+</svg>

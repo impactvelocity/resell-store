@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400">
+  <rect width="400" height="400" fill="#ffdceb"/>
+  <!-- jacket, front cover straight-on -->
+  <rect x="124" y="70" width="152" height="260" rx="8" fill="#ddf0e3"/>
+  <!-- title bars -->
+  <rect x="162" y="94" width="82" height="10" rx="5" fill="#14261d"/>
+  <rect x="162" y="114" width="52" height="8" rx="4" fill="#14261d"/>
+  <!-- sun -->
+  <circle cx="234" cy="164" r="17" fill="#ffd934"/>
+  <!-- mountains: the far ink peak, then two green ones -->
+  <path d="M174 286 L214 190 L254 286 Z" fill="#14261d" stroke="#14261d" stroke-width="6" stroke-linejoin="round"/>
+  <path d="M150 300 L188 222 L226 300 Z" fill="#256b4c" stroke="#256b4c" stroke-width="6" stroke-linejoin="round"/>
+  <path d="M206 300 L240 240 L268 300 Z" fill="#256b4c" stroke="#256b4c" stroke-width="6" stroke-linejoin="round"/>
+  <!-- spine edge -->
+  <path d="M132 70 H142 V330 H132 Q124 330 124 322 V78 Q124 70 132 70 Z" fill="#14261d"/>
+</svg>

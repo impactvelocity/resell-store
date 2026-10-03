@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 import { cn } from "@repo/ui/lib/utils";
-import type { Listing } from "../../../lib/mock-market";
-import { ItemArt } from "../art";
+import type { PublicListing } from "../../../lib/mock-market";
+import { ListingImage } from "../parts";
 
 /** Thumb, title and seller: the top of the summary card, and P10's item row. */
 export function OrderItem({
@@ -9,7 +9,7 @@ export function OrderItem({
   storeName,
   size = "md",
 }: {
-  listing: Listing;
+  listing: PublicListing;
   storeName: string;
   size?: "sm" | "md";
 }) {
@@ -18,11 +18,11 @@ export function OrderItem({
     <div className={cn("flex items-center", sm ? "gap-3.5" : "gap-4")}>
       <div
         className={cn(
-          "flex shrink-0 items-center justify-center rounded-[12px] bg-public-photo",
+          "flex shrink-0 items-center justify-center overflow-hidden rounded-[12px] bg-public-photo",
           sm ? "size-16" : "size-20",
         )}
       >
-        <ItemArt art={listing.art} size={sm ? 40 : 50} />
+        <ListingImage photo={listing.photo} art={listing.art} artSize={sm ? 40 : 50} />
       </div>
       <div className="flex min-w-0 flex-col gap-0.5">
         <p className="text-base font-bold">{listing.fullTitle ?? listing.title}</p>
@@ -70,7 +70,7 @@ export function OrderSummary({
   footer,
   className,
 }: {
-  listing: Listing;
+  listing: PublicListing;
   storeName: string;
   lines: SummaryLine[];
   footer: ReactNode;

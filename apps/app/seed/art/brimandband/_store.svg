@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400">
+  <rect width="400" height="400" fill="#ddf0e3"/>
+  <g transform="translate(200 200) scale(0.72) translate(-200 -206)">
+  <!-- underside of the brim, seen at the back -->
+  <path d="M54 244 Q120 214 200 214 Q280 214 346 244 Q200 268 54 244 Z" fill="#14261d"/>
+  <!-- crown with the cattleman crease -->
+  <path d="M128 246 C122 190 132 140 160 112 C176 126 188 124 200 116 C212 124 224 126 240 112 C268 140 278 190 272 246 Z" fill="#256b4c"/>
+  <path d="M200 126 V176" fill="none" stroke="#8cc9a4" stroke-width="8" stroke-linecap="round"/>
+  <!-- lemon band -->
+  <path d="M126 210 Q200 222 274 210 L273 246 Q200 256 127 246 Z" fill="#ffd934"/>
+  <!-- brim, curling up at the sides -->
+  <path d="M44 236 C60 228 74 240 100 248 Q200 272 300 248 C326 240 340 228 356 236 C352 270 300 300 200 300 C100 300 48 270 44 236 Z" fill="#256b4c"/>
+  <path d="M80 262 Q200 296 320 262" fill="none" stroke="#8cc9a4" stroke-width="6" stroke-linecap="round"/>
+  </g>
+</svg>

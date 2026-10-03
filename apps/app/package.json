@@ -8,14 +8,32 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint --max-warnings 0",
-    "check-types": "next typegen && tsc --noEmit"
+    "check-types": "next typegen && tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "workflows": "tsx --tsconfig workflows/tsconfig.json --import ./workflows/server-only.mjs workflows/main.ts",
+    "sweeps:start": "tsx scripts/start-sweeps.ts",
+    "seed": "tsx --env-file-if-exists=.env.local --import ./workflows/server-only.mjs scripts/seed.ts",
+    "seed:art": "tsx scripts/seed-art.ts"
   },
   "dependencies": {
-    "@clerk/nextjs": "^7.9.10",
+    "@ai-sdk/anthropic": "^4.0.71",
+    "@ai-sdk/react": "^4.0.130",
+    "@onkernel/sdk": "^0.119.0",
+    "@renderinc/sdk": "^1.2.0",
+    "@repo/db": "workspace:^",
+    "@repo/email": "workspace:^",
+    "@repo/mcp": "workspace:^",
     "@repo/ui": "workspace:*",
+    "ai": "^7.0.127",
+    "aws4fetch": "^1.0.20",
+    "better-auth": "^1.7.7",
+    "motion": "^14.0.0",
     "next": "16.3.4",
     "react": "19.2.8",
-    "react-dom": "19.2.8"
+    "react-dom": "19.2.8",
+    "server-only": "^0.0.1",
+    "zod": "^4.6.5"
   },
   "devDependencies": {
     "@repo/eslint-config": "workspace:*",
@@ -26,7 +44,10 @@
     "@types/react-dom": "19.2.5",
     "eslint": "10.9.1",
     "postcss": "^8.5.28",
+    "sharp": "^0.35.4",
     "tailwindcss": "^4.3.3",
-    "typescript": "7.0.2"
+    "tsx": "^4.23.15",
+    "typescript": "7.0.2",
+    "vitest": "^5.0.3"
   }
 }

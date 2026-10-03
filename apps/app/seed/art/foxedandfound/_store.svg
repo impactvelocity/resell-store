@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400">
+  <rect width="400" height="400" fill="#ffdceb"/>
+  <!-- three hardcovers lying in a stack, spines to the front -->
+  <!-- bottom book -->
+  <rect x="100" y="218" width="200" height="46" rx="7" fill="#256b4c"/>
+  <path d="M126 225 V257 M274 225 V257" fill="none" stroke="#ffd934" stroke-width="5" stroke-linecap="round"/>
+  <rect x="160" y="235" width="80" height="12" rx="6" fill="#ffd934"/>
+  <!-- middle book -->
+  <rect x="120" y="175" width="174" height="40" rx="7" fill="#f5be0b"/>
+  <path d="M144 182 V208 M270 182 V208" fill="none" stroke="#14261d" stroke-width="4" stroke-linecap="round"/>
+  <rect x="176" y="190" width="62" height="10" rx="5" fill="#14261d"/>
+  <!-- top book -->
+  <rect x="110" y="136" width="176" height="36" rx="7" fill="#ff5fa8"/>
+  <path d="M134 143 V165 M262 143 V165" fill="none" stroke="#ffffff" stroke-width="4" stroke-linecap="round"/>
+  <rect x="166" y="149" width="64" height="10" rx="5" fill="#ffffff"/>
+  <!-- bookmark ribbon hanging from the top book -->
+  <path d="M244 172 V236 L251 228 L258 236 V172 Z" fill="#c9246f" stroke="#c9246f" stroke-width="2" stroke-linejoin="round"/>
+</svg>

@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400">
+  <rect width="400" height="400" fill="#ddf0e3"/>
+  <!-- far side of the wide brim -->
+  <path d="M62 246 Q120 216 200 216 Q280 216 338 246 Q200 272 62 246 Z" fill="#ffd934"/>
+  <!-- teardrop crown, pinched at the front -->
+  <path d="M136 244 C132 196 138 156 154 132 C162 120 178 116 190 122 Q200 128 210 122 C222 116 238 120 246 132 C262 156 268 196 264 244 Z" fill="#ffd934"/>
+  <!-- weave -->
+  <g fill="none" stroke="#f5be0b" stroke-width="3" stroke-linecap="round" stroke-dasharray="6 8">
+    <path d="M158 142 H242"/>
+    <path d="M148 160 H252" stroke-dashoffset="7"/>
+    <path d="M144 178 H256"/>
+    <path d="M140 196 H260" stroke-dashoffset="7"/>
+  </g>
+  <!-- pinches and centre crease -->
+  <g fill="none" stroke="#f5be0b" stroke-width="6" stroke-linecap="round">
+    <path d="M200 132 V170"/>
+    <path d="M170 136 Q164 156 172 176"/>
+    <path d="M230 136 Q236 156 228 176"/>
+  </g>
+  <!-- black ribbon band -->
+  <path d="M136 208 Q200 218 264 208 L265 244 Q200 254 135 244 Z" fill="#14261d"/>
+  <!-- near side of the brim -->
+  <path d="M60 244 C80 236 104 244 130 250 Q200 266 270 250 C296 244 320 236 340 244 C338 270 290 290 200 290 C110 290 62 270 60 244 Z" fill="#ffd934"/>
+  <g fill="none" stroke="#f5be0b" stroke-width="3" stroke-linecap="round" stroke-dasharray="6 8">
+    <path d="M90 258 Q200 286 310 258"/>
+    <path d="M104 272 Q200 294 296 272" stroke-dashoffset="7"/>
+  </g>
+</svg>

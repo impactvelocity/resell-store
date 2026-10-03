@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Fragment, type ReactNode } from "react";
 import { CheckIcon, ChevronLeftIcon, CloseIcon } from "@repo/ui/icons";
-import { LemonMark } from "@repo/ui/logo";
+import { DotMark } from "@repo/ui/logo";
 import { cn } from "@repo/ui/lib/utils";
 import { Composer } from "../agent-chat/agent-chat";
 import { stepHref, steps } from "../workspace/listing-workspace";
@@ -94,7 +94,7 @@ export function LiveWorkspace({
       <header className="hidden h-[72px] shrink-0 items-center justify-between border-b border-border bg-surface px-6 desk:flex">
         <div className="flex min-w-0 flex-1 items-center gap-3.5 xl:w-[340px] xl:flex-none">
           <Link href="/home" aria-label="Home">
-            <LemonMark size={32} />
+            <DotMark />
           </Link>
           <div className="flex min-w-0 flex-col text-sm">
             <span className="truncate font-bold">{title}</span>

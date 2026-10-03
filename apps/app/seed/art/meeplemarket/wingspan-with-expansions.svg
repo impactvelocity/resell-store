@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400">
+  <rect width="400" height="400" fill="#ffdceb"/>
+  <!-- box lid with its rim -->
+  <rect x="70" y="70" width="260" height="260" rx="10" fill="#8cc9a4"/>
+  <rect x="80" y="80" width="240" height="240" rx="6" fill="#ddf0e3"/>
+  <!-- title -->
+  <rect x="98" y="96" width="112" height="10" rx="5" fill="#14261d"/>
+  <rect x="98" y="113" width="64" height="8" rx="4" fill="#14261d"/>
+  <!-- sun -->
+  <circle cx="200" cy="194" r="62" fill="#ffd934"/>
+  <!-- wings and tail -->
+  <g fill="#c9246f" stroke="#c9246f" stroke-width="4" stroke-linejoin="round">
+    <path d="M186 198 C160 172 124 160 94 164 C102 178 112 184 124 188 C114 196 110 202 106 210 C120 214 132 214 144 212 C138 220 136 226 134 234 C154 232 170 226 186 228 Z"/>
+    <path d="M214 198 C240 172 276 160 306 164 C298 178 288 184 276 188 C286 196 290 202 294 210 C280 214 268 214 256 212 C262 220 264 226 266 234 C246 232 230 226 214 228 Z"/>
+    <path d="M190 246 L178 282 Q200 290 222 282 L210 246 Z"/>
+  </g>
+  <!-- body and head -->
+  <ellipse cx="200" cy="218" rx="26" ry="40" fill="#ff5fa8"/>
+  <circle cx="200" cy="166" r="21" fill="#ff5fa8"/>
+  <circle cx="193" cy="162" r="3" fill="#14261d"/>
+  <circle cx="207" cy="162" r="3" fill="#14261d"/>
+  <path d="M195 171 H205 L200 180 Z" fill="#ffd934" stroke="#ffd934" stroke-width="3" stroke-linejoin="round"/>
+  <!-- breast feathers -->
+  <path d="M190 210 Q195 216 200 210 Q205 216 210 210 M190 228 Q195 234 200 228 Q205 234 210 228" fill="none" stroke="#ffdceb" stroke-width="4" stroke-linecap="round"/>
+  <!-- eggs -->
+  <ellipse cx="124" cy="294" rx="11" ry="14" fill="#8cc9a4"/>
+  <ellipse cx="150" cy="296" rx="11" ry="14" fill="#ffd934"/>
+  <ellipse cx="250" cy="296" rx="11" ry="14" fill="#ffdceb"/>
+  <ellipse cx="276" cy="294" rx="11" ry="14" fill="#8cc9a4"/>
+</svg>

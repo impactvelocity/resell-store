@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400">
+  <rect width="400" height="400" fill="#ddf0e3"/>
+  <!-- far side of the brim -->
+  <path d="M74 246 Q130 222 200 222 Q270 222 326 246 Q200 270 74 246 Z" fill="#256b4c"/>
+  <!-- teardrop crown with its centre crease -->
+  <path d="M136 244 C132 196 138 156 156 132 C166 120 182 118 192 124 Q200 130 208 124 C218 118 234 120 244 132 C262 156 268 196 264 244 Z" fill="#256b4c"/>
+  <g fill="none" stroke="#8cc9a4" stroke-width="6" stroke-linecap="round">
+    <path d="M200 136 V176"/>
+  </g>
+  <!-- band with a small bow -->
+  <path d="M134 206 Q200 216 266 206 L265 244 Q200 254 135 244 Z" fill="#14261d"/>
+  <path d="M158 226 L136 202 V250 Z M158 226 L180 202 V250 Z" fill="#14261d" stroke="#14261d" stroke-width="6" stroke-linejoin="round"/>
+  <rect x="151" y="216" width="14" height="20" rx="5" fill="#8cc9a4"/>
+  <!-- near side of the brim, snapped down at the front -->
+  <path d="M68 244 C90 238 110 246 132 250 Q200 266 268 250 C290 246 310 238 332 244 C330 268 252 292 200 292 C148 292 70 268 68 244 Z" fill="#256b4c"/>
+  <path d="M96 258 Q200 286 304 258" fill="none" stroke="#8cc9a4" stroke-width="5" stroke-linecap="round"/>
+</svg>

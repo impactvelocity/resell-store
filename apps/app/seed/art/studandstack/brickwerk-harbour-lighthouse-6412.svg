@@ -1,0 +1,46 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400">
+  <rect width="400" height="400" fill="#fff6c2"/>
+  <!-- base plate, with the studs that show -->
+  <rect x="72" y="300" width="256" height="18" rx="5" fill="#256b4c"/>
+  <g fill="#256b4c">
+    <rect x="78" y="294" width="12" height="8" rx="3"/><rect x="98" y="294" width="12" height="8" rx="3"/>
+  </g>
+  <!-- wide white footing -->
+  <g fill="#ffffff">
+    <rect x="124" y="274" width="54" height="23" rx="3"/><rect x="181" y="274" width="55" height="23" rx="3"/>
+    <rect x="126" y="268" width="12" height="8" rx="3"/><rect x="222" y="268" width="12" height="8" rx="3"/>
+  </g>
+  <!-- tower: striped courses, bottom to top -->
+  <g fill="#d9391b">
+    <rect x="140" y="248" width="56" height="23" rx="3"/><rect x="199" y="248" width="21" height="23" rx="3"/>
+    <rect x="140" y="196" width="56" height="23" rx="3"/><rect x="199" y="196" width="21" height="23" rx="3"/>
+    <rect x="140" y="144" width="56" height="23" rx="3"/><rect x="199" y="144" width="21" height="23" rx="3"/>
+  </g>
+  <g fill="#ffffff">
+    <rect x="140" y="222" width="26" height="23" rx="3"/><rect x="169" y="222" width="51" height="23" rx="3"/>
+    <rect x="140" y="170" width="26" height="23" rx="3"/><rect x="169" y="170" width="51" height="23" rx="3"/>
+  </g>
+  <!-- gallery plate -->
+  <rect x="128" y="132" width="104" height="10" rx="3" fill="#14261d"/>
+  <rect x="132" y="126" width="12" height="8" rx="3" fill="#14261d"/>
+  <rect x="216" y="126" width="12" height="8" rx="3" fill="#14261d"/>
+  <!-- lamp room and its light -->
+  <rect x="150" y="98" width="60" height="31" rx="4" fill="#14261d"/>
+  <rect x="156" y="104" width="20" height="20" rx="2" fill="#ffd934"/>
+  <rect x="184" y="104" width="20" height="20" rx="2" fill="#ffd934"/>
+  <g stroke="#f5be0b" stroke-width="5" stroke-linecap="round">
+    <path d="M140 106 L116 98"/><path d="M140 118 L112 118"/>
+    <path d="M220 106 L244 98"/><path d="M220 118 L248 118"/>
+  </g>
+  <!-- roof -->
+  <path d="M148 96 L180 72 L212 96 Z" fill="#d9391b" stroke="#d9391b" stroke-width="6" stroke-linejoin="round"/>
+  <circle cx="180" cy="68" r="5" fill="#14261d"/>
+  <!-- dock with studs -->
+  <rect x="248" y="285" width="74" height="12" rx="3" fill="#8cc9a4"/>
+  <rect x="250" y="279" width="12" height="8" rx="3" fill="#8cc9a4"/>
+  <rect x="308" y="279" width="12" height="8" rx="3" fill="#8cc9a4"/>
+  <!-- little boat -->
+  <path d="M256 260 H316 L305 280 H267 Z" fill="#ff5fa8" stroke="#ff5fa8" stroke-width="5" stroke-linejoin="round"/>
+  <rect x="270" y="240" width="26" height="18" rx="3" fill="#ffffff"/>
+  <rect x="276" y="245" width="14" height="7" rx="2" fill="#8cc9a4"/>
+</svg>

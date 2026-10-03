@@ -2,9 +2,9 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Fragment, useEffect, useRef, useState, type FormEvent } from "react";
+import { Fragment, useActionState, useEffect, useRef, useState, type FormEvent } from "react";
 import { CheckIcon, ChevronDownIcon, CloseIcon } from "@repo/ui/icons";
-import { LemonMark } from "@repo/ui/logo";
+import { DotMark } from "@repo/ui/logo";
 import { cn } from "@repo/ui/lib/utils";
 import { shops } from "../../lib/mock";
 import { listingHref, startSuggestion, startTryChips } from "../../lib/mock-listing";
@@ -14,8 +14,15 @@ import { PotIllustration } from "./pot-illustration";
 /*
  * C1 Listing / Start. Its own layout, not the workspace: a photo, a name, or
  * both. Adding a photo or sending the name starts the research (C2).
- * Nothing uploads: tapping the photo area "adds" the dutch oven.
+ * With `live`, the photo really uploads and the form creates a draft in the
+ * chosen shop. Without it (the mock), tapping the photo area "adds" the dutch oven.
  */
+
+export type StartLive = {
+  shops: { slug: string; name: string }[];
+  defaultShop: string;
+  action: (prev: { error?: string } | null, form: FormData) => Promise<{ error?: string } | null>;
+};
 
 function SparkleGlyph() {
   return (
@@ -44,11 +51,23 @@ function CameraGlyph({ size }: { size: number }) {
 }
 
 /** "For Home and kitchen finds" pill that opens a short list of shops. */
-function ShopPicker({ className }: { className?: string }) {
+function ShopPicker({
+  className,
+  options = shops,
+  value,
+  onChange,
+}: {
+  className?: string;
+  options?: { slug: string; name: string }[];
+  value?: string;
+  onChange?: (slug: string) => void;
+}) {
   const [open, setOpen] = useState(false);
-  const [slug, setSlug] = useState("home-and-kitchen");
+  const [ownSlug, setOwnSlug] = useState("home-and-kitchen");
+  const slug = value ?? ownSlug;
+  const setSlug = onChange ?? setOwnSlug;
   const ref = useRef<HTMLDivElement>(null);
-  const shop = shops.find((s) => s.slug === slug) ?? shops[0]!;
+  const shop = options.find((s) => s.slug === slug) ?? options[0]!;
 
   useEffect(() => {
     if (!open) return;
@@ -85,7 +104,7 @@ function ShopPicker({ className }: { className?: string }) {
           aria-label="Shop"
           className="absolute top-full left-1/2 z-20 mt-2 w-[260px] -translate-x-1/2 rounded-md border border-border bg-surface p-1.5 shadow-[0_16px_32px_-12px_rgb(20_38_29/0.2)]"
         >
-          {shops.map((s) => (
+          {options.map((s) => (
             <li key={s.slug}>
               <button
                 type="button"
@@ -164,26 +183,62 @@ function StepsPreview() {
   );
 }
 
-export function StartScreen() {
+export function StartScreen({ live }: { live?: StartLive } = {}) {
   const router = useRouter();
-  const [text, setText] = useState(startSuggestion);
+  const [text, setText] = useState(live ? "" : startSuggestion);
   const [photo, setPhoto] = useState(false);
+  const [preview, setPreview] = useState<string | null>(null);
   const [dragging, setDragging] = useState(false);
   const [going, setGoing] = useState(false);
+  const [shop, setShop] = useState(live?.defaultShop ?? "");
+  const [state, formAction, submitting] = useActionState(
+    live?.action ?? (async () => null),
+    null,
+  );
+  const formRef = useRef<HTMLFormElement>(null);
+  const fileRef = useRef<HTMLInputElement>(null);
   const research = listingHref("research");
 
   useEffect(() => {
-    router.prefetch(research);
-  }, [router, research]);
+    if (!live) router.prefetch(research);
+  }, [router, research, live]);
 
   // A photo is enough to start: show it for a beat, then go
   useEffect(() => {
     if (!photo) return;
-    const t = setTimeout(() => router.push(research), 900);
+    const t = setTimeout(() => {
+      if (live) formRef.current?.requestSubmit();
+      else router.push(research);
+    }, 900);
     return () => clearTimeout(t);
-  }, [photo, router, research]);
+  }, [photo, router, research, live]);
+
+  // The form errored (e.g. the photo was too big): let them try again
+  useEffect(() => {
+    if (state?.error) {
+      setGoing(false);
+      setPhoto(false);
+    }
+  }, [state]);
+
+  function pickFile(file: File | undefined) {
+    if (!file || !file.type.startsWith("image/")) return;
+    if (fileRef.current && fileRef.current.files?.[0] !== file) {
+      const dt = new DataTransfer();
+      dt.items.add(file);
+      fileRef.current.files = dt.files;
+    }
+    setPreview(URL.createObjectURL(file));
+    setPhoto(true);
+  }
 
   function start(e?: FormEvent) {
+    if (live) {
+      // The server action runs from the form itself
+      if (!text.trim() && !photo) e?.preventDefault();
+      else setGoing(true);
+      return;
+    }
     e?.preventDefault();
     if (!text.trim() && !photo) return;
     setGoing(true);
@@ -195,7 +250,7 @@ export function StartScreen() {
   const dropZone = (
     <button
       type="button"
-      onClick={() => setPhoto(true)}
+      onClick={() => (live ? fileRef.current?.click() : setPhoto(true))}
       onDragOver={(e) => {
         e.preventDefault();
         setDragging(true);
@@ -204,7 +259,8 @@ export function StartScreen() {
       onDrop={(e) => {
         e.preventDefault();
         setDragging(false);
-        setPhoto(true);
+        if (live) pickFile(e.dataTransfer.files[0]);
+        else setPhoto(true);
       }}
       className={cn(
         "flex h-[188px] w-full shrink-0 cursor-pointer flex-col items-center justify-center gap-3 rounded-xl border-2 border-lemon-300 bg-primary-soft transition-colors hover:border-lemon-400 desk:h-[240px] desk:gap-3.5",
@@ -213,8 +269,13 @@ export function StartScreen() {
     >
       {photo ? (
         <>
-          <span className="flex size-28 items-center justify-center rounded-lg bg-leaf-100">
-            <PotIllustration />
+          <span className="flex size-28 items-center justify-center overflow-hidden rounded-lg bg-leaf-100">
+            {preview ? (
+              // eslint-disable-next-line @next/next/no-img-element -- a local object URL
+              <img src={preview} alt="" className="size-full object-cover" />
+            ) : (
+              <PotIllustration />
+            )}
           </span>
           <span className="text-sm font-semibold">Got it. Looking it up…</span>
         </>
@@ -257,7 +318,7 @@ export function StartScreen() {
   const lookItUp = (
     <button
       type="submit"
-      disabled={!canStart || going}
+      disabled={!canStart || going || submitting}
       className="flex h-[60px] w-full shrink-0 cursor-pointer items-center justify-center gap-2 rounded-full bg-primary px-[30px] text-base font-bold text-on-primary transition-colors hover:bg-lemon-300 disabled:cursor-default disabled:opacity-60 desk:h-16 desk:w-auto"
     >
       <SparkleGlyph />
@@ -271,11 +332,11 @@ export function StartScreen() {
       <header className="hidden h-[72px] shrink-0 items-center justify-between border-b border-border bg-surface px-6 desk:flex">
         <div className="flex flex-1 items-center gap-3.5">
           <Link href="/home" aria-label="Home">
-            <LemonMark size={32} />
+            <DotMark />
           </Link>
           <span className="text-sm font-bold">New listing</span>
         </div>
-        <ShopPicker />
+        <ShopPicker options={live?.shops} value={live ? shop : undefined} onChange={live ? setShop : undefined} />
         <div className="flex flex-1 justify-end">
           <Link
             href="/home"
@@ -295,14 +356,29 @@ export function StartScreen() {
         >
           <CloseIcon size={18} strokeWidth={2.2} />
         </Link>
-        <ShopPicker />
+        <ShopPicker options={live?.shops} value={live ? shop : undefined} onChange={live ? setShop : undefined} />
         <span className="size-10 shrink-0" />
       </div>
 
       <form
+        ref={formRef}
+        action={live ? formAction : undefined}
         onSubmit={start}
         className="flex flex-1 flex-col desk:items-center desk:px-6 desk:pt-16 desk:pb-[72px]"
       >
+        {live && (
+          <>
+            <input type="hidden" name="shop" value={shop} />
+            <input
+              ref={fileRef}
+              type="file"
+              name="photo"
+              accept="image/*"
+              className="hidden"
+              onChange={(e) => pickFile(e.currentTarget.files?.[0])}
+            />
+          </>
+        )}
         <div className="flex w-full flex-1 flex-col desk:w-[720px] desk:flex-none desk:gap-7">
           <div className="flex flex-col gap-2 px-5 pt-7 desk:items-center desk:gap-2.5 desk:px-0 desk:pt-0 desk:text-center">
             <h1 className="font-display text-3xl font-extrabold tracking-tight desk:text-5xl">
@@ -318,14 +394,21 @@ export function StartScreen() {
 
             <div className="flex w-full items-center gap-3">
               <input
+                name="prompt"
                 value={text}
                 onChange={(e) => setText(e.target.value)}
                 aria-label="What are you selling?"
-                placeholder="Or type what it is"
+                placeholder={live ? startSuggestion : "Or type what it is"}
                 className="h-[60px] min-w-0 flex-1 rounded-full border-2 border-secondary bg-surface px-[22px] text-base font-medium text-text outline-none placeholder:text-text-muted desk:h-16 desk:px-[26px] desk:text-lg"
               />
               <div className="hidden desk:block">{lookItUp}</div>
             </div>
+
+            {state?.error && (
+              <p role="alert" className="px-1 text-sm font-semibold text-accent-text desk:text-center">
+                {state.error}
+              </p>
+            )}
 
             <div className="flex w-full flex-wrap gap-2 desk:items-center desk:justify-center">
               <span className="hidden text-sm font-medium text-text-muted desk:inline">Try</span>
