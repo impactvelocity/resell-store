@@ -2,28 +2,28 @@
 
 **Sell your stuff without doing the selling.**
 
-![resell.store: snap a photo, an AI agent prices it, lists it, answers buyers and haggles, and PayPal holds the money until it arrives](https://raw.githubusercontent.com/impactvelocity/resell-store/main/docs/readme/hero.png)
+!resell.store: snap a photo, an AI agent prices it, lists it, answers buyers and haggles, and PayPal holds the money until it arrives
 
 Snap a photo. An AI agent works out a fair price, writes the listing, puts it live in your own shop, answers buyers and haggles with them (or with their agents). PayPal holds the money until the item arrives. You just say yes.
 
-🛒 [resell.store](https://resell.store) · 🎬 [Demo video](https://www.youtube.com/watch?v=Nus5lpO5wL0) · 📚 [docs.resell.store](https://docs.resell.store) · 💻 [Source on GitHub (MIT)](https://github.com/impactvelocity/resell-store)
+[resell.store](https://resell.store) · [Demo video](https://www.youtube.com/watch?v=Nus5lpO5wL0) · [docs.resell.store](https://docs.resell.store) · [Source on GitHub (MIT)](https://github.com/impactvelocity/resell-store)
 
 ---
 
 ## Inspiration
 
-The average American home holds about **$4,267 of stuff nobody uses**, around $560B across the country ([Mercari Reuse Report](https://www.prnewswire.com/news-releases/mercaris-2023-reuse-report-predicts-secondhand-market-will-double-to-325-billion-by-2031-301884361.html)). Most of it never gets sold, and it isn't because nobody wants it. Selling is a chore: work out a price, take photos, write the listing, answer "is this still available?" twenty times, deal with lowballers, dodge scams, then wait to be paid.
+The average American home holds about **$4,267 of stuff nobody uses**, around $560B across the country (Mercari Reuse Report). Most of it never gets sold, and it isn't because nobody wants it. Selling is a chore: work out a price, take photos, write the listing, answer "is this still available?" twenty times, deal with lowballers, dodge scams, then wait to be paid.
 
 Every one of those steps is something an agent can do now. People are ready for it:
 
-- **1 in 3** people who have never resold say they would if AI did the listing ([ThredUp 2026 Resale Report](https://cf-assets-tup.thredup.com/resale_report/2026/ThredUp_Resale_Report_2026.pdf), p.12).
+- **1 in 3** people who have never resold say they would if AI did the listing (ThredUp 2026 Resale Report, p.12).
 - **6 in 10** shoppers say they'd use AI to negotiate secondhand deals for them (same report, p.11).
-- AI shopping traffic to US retail was **up 693%** last holiday season ([Adobe via Digital Commerce 360](https://www.digitalcommerce360.com/2026/01/13/generative-ai-online-holiday-shopping-traffic-2025/)).
-- US resale is heading for **$306.5B by 2030** ([OfferUp 2025 Recommerce Report](https://www.prnewswire.com/news-releases/secondhand-shopping-is-now-the-norm-93-of-americans-bought-used-in-2025-according-to-offerups-2025-recommerce-report-302566495.html)).
+- AI shopping traffic to US retail was **up 693%** last holiday season (Adobe via Digital Commerce 360).
+- US resale is heading for **$306.5B by 2030** (OfferUp 2025 Recommerce Report).
 
-But trust is the catch. Only **12%** of people are comfortable with an AI agent deciding alone at payment ([Accenture Consumer Pulse 2026](https://www.artificialintelligence-news.com/news/ai-shopping-agents-consumer-trust-accenture-report/)), and US consumers lost **$15.9B** to fraud in 2025, with shopping scams the most-reported scam on social media ([FTC](https://www.ftc.gov/news-events/news/press-releases/2026/03/ftc-testifies-joint-economic-committee-agencys-efforts-combat-fraud)).
+But trust is the catch. Only **12%** of people are comfortable with an AI agent deciding alone at payment (Accenture Consumer Pulse 2026), and US consumers lost **$15.9B** to fraud in 2025, with shopping scams the most-reported scam on social media (FTC).
 
-So we set out to build a marketplace where agents do the work on both sides of a secondhand sale, while people keep the decisions that matter and PayPal makes sure nobody gets scammed. Our mission: nothing good goes unused.
+So I set out to build a marketplace where agents do the work on both sides of a secondhand sale, while people keep the decisions that matter and PayPal makes sure nobody gets scammed. The mission: nothing good goes unused.
 
 ## What it does
 
@@ -33,21 +33,21 @@ resell.store is one app with three ways in: a seller app, a marketplace of littl
 
 ### An agent that sells for you
 
-- 📸 **One photo to a priced listing.** The agent identifies the item, finds what it costs new, and reads what the same thing is listed for on eBay, Poshmark and Depop right now. It suggests a price and shows where every number came from.
-- ✍️ **It writes the listing.** It only asks what a photo can't show (does it have chips, does the lid fit), then writes the title, description and details.
-- 🏪 **Your own shop.** Every seller gets a storefront on their own subdomain, like `claspandcarry.resell.store`, with a link to share anywhere.
-- 💬 **It answers buyers.** Questions get answered at any hour, only from the listing's facts and your earlier replies. When it doesn't know, it says so kindly and flags the thread "Needs you."
-- 🤝 **It haggles inside your limits.** Low offers get a counter halfway between the offer and your price, never under your lowest. Offers at or above your lowest wait for your yes, with a note: "I'd take it."
+- **One photo to a priced listing.** The agent identifies the item, finds what it costs new, and reads what the same thing is listed for on eBay, Poshmark and Depop right now. It suggests a price and shows where every number came from.
+- **It writes the listing.** It only asks what a photo can't show (does it have chips, does the lid fit), then writes the title, description and details.
+- **Your own shop.** Every seller gets a storefront on their own subdomain, like `claspandcarry.resell.store`, with a link to share anywhere.
+- **It answers buyers.** Questions get answered at any hour, only from the listing's facts and your earlier replies. When it doesn't know, it says so kindly and flags the thread "Needs you."
+- **It haggles inside your limits.** Low offers get a counter halfway between the offer and your price, never under your lowest. Offers at or above your lowest wait for your yes, with a note: "I'd take it."
 
 ![The shop agent: a Q&A agent that answers from the listing, and a negotiator where code does the maths and the AI only picks the words](https://raw.githubusercontent.com/impactvelocity/resell-store/main/docs/devpost/diagrams/03-agents.png)
 
-The rule we built everything around: **money decisions live in code, not the model.** The negotiator's moves are plain, tested functions. The AI only words the message, and a reply that carries any number other than the one the code chose is thrown away and replaced with a template. The seller's lowest price is never shown to a buyer.
+The rule I built everything around: **money decisions live in code, not the model.** The negotiator's moves are plain, tested functions. The AI only words the message, and a reply that carries any number other than the one the code chose is thrown away and replaced with a template. The seller's lowest price is never shown to a buyer.
 
 ### An agent that shops for you
 
-- 🔎 **Search by meaning.** "A warm coat for a toddler" finds the right things across every shop, not just keyword matches.
-- 🛍️ **A shopping sidekick.** Paste a link before you buy and it tells you what the item costs new, what it resells for, and whether it's a better buy than the one you were comparing it to. Good for flippers, and for anyone who just wants to know.
-- 🤖 **Bring your own AI.** Add resell.store to the assistant you already use. It can search, ask sellers questions and make offers, inside a spending cap you set ($200 to start), and it asks before it does anything you've marked "ask me first."
+- **Search by meaning.** "A warm coat for a toddler" finds the right things across every shop, not just keyword matches.
+- **A shopping sidekick.** Paste a link before you buy and it tells you what the item costs new, what it resells for, and whether it's a better buy than the one you were comparing it to. Good for flippers, and for anyone who just wants to know.
+- **Bring your own AI.** Add resell.store to the assistant you already use. It can search, ask sellers questions and make offers, inside a spending cap you set ($200 to start), and it asks before it does anything you've marked "ask me first."
 
 ![Bring your own agent: any MCP client talks to the resell.store MCP server and public API, with scoped keys, ask-me-first, a spending cap and an activity log](https://raw.githubusercontent.com/impactvelocity/resell-store/main/docs/devpost/diagrams/06-mcp.png)
 
@@ -57,20 +57,20 @@ When a buyer's agent meets a seller's agent, they haggle with each other, and th
 
 Buyers pay with PayPal, Pay Later or a card. The money goes to the seller's own PayPal and waits there until the buyer confirms it arrived (or a timer decides it did). Problems after shipping get a proper flow: reply, offer a part refund, refund in full, or escalate. Nobody pays for something that never shows up, and nobody ships to a buyer who hasn't paid.
 
-## How we use the sponsors
+## How I use the sponsors
 
-Every sponsor listed here is wired into the running app. We left out anything that's only planned.
+Every sponsor listed here is wired into the running app. I left out anything that's only planned.
 
 ![Where each sponsor does its work: PayPal, Channel3, Kernel and Render across listing, shops, checkout, after the sale, the sidekick and timed jobs](https://raw.githubusercontent.com/impactvelocity/resell-store/main/docs/devpost/images/06-sponsors.png)
 
 ### PayPal: under every sale
 
-PayPal is the trust layer, so we used it end to end rather than as a pay button:
+PayPal is the trust layer, so I used it end to end rather than as a pay button:
 
 | Step | PayPal API |
 | --- | --- |
 | Seller connects their PayPal | **Partner Referrals** onboarding, verified with the merchant-integrations lookup on return |
-| Buyer pays | **Orders v2** with the seller as payee, our 10% fee in `platform_fees`, and `DELAYED` disbursement |
+| Buyer pays | **Orders v2** with the seller as payee, the marketplace's 10% fee in `platform_fees`, and `DELAYED` disbursement |
 | Money held | Captured into the seller's account but not released |
 | Item arrives | **Referenced Payouts** releases the held money to the seller |
 | Something goes wrong | **Refunds** (full or part), **Disputes** synced from PayPal webhooks, and a live dispute blocks the payout |
@@ -86,38 +86,38 @@ Channel3's product catalogue (100M+ products) turns a photo and a line of text i
 
 ### Kernel: what's it going for right now?
 
-Kernel's cloud browsers read live listings for the same item on eBay, Poshmark and Depop, one browser per site, all in parallel. We match the cards with the model, keep only used or unstated-condition listings, and price from those. The sidekick uses Kernel twice: once to read the page you pasted, and once to check resale listings.
+Kernel's cloud browsers read live listings for the same item on eBay, Poshmark and Depop, one browser per site, all in parallel. I match the cards with the model, keep only used or unstated-condition listings, and price from those. The sidekick uses Kernel twice: once to read the page you pasted, and once to check resale listings.
 
 ### Render: the whole thing runs here
 
 One Render web service hosts the marketing site, the seller app, the marketplace, every shop subdomain, the docs, the API and the MCP servers, routed by host. Render Postgres with pgvector holds everything, including the embeddings for search. **Render Workflows** run the jobs that have to happen on time even when nobody is looking: offer expiry and reminders, ship-by reminders, auto-cancel, "did it arrive?" check-ins, auto-release of held money, webhook retries, follower digests, the agent's evening summary, and the demo reset. The whole stack deploys from one `render.yaml` Blueprint.
 
-## How we built it
+## How I built it
 
-- **Next.js 16 + React** in a Turborepo monorepo on pnpm, with our own design system (24 components on Base UI and Tailwind CSS v4), designed in Paper first and built from a clickable prototype of every screen.
+- **Next.js 16 + React** in a Turborepo monorepo on pnpm, with my own design system (24 components on Base UI and Tailwind CSS v4), designed in Paper first and built from a clickable prototype of every screen.
 - **AI SDK** for every agent: research, the listing chat with tools, the Q&A agent, the negotiator's wording, card matching and the sidekick. A fast model handles chat, a stronger one handles matching and research.
 - **Postgres + Drizzle**, with hybrid search (full text plus Jina embeddings in pgvector).
 - **One route definition per endpoint** drives the handler, the docs page and the OpenAPI file, so the API, docs and MCP can't drift apart. The MCP servers only call the public API, so they get the same permissions and logging as anything else.
 - **Better Auth** magic-link sign-in, **React Email** templates, **Cloudflare R2** for photos.
 - **Vitest** against a real test database, with the money paths (offers, checkout, release, refunds, disputes, sweeps) covered.
 
-## Challenges we ran into
+## Challenges I ran into
 
-- **Letting an agent haggle without letting it give money away.** Our first instinct was to let the model negotiate. We ended up with deterministic moves in code and the model on wording only, validated so it can't slip in a different number.
+- **Letting an agent haggle without letting it give money away.** My first instinct was to let the model negotiate. I ended up with deterministic moves in code and the model on wording only, validated so it can't slip in a different number.
 - **Held funds.** Getting a marketplace fee, delayed disbursement, release, refunds and disputes to agree with each other took a lot of sandbox runs. A dispute must block a payout, a refund must adjust what's released, and a sweep that runs twice must not pay twice.
-- **Reading resale sites.** Some sites need a login, some crash headless browsers, and stealth mode broke others. We settled on plain Kernel browsers, one per site, with retries, deadlines and a cap that fits the free plan.
+- **Reading resale sites.** Some sites need a login, some crash headless browsers, and stealth mode broke others. I settled on plain Kernel browsers, one per site, with retries, deadlines and a cap that fits the free plan.
 - **Lookalikes.** A fast model happily matched a branded pot to a cheaper lookalike, which dragged the price down. Card matching moved to the stronger model.
-- **Subdomain shops in development.** Browsers won't share cookies across `*.localhost`, so we built a one-time handoff to carry the session into a store.
+- **Subdomain shops in development.** Browsers won't share cookies across `*.localhost`, so I built a one-time handoff to carry the session into a store.
 - **A demo judges can actually use.** Shared logins that let you list and buy for real, without anyone being able to wreck the public marketplace, plus a reset every 10 minutes.
 
-## Accomplishments that we're proud of
+## Accomplishments that I'm proud of
 
 - A real sale works end to end: photo, research, listing, a buyer question, a haggle, PayPal checkout, held funds, shipping, delivery and payout.
 - Agents on both sides of the deal, with people in charge at the two moments that matter: what you'll accept, and what you'll spend.
 - Everything you can do in the app, an agent can do too: **72 API endpoints**, a seller MCP server with **38 tools** and a buyer MCP server with **31**.
 - It's open source and deploys with one Blueprint, so anyone can run their own marketplace.
 
-## What we learned
+## What I learned
 
 Agents earn trust through limits you can see, not through being clever. "Good offers wait for your yes" did more for the product than any prompt. Also, the boring parts (timers, reminders, retries, refunds) are what make a marketplace feel safe, and they're exactly the parts a person shouldn't have to watch.
 
@@ -178,15 +178,25 @@ pnpm dev   # http://localhost:5689, shops at {slug}.localhost:5689
 
 Deploying is one click: **New → Blueprint** in Render, pick the repo, fill in the keys. The full guide is at [docs.resell.store](https://docs.resell.store).
 
-## Try it
+## Try it out
 
-- 🛒 Shop at [resell.store](https://resell.store), or visit a seeded store like [claspandcarry.resell.store](https://claspandcarry.resell.store)
-- 🧑‍💼 Use the demo logins on the welcome page to sell or shop without signing up
-- 🔌 Connect your own AI: the API is at [api.resell.store](https://api.resell.store/v1/openapi.json), the MCP servers at `mcp.resell.store`
-- 🎬 Watch the [demo](https://www.youtube.com/watch?v=Nus5lpO5wL0)
+- Main site: [resell.store](https://resell.store)
+- Marketplace: [resell.store/discover](https://resell.store/discover)
+- Example store: [claspandcarry.resell.store](https://claspandcarry.resell.store)
+- Sign up or use a demo login: [resell.store/welcome](https://resell.store/welcome)
+- Docs: [docs.resell.store](https://docs.resell.store)
+- API: [api.resell.store/v1/openapi.json](https://api.resell.store/v1/openapi.json), MCP servers at `mcp.resell.store`
+- Demo video: [youtube.com/watch?v=Nus5lpO5wL0](https://www.youtube.com/watch?v=Nus5lpO5wL0)
+
+How each sponsor is used, in the developer docs:
+
+- PayPal: [docs.resell.store/dev/stack/paypal](https://docs.resell.store/dev/stack/paypal)
+- Channel3: [docs.resell.store/dev/stack/channel3](https://docs.resell.store/dev/stack/channel3)
+- Kernel: [docs.resell.store/dev/stack/kernel](https://docs.resell.store/dev/stack/kernel)
+- Render: [docs.resell.store/dev/stack/render](https://docs.resell.store/dev/stack/render)
 
 PayPal runs in sandbox mode, so no real money moves.
 
 ## Built with
 
-PayPal (Partner Referrals, Orders v2, Payouts, Disputes, webhooks) · Channel3 · Kernel · Render (web service, Postgres, Workflows) · AI SDK · Next.js · React · TypeScript · Turborepo · PostgreSQL · pgvector · Drizzle · Jina embeddings · Better Auth · React Email · Cloudflare R2 · Tailwind CSS · Base UI · MCP · Vitest
+PayPal Channel3 Kernel Render Next.js React TypeScript PostgreSQL pgvector Drizzle Turborepo MCP Vercel-AI-SDK Tailwind

@@ -65,7 +65,7 @@ export default async function Page({ searchParams }: { searchParams: Promise<{ p
   return (
     <ComingSoon
       mobileTitle="Connections"
-      tone="pink"
+      tone="leaf"
       art="items"
       eyebrow="Connections"
       title="Link the accounts you already use"

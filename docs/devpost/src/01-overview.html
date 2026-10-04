@@ -22,7 +22,9 @@
   .paypal img { height: 52px; }
   .tools { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
   .tool { display: flex; flex-direction: column; gap: 14px; padding: 24px 26px; }
-  .tool .logo { height: 32px; }
+  .tool .logo { height: 32px; align-self: flex-start; }
+  .agentband { background: var(--leaf-100); border-color: var(--leaf-300); }
+  .agentband .spark { background: var(--leaf-600); }
 </style>
 </head>
 <body>
@@ -79,8 +81,8 @@
     </div>
   </div>
 
-  <div class="card pink agentband">
-    <span class="spark"><svg viewBox="0 0 24 24"><path d="M12 0C13 7 17 11 24 12 17 13 13 17 12 24 11 17 7 13 0 12 7 11 11 7 12 0Z" fill="#14261d"/></svg></span>
+  <div class="card agentband">
+    <span class="spark"><svg viewBox="0 0 24 24"><path d="M12 0C13 7 17 11 24 12 17 13 13 17 12 24 11 17 7 13 0 12 7 11 11 7 12 0Z" fill="#fff"/></svg></span>
     <div class="col" style="gap:6px">
       <h3>Every shop has an agent</h3>
       <p class="small">It prices, writes, answers buyers and counters low offers. Money decisions stay in code, and good offers wait for the seller's yes.</p>

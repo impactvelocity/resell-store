@@ -45,3 +45,4 @@ yarn-error.log*
 # Video render outputs (regenerate locally; too large for git)
 docs/video/brag-output/work/
 docs/video/brag-output/*.mp4
+docs/devpost/DEVPOST.md
