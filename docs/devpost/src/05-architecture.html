@@ -40,7 +40,7 @@
     </div>
     <p class="eyebrow" style="padding-top:18px">Under the hood</p>
     <h1>One app, one database, one job runner</h1>
-    <p class="lead">Every address lands on the same Next.js app, which picks the right part by host name. Each rule lives in one server file that the screens, the API, the MCP servers and the timed jobs all share.</p>
+    <p class="lead">Every address lands on the same web app, which picks the right part by host name. Each rule lives in one server file that the screens, the API, the MCP servers and the timed jobs all share.</p>
   </div>
 
   <div class="col" style="gap:12px">
@@ -60,7 +60,7 @@
 
     <div class="card" style="padding:24px;display:flex;flex-direction:column;gap:16px">
       <div class="row center" style="justify-content:space-between">
-        <h3>One Next.js app</h3>
+        <h3>One web app</h3>
         <span class="mono muted">proxy.ts routes by host</span>
       </div>
       <div class="zones">
@@ -86,8 +86,8 @@
 
     <div class="base">
       <div class="card col" style="gap:10px">
-        <h3>Postgres + pgvector</h3>
-        <p class="small muted">Every table, plus listing embeddings for search by meaning. Money is kept in cents.</p>
+        <h3>One database</h3>
+        <p class="small muted">Every table, plus vector search over listings for search by meaning. Money is kept in cents.</p>
       </div>
       <div class="card col" style="gap:10px">
         <h3>Workflow + Cron, every 15 min</h3>
@@ -102,17 +102,17 @@
     <div class="svcs">
       <div class="card svc"><div class="mark"><img src="assets/paypal.svg" alt="PayPal" style="height:30px"></div><p>Seller onboarding, checkout, fee split, held money, payouts, refunds</p></div>
       <div class="card svc"><div class="mark"><img src="assets/channel3.png" alt="Channel3"></div><p>What the item is, its new price, the maker's photos</p></div>
-      <div class="card svc"><div class="mark"><img src="assets/kernel.png" alt="Kernel" style="height:23px"></div><p>Cloud browsers reading live eBay, Poshmark and Depop listings</p></div>
+      <div class="card svc"><div class="mark"><img src="assets/kernel.png" alt="Kernel" style="height:23px"></div><p>Cloud browsers reading live listings on the big resale sites</p></div>
       <div class="card svc"><div class="mark"><span class="chip pink" style="font-size:19px">✦ AI model</span></div><p>Names items, writes listings, answers buyers, words counters</p></div>
-      <div class="card svc"><div class="mark"><span class="name">Jina</span></div><p>Embeddings for search by meaning</p></div>
-      <div class="card svc"><div class="mark"><span class="name">Cloudflare R2</span></div><p>Photo and video uploads</p></div>
-      <div class="card svc"><div class="mark"><span class="name">Resend</span></div><p>Sign-in links and every email</p></div>
-      <div class="card svc"><div class="mark"><span class="name">Better Auth</span></div><p>One sign-in across every shop's address</p></div>
+      <div class="card svc"><div class="mark"><span class="name">Vector search</span></div><p>Embeddings for search by meaning</p></div>
+      <div class="card svc"><div class="mark"><span class="name">File storage</span></div><p>Photo and video uploads</p></div>
+      <div class="card svc"><div class="mark"><span class="name">Email delivery</span></div><p>Sign-in links and every email</p></div>
+      <div class="card svc"><div class="mark"><span class="name">Sign-in</span></div><p>One sign-in across every shop's address</p></div>
     </div>
-    <p class="small muted">Only Postgres and an auth secret are required. Every other service switches a feature on, with a fallback without it.</p>
+    <p class="small muted">Only the database and an auth secret are required. Every other service switches a feature on, with a fallback without it.</p>
   </div>
 
-  <div class="foot"><span><b>resell.store</b> · Turborepo · Next.js · Drizzle</span><span>Sell your stuff without doing the selling</span></div>
+  <div class="foot"><span><b>resell.store</b> · one repo, open source</span><span>Sell your stuff without doing the selling</span></div>
 </div>
 </body>
 </html>

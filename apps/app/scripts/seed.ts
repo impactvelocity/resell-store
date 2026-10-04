@@ -20,6 +20,7 @@ import {
   user,
   type ActivitySource,
 } from "@repo/db";
+import { clearDemoBaseline } from "../lib/server/demo";
 import { embed, embeddingsConfigured, listingPassage } from "../lib/server/embeddings";
 import { deleteFiles, fileIdsOwnedBy, saveUpload } from "../lib/server/files";
 import { platformFeeCents } from "../lib/server/payout-policy";
@@ -398,6 +399,8 @@ async function main() {
 
   const removed = await clearSeed();
   if (removed) console.log(`Removed the old seed data (${removed} people and everything they had).`);
+  // The demo accounts (DEMO=true) start over from this seed
+  await clearDemoBaseline();
   if (args.has("--reset")) return;
 
   const { listingCount, pictures, views, embedded } = await seed();

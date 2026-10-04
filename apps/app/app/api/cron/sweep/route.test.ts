@@ -45,7 +45,8 @@ const post = (authorization?: string) =>
     }) as unknown as NextRequest,
   );
 
-const nothing = { offersExpired: 0, offerReminders: 0, shipReminders: 0, cancelled: 0, arrivalChecks: 0, released: 0, escalated: 0, followDigests: 0, agentSummaries: 0, reviewRequests: 0, webhooks: { retried: 0, delivered: 0, gaveUp: 0, turnedOff: 0, activityPruned: 0 } };
+// DEMO is off in tests, so the demo reset reports null
+const nothing = { offersExpired: 0, offerReminders: 0, shipReminders: 0, cancelled: 0, arrivalChecks: 0, released: 0, escalated: 0, followDigests: 0, agentSummaries: 0, reviewRequests: 0, webhooks: { retried: 0, delivered: 0, gaveUp: 0, turnedOff: 0, activityPruned: 0 }, demo: null };
 
 describe("POST /api/cron/sweep", () => {
   it("refuses without the cron secret", async () => {

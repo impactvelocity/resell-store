@@ -33,6 +33,7 @@ export default async function Env() {
         { id: "paypal", title: "PayPal" },
         { id: "payouts", title: "Fees and timers" },
         { id: "jobs", title: "Timed jobs" },
+        { id: "demo", title: "Demo accounts" },
         { id: "misc", title: "Everything else" },
         { id: "services", title: "Which service needs what" },
       ]}
@@ -132,6 +133,15 @@ export default async function Env() {
         ["CRON_SECRET", "Production", <>Required as <C key="a">Authorization: Bearer</C> on <C>POST /api/cron/sweep</C> outside development. The blueprint generates one</>, "The sweep route answers 401 (it runs without one in development)"],
         ["RENDER_API_KEY", "Cron job", "Lets scripts/start-sweeps.ts start tasks on the workflow. A Render API key from your account settings", "The cron job fails; nothing timed runs"],
         ["RENDER_WORKFLOW_SLUG", "Cron job", "The workflow's slug. The blueprint fills it in from the resell-sweeps service", "resell-sweeps"],
+      ])}
+
+      <H2 id="demo">Demo accounts</H2>
+      {table([
+        ["DEMO", "Demo only", <>Set to <C key="a">true</C> to offer &quot;Sell as&quot; and &quot;Shop as&quot; on the sign-in page: shared accounts that sign in with no email. They can&apos;t publish, edit what was there, or deal with real sellers, and what they add is reset. Set it on the workflow too</>, "No demo accounts"],
+        ["DEMO_SELLER_EMAIL", "Demo only", "The shared seller. Must already exist with a store (the seed makes it)", "dana.okafor@example.com"],
+        ["DEMO_BUYER_EMAIL", "Demo only", "The shared buyer", "ava.lindqvist@example.com"],
+        ["DEMO_RESET_MINUTES", "Demo only", "The least time between resets. The sweep cron and the next demo sign-in reset once it has passed", "10"],
+        ["DEMO_MAX_DRAFTS", "Demo only", "New drafts the demo seller may start between resets (each runs research)", "5"],
       ])}
 
       <H2 id="misc">Everything else</H2>

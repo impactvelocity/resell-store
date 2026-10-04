@@ -64,6 +64,9 @@ services:
         value: jina-embeddings-v5-text-small
       - key: KERNEL_API_KEY
         sync: false
+      # "true" offers the shared demo accounts on the sign-in page (lib/server/demo.ts)
+      - key: DEMO
+        sync: false
 
 databases:
   - name: resell-db

@@ -24,7 +24,7 @@ The block below is ready to paste into the Devpost story. The links point at `ma
 
 ## Under the hood
 
-![Architecture: one Next.js app on Render routing by host, Postgres with pgvector, a Render Workflow for timed jobs, and the services it talks to](https://raw.githubusercontent.com/impactvelocity/resell-store/main/docs/devpost/images/05-architecture.png)
+![Architecture: one web app on Render routing by host, one database with vector search, a Render Workflow for timed jobs, and the services it talks to](https://raw.githubusercontent.com/impactvelocity/resell-store/main/docs/devpost/images/05-architecture.png)
 
 ## Where each sponsor does its work
 

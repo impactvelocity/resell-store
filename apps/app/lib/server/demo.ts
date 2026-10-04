@@ -6,6 +6,7 @@ import {
   checkout,
   db,
   demoState,
+  dispute,
   desc,
   eq,
   favourite,
@@ -276,6 +277,19 @@ export async function resetDemo() {
           .where(and(inArray(listing.id, restore), ne(listing.status, "live"), sql`${listing.createdAt} <= ${since}`));
     }
     result.orders = made.length;
+
+    // Problems reported during the demo on orders from before it
+    await tx
+      .delete(dispute)
+      .where(
+        and(
+          gt(dispute.createdAt, since),
+          inArray(
+            dispute.orderId,
+            tx.select({ id: orders.id }).from(orders).where(theirs(orders.buyerId, orders.shopId)),
+          ),
+        ),
+      );
 
     await tx.delete(checkout).where(and(inArray(checkout.buyerId, ids), gt(checkout.createdAt, since)));
     await tx

@@ -12,12 +12,13 @@ import {
   runDigests,
   webhookSweep,
 } from "../lib/server/sweeps";
+import { resetDemoIfDue } from "../lib/server/demo";
 
 /*
  * The Render Workflow service ("resell-sweeps" in render.yaml): the timed
  * side of offers and orders, from lib/server/sweeps.ts. A Render Cron Job
- * (scripts/start-sweeps.ts) starts offerSweep, orderSweep, digestSweep and
- * webhookSweep every 15 minutes. Money moves in their own small tasks, one per order, so a PayPal
+ * (scripts/start-sweeps.ts) starts offerSweep, orderSweep, digestSweep,
+ * webhookSweep and demoReset every 15 minutes. Money moves in their own small tasks, one per order, so a PayPal
  * hiccup retries that order alone with backoff.
  *
  * Start: `pnpm --filter app workflows` (Render runs the same; locally wrap it
@@ -58,6 +59,14 @@ export const digestSweep = task(
   { name: "digestSweep", retry: sweepRetry, timeoutSeconds: 1800 },
   async function digestSweep() {
     return runDigests();
+  },
+);
+
+/** DEMO=true: put the shared demo accounts back (lib/server/demo.ts). */
+export const demoResetTask = task(
+  { name: "demoReset", retry: sweepRetry, timeoutSeconds: 300 },
+  async function demoReset() {
+    return { reset: await resetDemoIfDue() };
   },
 );
 

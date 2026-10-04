@@ -13,7 +13,7 @@ const slug = process.env.RENDER_WORKFLOW_SLUG ?? "resell-sweeps";
 const render = new Render();
 const slot = Math.floor(Date.now() / (15 * 60 * 1000));
 
-for (const name of ["offerSweep", "orderSweep", "digestSweep", "webhookSweep"]) {
+for (const name of ["offerSweep", "orderSweep", "digestSweep", "webhookSweep", "demoReset"]) {
   const run = await render.workflows.startTask(`${slug}/${name}`, [], { idempotencyKey: `${name}-${slot}` });
   console.log(`Started ${slug}/${name}: ${run.taskRunId}`);
 }
