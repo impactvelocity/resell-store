@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>resell.store hero</title>
+<style>
+  @import url("https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600..800&family=Figtree:wght@400;500;600;700;800&display=swap");
+
+  :root {
+    --lemon-100: #fff6c2;
+    --lemon-300: #ffe873;
+    --lemon-400: #ffd934;
+    --leaf-100: #ddf0e3;
+    --leaf-600: #256b4c;
+    --leaf-900: #14261d;
+    --pink-100: #ffdceb;
+    --pink-400: #ff5fa8;
+    --pink-600: #c9246f;
+    --bg: #fffdf2;
+    --border: #e8e3cc;
+    --muted: #56675e;
+    --display: "Bricolage Grotesque", system-ui, sans-serif;
+    --sans: "Figtree", system-ui, sans-serif;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html, body {
+    width: 1280px;
+    height: 640px;
+    overflow: hidden;
+    background: var(--bg);
+    color: var(--leaf-900);
+    font-family: var(--sans);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .hero { position: relative; width: 1280px; height: 640px; overflow: hidden; }
+
+  /* Background shapes */
+  .sun { position: absolute; right: -150px; top: 70px; width: 640px; height: 640px; border-radius: 50%; background: var(--lemon-300); }
+  .sun-small { position: absolute; left: -90px; bottom: -120px; width: 260px; height: 260px; border-radius: 50%; background: var(--lemon-100); }
+
+  /* Copy */
+  .copy { position: absolute; left: 64px; top: 46px; width: 560px; display: flex; flex-direction: column; gap: 18px; z-index: 2; }
+  .wordmark { display: inline-flex; align-items: baseline; font-family: var(--display); font-weight: 800; font-size: 30px; letter-spacing: -0.03em; font-variation-settings: "opsz" 96; }
+  .wordmark i { display: inline-block; width: 0.34em; height: 0.34em; margin: 0 0.06em; border-radius: 50%; background: var(--lemon-400); }
+  h1 { font-family: var(--display); font-weight: 800; font-size: 68px; line-height: 0.95; letter-spacing: -0.045em; font-variation-settings: "opsz" 96; margin-top: 14px; }
+  h1 em { font-style: normal; position: relative; white-space: nowrap; }
+  h1 em::after { content: ""; position: absolute; left: -4px; right: -4px; bottom: 4px; height: 20px; background: var(--lemon-400); z-index: -1; border-radius: 6px; }
+  .lead { font-size: 21px; line-height: 1.4; color: var(--muted); max-width: 520px; }
+  .lead b { color: var(--leaf-900); font-weight: 700; }
+
+  .steps { display: flex; gap: 8px; flex-wrap: wrap; }
+  .chip { display: inline-flex; align-items: center; gap: 8px; height: 38px; padding: 0 16px; border-radius: 999px; font-size: 18px; font-weight: 700; background: #fff; border: 2px solid var(--border); }
+  .chip.pink { background: var(--pink-100); border-color: #f9c2da; color: var(--pink-600); }
+  .chip.leaf { background: var(--leaf-600); border-color: var(--leaf-600); color: #fff; }
+  .chip svg { width: 16px; height: 16px; }
+
+  .badge { position: absolute; left: 64px; bottom: 40px; display: flex; align-items: center; gap: 16px; padding: 14px 22px; background: #fff; border: 2px solid var(--border); border-radius: 20px; box-shadow: 0 12px 30px rgba(20, 38, 29, 0.08); z-index: 2; }
+  .badge img { height: 30px; }
+  .badge .rule { width: 2px; height: 34px; background: var(--border); }
+  .badge span { font-size: 18px; font-weight: 700; color: var(--leaf-600); }
+
+  /* Screens */
+  .desktop { position: absolute; left: 660px; top: 92px; width: 700px; border-radius: 18px; overflow: hidden; border: 3px solid var(--leaf-900); box-shadow: 0 30px 60px rgba(20, 38, 29, 0.18); transform: rotate(-2deg); background: #fff; z-index: 1; }
+  .desktop .bar { height: 30px; display: flex; align-items: center; gap: 7px; padding: 0 14px; background: #f7f3df; border-bottom: 2px solid var(--border); }
+  .desktop .bar i { width: 11px; height: 11px; border-radius: 50%; background: var(--border); }
+  .desktop img { display: block; width: 100%; }
+
+  .phone { position: absolute; left: 1010px; top: 196px; width: 236px; height: 486px; border-radius: 38px; border: 7px solid var(--leaf-900); overflow: hidden; background: var(--bg); box-shadow: 0 30px 60px rgba(20, 38, 29, 0.25); transform: rotate(4deg); z-index: 3; }
+  .phone img { display: block; width: 100%; }
+
+  /* Floating callouts */
+  .bubble { position: absolute; z-index: 4; display: flex; align-items: center; gap: 10px; padding: 12px 18px; border-radius: 18px; font-size: 18px; font-weight: 700; box-shadow: 0 16px 34px rgba(20, 38, 29, 0.18); }
+  .bubble.agent { left: 720px; top: 470px; background: var(--leaf-900); color: #fff; transform: rotate(-3deg); }
+  .bubble.agent .dot { width: 30px; height: 30px; border-radius: 50%; background: var(--pink-400); display: grid; place-items: center; }
+  .bubble.agent .dot svg { width: 16px; height: 16px; }
+  .bubble.held { left: 860px; top: 552px; background: var(--leaf-100); color: var(--leaf-600); transform: rotate(2deg); border: 2px solid #c3e2cd; }
+  .bubble.held svg { width: 20px; height: 20px; }
+
+  .flower { position: absolute; left: 980px; top: 168px; width: 64px; height: 64px; z-index: 5; }
+</style>
+</head>
+<body>
+<div class="hero">
+  <div class="sun"></div>
+  <div class="sun-small"></div>
+
+  <div class="copy">
+    <div class="wordmark">resell<i></i>store</div>
+    <h1>Sell your stuff without doing the <em>selling.</em></h1>
+    <p class="lead">Snap a photo. An AI agent <b>prices it, lists it, answers buyers and haggles</b>. PayPal holds the money until it arrives. You just say yes.</p>
+    <div class="steps">
+      <span class="chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg>Snap</span>
+      <span class="chip pink"><svg viewBox="0 0 24 24"><path fill="currentColor" d="M12 0c.6 6.4 5.6 11.4 12 12-6.4.6-11.4 5.6-12 12-.6-6.4-5.6-11.4-12-12 6.4-.6 11.4-5.6 12-12z"/></svg>Agent sells</span>
+      <span class="chip leaf">✓ You say yes</span>
+    </div>
+  </div>
+
+  <div class="badge">
+    <img src="../devpost/src/assets/paypal.svg" alt="PayPal">
+    <div class="rule"></div>
+    <span>Built for the PayPal AI Hackathon</span>
+  </div>
+
+  <div class="desktop">
+    <div class="bar"><i></i><i></i><i></i></div>
+    <img src="../video/captures/desktop/c3-findings.png" alt="">
+  </div>
+
+  <svg class="flower" viewBox="0 0 100 100">
+    <g fill="#ff5fa8">
+      <circle cx="50" cy="24" r="22"/><circle cx="75" cy="42" r="22"/><circle cx="65" cy="72" r="22"/>
+      <circle cx="35" cy="72" r="22"/><circle cx="25" cy="42" r="22"/>
+    </g>
+    <circle cx="50" cy="50" r="15" fill="#ffd934"/>
+  </svg>
+
+  <div class="phone">
+    <img src="../video/captures/phone/m-c10-offer.png" alt="">
+  </div>
+
+  <div class="bubble agent">
+    <span class="dot"><svg viewBox="0 0 24 24"><path fill="#14261d" d="M12 0c.6 6.4 5.6 11.4 12 12-6.4.6-11.4 5.6-12 12-.6-6.4-5.6-11.4-12-12 6.4-.6 11.4-5.6 12-12z"/></svg></span>
+    “Jess offered $170. I'd take it.”
+  </div>
+  <div class="bubble held">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>
+    PayPal holds the money until it arrives
+  </div>
+</div>
+</body>
+</html>

@@ -70,12 +70,31 @@ export default async function Deploy() {
           On the web service, add two custom domains: <C>resell.store</C> and <C>*.resell.store</C> (your own domain, if
           different). The wildcard covers every store and the <C>api.</C>, <C>docs.</C> and <C>mcp.</C> hosts.
         </li>
-        <li>Add the DNS records Render shows for each. The wildcard has its own verification records for its certificate.</li>
+        <li>
+          Add the DNS records Render shows for each. Copy the exact targets from the dashboard, and remove any <C>AAAA</C>{" "}
+          records: Render doesn&apos;t support IPv6 for custom domains.
+        </li>
+
         <li>
           Set <C>NEXT_PUBLIC_ROOT_DOMAIN=resell.store</C> and <C>BETTER_AUTH_URL=https://resell.store</C> on the web service, and
           the same on the workflow. The root domain is baked in at build time, so trigger a new deploy after changing it.
         </li>
       </OL>
+      <Table
+        head={["Type", "Name", "Value"]}
+        rows={[
+          [<C key="a">A</C>, <C key="b">@</C>, <><C key="c">216.24.57.1</C>, or an ALIAS/ANAME to your <C>onrender.com</C> address</>],
+          [<C key="d">CNAME</C>, <C key="e">www</C>, <>Your <C key="f">onrender.com</C> address. Render redirects www to the root</>],
+          [<C key="g">CNAME</C>, <C key="h">*</C>, <>Your <C key="i">onrender.com</C> address</>],
+          [<C key="j">CNAME</C>, <C key="k">_acme-challenge</C>, <><C key="l">{"<service-id>"}.verify.renderdns.com</C>, for the wildcard certificate</>],
+          [<C key="m">CNAME</C>, <C key="n">_cf-custom-hostname</C>, <C key="o">{"<service-id>"}.hostname.renderdns.com</C>],
+        ]}
+      />
+      <P>
+        On Cloudflare, use a <C>CNAME</C> on <C>@</C> instead of the <C>A</C> record, and keep every record on DNS only (grey
+        cloud) until Render has verified the domains and issued certificates. If you turn the proxy on afterwards, set SSL/TLS to
+        Full. The wildcard only works while the root domain also points to Render.
+      </P>
       <Callout tone="note">
         Until the domains are live you can try the app on its <C>onrender.com</C> address, but store subdomains, the session
         cookie and the api/docs/mcp hosts all need the real root domain.
@@ -131,15 +150,16 @@ PAYMENT.REFERENCED-PAYOUT-ITEM.FAILED`}
       <H2 id="each-deploy">What happens on each deploy</H2>
       <OL>
         <li>
-          <strong>Build:</strong> <C>corepack enable &amp;&amp; pnpm install --frozen-lockfile &amp;&amp; pnpm --filter app build</C>.
-          The <C>NEXT_PUBLIC_</C> values are baked in here.
+          <strong>Build:</strong> <C>corepack pnpm install --frozen-lockfile &amp;&amp; corepack pnpm --filter app build</C>.
+          pnpm runs through corepack because <C>corepack enable</C> can&apos;t write to Render&apos;s read-only <C>/usr/bin</C>. The{" "}
+          <C>NEXT_PUBLIC_</C> values are baked in here.
         </li>
         <li>
-          <strong>Pre-deploy:</strong> <C>pnpm db:migrate</C> applies any new migrations. If it fails, the deploy stops and the old
+          <strong>Pre-deploy:</strong> <C>cd packages/db &amp;&amp; npm run db:migrate</C> applies any new migrations. If it fails, the deploy stops and the old
           version keeps serving.
         </li>
         <li>
-          <strong>Start:</strong> <C>pnpm --filter app start</C>. Render switches traffic once the health check on <C>/</C> passes.
+          <strong>Start:</strong> <C>cd apps/app &amp;&amp; npm start</C>. Render switches traffic once the health check on <C>/</C> passes.
         </li>
       </OL>
       <P>
