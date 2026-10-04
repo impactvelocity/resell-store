@@ -89,6 +89,7 @@ export const docsTabs: NavTab[] = [
           { title: "Introduction", href: "/api" },
           { title: "Keys and permissions", href: "/api/authentication" },
           { title: "Errors and limits", href: "/api/errors" },
+          { title: "Postman", href: "/api/postman" },
           { title: "Recipes", href: "/api/recipes" },
         ],
       },

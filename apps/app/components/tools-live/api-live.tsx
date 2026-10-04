@@ -27,7 +27,7 @@ export type ApiScreenData = {
   key: { masked: string; token: string | null; made: string; lastUsed: string | null } | null;
   usage: { used: number; limit: number; resets: string };
   apiBase: string;
-  docs: { home: string; groups: { title: string; href: string; blurb: string }[] };
+  docs: { home: string; postman: string; groups: { title: string; href: string; blurb: string }[] };
   webhook: {
     url: string;
     events: string[];
@@ -265,7 +265,20 @@ function EndpointsCard({ docs }: { docs: ApiScreenData["docs"] }) {
   );
 }
 
-function PostmanCard({ apiBase, token }: { apiBase: string; token: string | null }) {
+/** Postman's mark (Simple Icons, CC0) in its brand orange, on white so the figure reads. */
+function PostmanLogo({ className }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 24 24" role="img" aria-label="Postman" className={className}>
+      <circle cx="12" cy="12" r="11" fill="#fff" />
+      <path
+        fill="#FF6C37"
+        d="M13.527.099C6.955-.744.942 3.9.099 10.473c-.843 6.572 3.8 12.584 10.373 13.428 6.573.843 12.587-3.801 13.428-10.374C24.744 6.955 20.101.943 13.527.099zm2.471 7.485a.855.855 0 0 0-.593.25l-4.453 4.453-.307-.307-.643-.643c4.389-4.376 5.180-4.418 5.996-3.753zm-4.863 4.861l4.440-4.440a.62.62 0 1 1 .847.903l-4.699 4.125-.588-.588zm.33.694l-1.100.238a.06.06 0 0 1-.067-.032.06.06 0 0 1 .01-.073l.645-.645.512.512zm-2.803-.459l1.172-1.172.879.878-1.979.426a.074.074 0 0 1-.085-.039.072.072 0 0 1 .013-.093zm-3.646 6.058a.076.076 0 0 1-.069-.083.077.077 0 0 1 .022-.046h.002l.946-.946 1.222 1.222-2.123-.147zm2.425-1.256a.228.228 0 0 0-.117.256l.203.865a.125.125 0 0 1-.211.117h-.003l-.934-.934-.294-.295 3.762-3.758 1.820-.393.874.874c-1.255 1.102-2.971 2.201-5.100 3.268zm5.279-3.428h-.002l-.839-.839 4.699-4.125a.952.952 0 0 0 .119-.127c-.148 1.345-2.029 3.245-3.977 5.091zm3.657-6.460l-.003-.002a1.822 1.822 0 0 1 2.459-2.684l-1.610 1.613a.119.119 0 0 0 0 .169l1.247 1.247a1.817 1.817 0 0 1-2.093-.343zm2.578 0a1.714 1.714 0 0 1-.271.218h-.001l-1.207-1.207 1.533-1.533c.661.72.637 1.832-.054 2.522zM18.855 6.050a.143.143 0 0 0-.053.157.416.416 0 0 1-.053.45.14.14 0 0 0 .023.197.141.141 0 0 0 .084.03.14.14 0 0 0 .106-.05.691.691 0 0 0 .087-.751.138.138 0 0 0-.194-.033z"
+      />
+    </svg>
+  );
+}
+
+function PostmanCard({ apiBase, docs, token }: { apiBase: string; docs: string; token: string | null }) {
   const toast = useToast();
   const { copy, copied } = useCopy();
   const [busy, setBusy] = useState(false);
@@ -294,23 +307,36 @@ function PostmanCard({ apiBase, token }: { apiBase: string; token: string | null
   };
 
   return (
-    <section className={card}>
-      <div className="flex flex-col gap-0.5">
-        <h2 className={title}>Use it in Postman</h2>
-        <p className="text-sm text-text-muted">
-          Every request, ready to send. In Postman, choose Import and drop in the file or paste the link.
-        </p>
+    <section className={cn(card, "gap-5 desk:gap-6")}>
+      <div className="flex items-start gap-4 desk:gap-5">
+        <PostmanLogo className="size-14 shrink-0 desk:size-16" />
+        <div className="flex min-w-0 flex-col gap-1">
+          <h2 className="font-display text-2xl font-extrabold tracking-tight desk:text-[28px] desk:leading-9">Use it in Postman</h2>
+          <p className="text-base text-text-muted">Every request, ready to send. Import it once and try anything in the API.</p>
+        </div>
       </div>
-      <div className="flex flex-wrap items-center gap-x-5 gap-y-3">
-        <Button size="md" onClick={download} disabled={busy}>
+      <div className="flex flex-col gap-3 desk:flex-row desk:items-center desk:gap-5">
+        <Button className="w-full desk:w-auto desk:px-7" onClick={download} disabled={busy}>
           {busy && <MiniSpinner />}
           Download collection
         </Button>
-        <TextAction onClick={() => copy("postman", link, "Copied. Paste it into Import in Postman.")}>
-          {copied === "postman" ? "Copied" : "Copy import link"}
-        </TextAction>
+        <div className="flex items-center justify-center gap-5">
+          <TextAction onClick={() => copy("postman", link, "Copied. Paste it into Import in Postman.")}>
+            {copied === "postman" ? "Copied" : "Copy import link"}
+          </TextAction>
+          <a
+            href={docs}
+            target="_blank"
+            rel="noreferrer"
+            className="inline-flex shrink-0 items-center gap-1 rounded-sm text-sm font-bold whitespace-nowrap text-secondary outline-none hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-secondary"
+          >
+            How to set it up
+            <ArrowUpRightIcon size={14} strokeWidth={2.4} />
+          </a>
+        </div>
       </div>
-      <p className="text-sm text-text-muted">
+      <p className="border-t border-border pt-4 text-sm text-text-muted">
+        In Postman, choose Import and drop in the file or paste the link.{" "}
         {token ? (
           "Your key goes in the download, so it works as soon as it's imported. Keep the file private."
         ) : (
@@ -494,10 +520,10 @@ export function ApiLiveScreen({ data }: { data: ApiScreenData }) {
               <CodeSample data={data} token={token} />
             </div>
             <div className="order-4 desk:order-none">
-              <EndpointsCard docs={data.docs} />
+              <PostmanCard apiBase={data.apiBase} docs={data.docs.postman} token={token} />
             </div>
             <div className="order-5 desk:order-none">
-              <PostmanCard apiBase={data.apiBase} token={token} />
+              <EndpointsCard docs={data.docs} />
             </div>
           </div>
           <div className="order-7 desk:hidden">

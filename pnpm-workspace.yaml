@@ -4,5 +4,7 @@ packages:
 
 # pnpm 11 fails CI installs on unapproved dependency build scripts.
 # esbuild's postinstall fetches its platform binary.
+# core-js only prints a funding banner.
 allowBuilds:
+  core-js: false
   esbuild: true

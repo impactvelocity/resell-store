@@ -654,6 +654,16 @@ describe("finishCheckout", () => {
     expect(paypal.refundCapture).not.toHaveBeenCalled();
   });
 
+  it("says when it's the seller's PayPal that isn't verified", async () => {
+    const s = await started();
+    paypal.captureOrder.mockRejectedValue(new paypal.PayPalError("not verified", 403, "PAYEE_ACCOUNT_NOT_VERIFIED"));
+    vi.spyOn(console, "error").mockImplementation(() => {});
+    await expect(commerce.finishCheckout({ providerOrderId: "ORDER-1", viewerId: s.buyer.id })).rejects.toThrow(
+      "The seller's PayPal account isn't verified yet",
+    );
+    expect((await getCheckout(s.checkout.id)).status).toBe("failed");
+  });
+
   it("says nothing was charged on any other PayPal error", async () => {
     const s = await started();
     paypal.captureOrder.mockRejectedValue(new paypal.PayPalError("not approved", 422, "ORDER_NOT_APPROVED"));

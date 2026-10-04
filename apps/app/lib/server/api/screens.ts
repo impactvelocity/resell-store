@@ -50,6 +50,7 @@ export async function apiScreenData(userId: string) {
     apiBase: apiUrl(),
     docs: {
       home: docsUrl("/api"),
+      postman: docsUrl("/api/postman"),
       groups: apiGroups.slice(0, 10).map((g) => ({ title: g.title, href: docsUrl(`/api/${g.id}`), blurb: g.blurb })),
     },
     webhook: webhook

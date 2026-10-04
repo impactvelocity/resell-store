@@ -82,8 +82,8 @@ export default async function ApiIntro() {
       <H2 id="reference">Reference</H2>
       <P>
         Prefer a machine-readable description? <A href={`${api}/openapi.json`}>openapi.json</A> works with Insomnia and code generators. For Postman,
-        import <A href={`${api}/postman.json`}>postman.json</A>: every request is ready, and you set your key once in the <C>apiKey</C>{" "}
-        variable.
+        import <A href={`${api}/postman.json`}>postman.json</A>: every request is ready, and you set your key once. See{" "}
+        <A href={`${base}/api/postman`}>Postman</A>.
       </P>
       <CardGrid>
         {apiGroups.map((g) => (

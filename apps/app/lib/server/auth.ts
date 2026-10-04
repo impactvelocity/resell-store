@@ -22,6 +22,56 @@ const protocol = isLocal ? "http" : "https";
  */
 export const paypalSignInEnabled = !!(process.env.PAYPAL_CLIENT_ID && process.env.PAYPAL_CLIENT_SECRET);
 
+const paypalLive = process.env.PAYPAL_ENV === "live";
+const paypalWeb = paypalLive ? "https://www.paypal.com" : "https://www.sandbox.paypal.com";
+const paypalApi = paypalLive ? "https://api-m.paypal.com" : "https://api-m.sandbox.paypal.com";
+
+type PayPalProfile = {
+  user_id: string;
+  name?: string;
+  given_name?: string;
+  family_name?: string;
+  picture?: string;
+  email?: string;
+  email_verified?: boolean;
+  emails?: { value: string; primary?: boolean; confirmed?: boolean }[];
+};
+
+/**
+ * Who signed in with PayPal. Ours rather than Better Auth's: PayPal's
+ * paypalv1.1 profile lists addresses under `emails`, which Better Auth's
+ * version doesn't read, so every sign-in came back without an email.
+ */
+async function paypalProfile(token: { accessToken?: string }) {
+  if (!token.accessToken) return null;
+  const res = await fetch(`${paypalApi}/v1/identity/oauth2/userinfo?schema=paypalv1.1`, {
+    headers: { Authorization: `Bearer ${token.accessToken}`, Accept: "application/json" },
+    cache: "no-store",
+  });
+  if (!res.ok) {
+    console.error("[paypal sign-in] userinfo failed", res.status, await res.text().catch(() => ""));
+    return null;
+  }
+  const p = (await res.json()) as PayPalProfile;
+  const primary = p.emails?.find((e) => e.primary) ?? p.emails?.[0];
+  const email = p.email ?? primary?.value;
+  // Their PayPal account id, what the sign-in is linked by
+  if (!p.user_id) {
+    console.error("[paypal sign-in] profile without a user_id");
+    return null;
+  }
+  if (!email) {
+    console.error("[paypal sign-in] no email: turn on Email under Log in with PayPal for the app");
+    return null;
+  }
+  const name = p.name || [p.given_name, p.family_name].filter(Boolean).join(" ") || email.split("@")[0]!;
+  const emailVerified = p.email_verified ?? primary?.confirmed ?? false;
+  return {
+    user: { name, email, image: p.picture, emailVerified },
+    data: { ...p, user_id: p.user_id, name, email, email_verified: emailVerified, given_name: p.given_name ?? "", family_name: p.family_name ?? "" },
+  };
+}
+
 export const auth = betterAuth({
   baseURL: process.env.BETTER_AUTH_URL,
   secret: process.env.BETTER_AUTH_SECRET,
@@ -48,7 +98,11 @@ export const auth = betterAuth({
         paypal: {
           clientId: process.env.PAYPAL_CLIENT_ID!,
           clientSecret: process.env.PAYPAL_CLIENT_SECRET!,
-          environment: process.env.PAYPAL_ENV === "live" ? "live" : "sandbox",
+          environment: paypalLive ? "live" : "sandbox",
+          // Better Auth sends no scope and PayPal answers that with "Something went
+          // wrong". `scope` can't go in additionalParams (reserved), so it rides here
+          authorizationEndpoint: `${paypalWeb}/signin/authorize?scope=${encodeURIComponent("openid email profile")}`,
+          getUserInfo: paypalProfile,
         },
       }
     : {},

@@ -296,7 +296,9 @@ export async function finishCheckout(input: { providerOrderId: string; viewerId:
       throw new CommerceError(
         error.issue === "INSTRUMENT_DECLINED"
           ? "PayPal declined that way to pay. Try again with another one."
-          : "PayPal couldn't take the payment. Nothing was charged.",
+          : error.issue === "PAYEE_ACCOUNT_NOT_VERIFIED"
+            ? "The seller's PayPal account isn't verified yet, so PayPal can't pay them. Nothing was charged."
+            : "PayPal couldn't take the payment. Nothing was charged.",
       );
     }
     throw error;
