@@ -584,5 +584,30 @@ describe("connected sellers", () => {
       "PARTNER_FEE",
       "DELAY_FUNDS_DISBURSEMENT",
     ]);
+    expect(body).not.toHaveProperty("email");
+  });
+
+  it("fills in the seller's email on PayPal's first screen", async () => {
+    mockFetch(() => ({ body: { links: [{ rel: "action_url", href: "https://paypal.test/signup" }] } }));
+    const p = await load();
+    await p.createSellerSignupLink({ trackingId: "user_1", returnUrl: "http://localhost:5689/back", email: "maya@test.dev" });
+    expect(calls[0]!.body.email).toBe("maya@test.dev");
+  });
+
+  it("reads who signed in with PayPal using their own token", async () => {
+    mockFetch(() => ({
+      body: { payer_id: "MERCHANT9", emails: [{ value: "old@test.dev" }, { value: "maya@test.dev", primary: true }] },
+    }));
+    const p = await load();
+    expect(await p.paypalLoginProfile("user-token")).toEqual({ payerId: "MERCHANT9", email: "maya@test.dev" });
+    expect(calls[0]!.url).toBe("https://api-m.sandbox.paypal.com/v1/identity/oauth2/userinfo?schema=paypalv1.1");
+    expect(calls[0]!.headers.Authorization).toBe("Bearer user-token");
+    expect(tokenFetches).toBe(0);
+  });
+
+  it("has no payer id when the app doesn't share it", async () => {
+    mockFetch(() => ({ body: { email: "maya@test.dev" } }));
+    const p = await load();
+    expect(await p.paypalLoginProfile("user-token")).toEqual({ payerId: null, email: "maya@test.dev" });
   });
 });

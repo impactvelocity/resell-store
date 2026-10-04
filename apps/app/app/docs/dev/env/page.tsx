@@ -31,6 +31,7 @@ export default async function Env() {
         { id: "search", title: "Search" },
         { id: "files", title: "Files" },
         { id: "paypal", title: "PayPal" },
+        { id: "zapier", title: "Zapier" },
         { id: "payouts", title: "Fees and timers" },
         { id: "jobs", title: "Timed jobs" },
         { id: "demo", title: "Demo accounts" },
@@ -119,6 +120,11 @@ export default async function Env() {
         ["PAYPAL_DEMO_SELLER_PASSWORD", "Sandbox demo", "Its password", "Not shown"],
         ["PAYPAL_DEMO_BUYER_EMAIL", "Sandbox demo", "A sandbox buyer login, shown at checkout", "Not shown"],
         ["PAYPAL_DEMO_BUYER_PASSWORD", "Sandbox demo", "Its password", "Not shown"],
+      ])}
+
+      <H2 id="zapier">Zapier</H2>
+      {table([
+        ["ZAPIER_APP_URL", "Optional", <>The resell.store Zapier app&apos;s invite link, once it&apos;s pushed (<C key="a">integrations/zapier</C>). Shows Connect on Zapier on /tools/api and the docs</>, "Zaps start from Webhooks by Zapier only; the docs call the app coming soon"],
       ])}
 
       <H2 id="payouts">Fees and timers</H2>

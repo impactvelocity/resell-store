@@ -10,6 +10,7 @@ import { rootDomain } from "../urls";
 import { sendEmail } from "./email";
 import { captureDemoLink } from "./demo";
 import { isDevTestAddress, rememberDevLink } from "./dev-links";
+import { linkFromPayPalLogin } from "./paypal-sellers";
 
 const rootHostname = rootDomain.split(":")[0]!;
 const isLocal = rootHostname === "localhost";
@@ -119,6 +120,11 @@ export const auth = betterAuth({
         }),
       },
     },
+    // Signed in with PayPal: link that PayPal for payouts if it's already connected to us
+    account: {
+      create: { after: async (row) => linkPayPalLogin(row) },
+      update: { after: async (row) => linkPayPalLogin(row) },
+    },
   },
   plugins: [
     magicLink({
@@ -144,6 +150,16 @@ export const auth = betterAuth({
     nextCookies(),
   ],
 });
+
+/** Never holds up signing in: a seller can still connect from Connections. */
+async function linkPayPalLogin(row: { providerId?: string; userId?: string; accessToken?: string | null }) {
+  if (row.providerId !== "paypal" || !row.userId || !row.accessToken) return;
+  try {
+    await linkFromPayPalLogin(row.userId, row.accessToken);
+  } catch (error) {
+    console.error("Linking PayPal from sign-in failed", error);
+  }
+}
 
 /** "maya.rivera@example.com" → "Maya Rivera" */
 function nameFromEmail(email: string) {

@@ -3,6 +3,7 @@ import { createHmac, randomBytes } from "node:crypto";
 import {
   and,
   asc,
+  count,
   db,
   eq,
   isNull,
@@ -13,11 +14,14 @@ import {
   orders,
   review,
   shop,
+  sql,
   thread,
   user,
   webhookDelivery,
   webhookEndpoint,
+  webhookSubscription,
   type WebhookEvent,
+  type WebhookSubscriptionSource,
 } from "@repo/db";
 import { effectiveStatus } from "../commerce";
 import { coverPhotos } from "../listings";
@@ -36,6 +40,12 @@ import { apiOffer, apiOrder } from "./serialize";
  *
  * Each request carries `Resell-Signature: t=<unix seconds>,v1=<hex>`, where
  * v1 is HMAC-SHA256 of `${t}.${body}` with the endpoint's secret.
+ *
+ * Subscriptions are more places to send events, each with its own events
+ * and secret (REST hooks): the resell.store Zapier app makes one per Zap,
+ * and sellers can paste a Webhooks by Zapier address on /tools/api. They're
+ * retried and turned off the same way, and one that answers 410 Gone is
+ * deleted, as Zapier asks.
  */
 
 export const webhookEvents: { id: WebhookEvent; what: string }[] = [
@@ -53,6 +63,18 @@ export const webhookEvents: { id: WebhookEvent; what: string }[] = [
 export const defaultWebhookEvents: WebhookEvent[] = ["listing.sold", "offer.received", "question.asked"];
 
 export type WebhookRow = typeof webhookEndpoint.$inferSelect;
+export type SubscriptionRow = typeof webhookSubscription.$inferSelect;
+
+/** Where one event goes: the seller's endpoint, or one of their subscriptions. */
+type Target = { userId: string; url: string; secret: string; subscriptionId: string | null };
+
+const endpointTarget = (row: WebhookRow): Target => ({ userId: row.userId, url: row.url, secret: row.secret, subscriptionId: null });
+const subscriptionTarget = (row: SubscriptionRow): Target => ({
+  userId: row.userId,
+  url: row.url,
+  secret: row.secret,
+  subscriptionId: row.id,
+});
 
 export function newWebhookSecret() {
   return `whsec_${randomBytes(24).toString("base64url")}`;
@@ -95,6 +117,56 @@ export async function rotateWebhookSecret(userId: string) {
   return row ?? null;
 }
 
+/* Subscriptions */
+
+/** Enough for a Zap per event on every shop, with room to spare. */
+export const MAX_SUBSCRIPTIONS = 50;
+
+export async function listSubscriptions(userId: string) {
+  return db.select().from(webhookSubscription).where(eq(webhookSubscription.userId, userId)).orderBy(asc(webhookSubscription.createdAt));
+}
+
+export async function getSubscription(userId: string, id: string) {
+  const [row] = await db
+    .select()
+    .from(webhookSubscription)
+    .where(and(eq(webhookSubscription.userId, userId), eq(webhookSubscription.id, id)));
+  return row ?? null;
+}
+
+/**
+ * Adds a subscription, or updates the one already sending to that address
+ * (switching it back on). Null when they already have MAX_SUBSCRIPTIONS.
+ */
+export async function addSubscription(
+  userId: string,
+  input: { url: string; events: WebhookEvent[]; source: WebhookSubscriptionSource; name?: string | null },
+) {
+  const values = { events: input.events, name: input.name?.trim() || null, enabled: true, failingSince: null };
+  const [same] = await db
+    .update(webhookSubscription)
+    .set(values)
+    .where(and(eq(webhookSubscription.userId, userId), eq(webhookSubscription.url, input.url)))
+    .returning();
+  if (same) return same;
+  const [{ n }] = (await db.select({ n: count() }).from(webhookSubscription).where(eq(webhookSubscription.userId, userId))) as [{ n: number }];
+  if (n >= MAX_SUBSCRIPTIONS) return null;
+  const [row] = await db
+    .insert(webhookSubscription)
+    .values({ userId, url: input.url, source: input.source, secret: newWebhookSecret(), ...values })
+    .returning();
+  return row!;
+}
+
+/** True if there was one to remove. */
+export async function removeSubscription(userId: string, id: string) {
+  const gone = await db
+    .delete(webhookSubscription)
+    .where(and(eq(webhookSubscription.userId, userId), eq(webhookSubscription.id, id)))
+    .returning({ id: webhookSubscription.id });
+  return gone.length > 0;
+}
+
 const MINUTE = 60_000;
 const HOUR = 60 * MINUTE;
 
@@ -110,18 +182,18 @@ const KEEP_DELIVERIES_MS = 30 * 24 * HOUR;
 type Attempt = { status: number | null; error: string | null };
 
 /** One POST of an already-built event body, signed now. */
-async function send(endpoint: WebhookRow, type: string, body: string): Promise<Attempt> {
+async function send(target: Target, type: string, body: string): Promise<Attempt> {
   const t = Math.floor(Date.now() / 1000);
   let status: number | null = null;
   let error: string | null = null;
   try {
-    const res = await fetch(endpoint.url, {
+    const res = await fetch(target.url, {
       method: "POST",
       headers: {
         "content-type": "application/json",
         "user-agent": "resell.store-webhooks/1",
         "resell-event": type,
-        "resell-signature": `t=${t},v1=${sign(endpoint.secret, t, body)}`,
+        "resell-signature": `t=${t},v1=${sign(target.secret, t, body)}`,
       },
       body,
       signal: AbortSignal.timeout(10_000),
@@ -135,41 +207,59 @@ async function send(endpoint: WebhookRow, type: string, body: string): Promise<A
   return { status, error };
 }
 
-/** The endpoint's last result, and when it started failing (kept until a success). */
-async function noteResult(userId: string, result: Attempt, now: Date) {
-  await db
-    .update(webhookEndpoint)
-    .set({ lastStatus: result.status, lastError: result.error, lastDeliveredAt: now })
-    .where(eq(webhookEndpoint.userId, userId));
-  if (result.error) {
-    await db
-      .update(webhookEndpoint)
-      .set({ failingSince: now })
-      .where(and(eq(webhookEndpoint.userId, userId), isNull(webhookEndpoint.failingSince)));
-  } else {
-    await db.update(webhookEndpoint).set({ failingSince: null }).where(eq(webhookEndpoint.userId, userId));
-  }
-}
+/** A subscription's address answered 410 Gone: Zapier's way of saying the Zap is gone. */
+const isGone = (target: Target, result: Attempt) => target.subscriptionId !== null && result.status === 410;
 
 /**
- * Sends one event to one endpoint and records how it went. A failed event
- * (not the "ping" test) is queued to be tried again.
+ * The target's last result, and when it started failing (kept until a
+ * success). A subscription that answered 410 is deleted instead.
  */
-export async function deliver(endpoint: WebhookRow, type: WebhookEvent | "ping", object: unknown) {
-  const event = {
-    id: `evt_${randomBytes(12).toString("hex")}`,
+async function noteResult(target: Target, result: Attempt, now: Date) {
+  const last = { lastStatus: result.status, lastError: result.error, lastDeliveredAt: now };
+  if (target.subscriptionId) {
+    const where = eq(webhookSubscription.id, target.subscriptionId);
+    if (isGone(target, result)) {
+      await db.delete(webhookSubscription).where(where);
+      return;
+    }
+    await db
+      .update(webhookSubscription)
+      .set({ ...last, failingSince: result.error ? sql`coalesce(${webhookSubscription.failingSince}, ${now})` : null })
+      .where(where);
+    return;
+  }
+  await db
+    .update(webhookEndpoint)
+    .set({ ...last, failingSince: result.error ? sql`coalesce(${webhookEndpoint.failingSince}, ${now})` : null })
+    .where(eq(webhookEndpoint.userId, target.userId));
+}
+
+/** The JSON we POST. `test` marks samples sent from the API page or POST /webhooks/subscriptions/:id/test. */
+export function eventBody(type: WebhookEvent | "ping", object: unknown, { test = false, id = `evt_${randomBytes(12).toString("hex")}` } = {}) {
+  return {
+    id,
     object: "event",
     type,
     created_at: new Date().toISOString(),
+    ...(test ? { test: true } : {}),
     data: { object },
   };
+}
+
+/**
+ * Sends one event to one target and records how it went. A failed event
+ * (not a "ping" or a test) is queued to be tried again.
+ */
+async function deliverTo(target: Target, type: WebhookEvent | "ping", object: unknown, { test = false } = {}) {
+  const event = eventBody(type, object, { test });
   const body = JSON.stringify(event);
-  const result = await send(endpoint, type, body);
+  const result = await send(target, type, body);
   const now = new Date();
-  await noteResult(endpoint.userId, result, now);
-  if (type !== "ping") {
+  await noteResult(target, result, now);
+  if (type !== "ping" && !test && !isGone(target, result)) {
     await db.insert(webhookDelivery).values({
-      userId: endpoint.userId,
+      userId: target.userId,
+      subscriptionId: target.subscriptionId,
       eventId: event.id,
       type,
       body,
@@ -182,6 +272,16 @@ export async function deliver(endpoint: WebhookRow, type: WebhookEvent | "ping",
     });
   }
   return { id: event.id, ...result };
+}
+
+/** Sends one event to the seller's endpoint (see deliverTo). */
+export function deliver(endpoint: WebhookRow, type: WebhookEvent | "ping", object: unknown) {
+  return deliverTo(endpointTarget(endpoint), type, object);
+}
+
+/** Sends one event to a subscription; `test` ones aren't retried. */
+export function deliverToSubscription(row: SubscriptionRow, type: WebhookEvent, object: unknown, opts: { test?: boolean } = {}) {
+  return deliverTo(subscriptionTarget(row), type, object, opts);
 }
 
 /**
@@ -205,8 +305,9 @@ export async function retryWebhooks(now = new Date()) {
       .where(and(eq(webhookDelivery.id, d.id), eq(webhookDelivery.status, "pending"), lte(webhookDelivery.nextAttemptAt, now)))
       .returning({ id: webhookDelivery.id });
     if (!claimed) continue;
-    const endpoint = await getWebhook(d.userId);
-    if (!endpoint?.enabled) {
+    // A removed subscription takes its deliveries with it, so only the endpoint can be missing here
+    const row = d.subscriptionId ? await getSubscription(d.userId, d.subscriptionId) : await getWebhook(d.userId);
+    if (!row?.enabled) {
       await db
         .update(webhookDelivery)
         .set({ status: "failed", nextAttemptAt: null, lastError: "The webhook was turned off or removed." })
@@ -214,8 +315,13 @@ export async function retryWebhooks(now = new Date()) {
       gaveUp++;
       continue;
     }
-    const result = await send(endpoint, d.type, d.body);
-    await noteResult(d.userId, result, now);
+    const target = "id" in row ? subscriptionTarget(row) : endpointTarget(row);
+    const result = await send(target, d.type, d.body);
+    await noteResult(target, result, now);
+    if (isGone(target, result)) {
+      gaveUp++;
+      continue;
+    }
     const attempts = d.attempts + 1;
     const wait = RETRY_DELAYS_MS[attempts - 1];
     if (!result.error) delivered++;
@@ -245,7 +351,23 @@ export async function retryWebhooks(now = new Date()) {
     await db
       .update(webhookDelivery)
       .set({ status: "failed", nextAttemptAt: null })
-      .where(and(eq(webhookDelivery.userId, userId), eq(webhookDelivery.status, "pending")));
+      .where(and(eq(webhookDelivery.userId, userId), isNull(webhookDelivery.subscriptionId), eq(webhookDelivery.status, "pending")));
+  }
+  const subsOff = await db
+    .update(webhookSubscription)
+    .set({
+      enabled: false,
+      lastError: "We turned this off after three days of failed deliveries. Turn the Zap off and on again, or add the address again.",
+    })
+    .where(
+      and(eq(webhookSubscription.enabled, true), lte(webhookSubscription.failingSince, new Date(now.getTime() - TURN_OFF_AFTER_MS))),
+    )
+    .returning({ id: webhookSubscription.id });
+  for (const { id } of subsOff) {
+    await db
+      .update(webhookDelivery)
+      .set({ status: "failed", nextAttemptAt: null })
+      .where(and(eq(webhookDelivery.subscriptionId, id), eq(webhookDelivery.status, "pending")));
   }
 
   // Keep a month of history; nothing pending is ever cleared
@@ -253,25 +375,31 @@ export async function retryWebhooks(now = new Date()) {
     .delete(webhookDelivery)
     .where(and(lte(webhookDelivery.createdAt, new Date(now.getTime() - KEEP_DELIVERIES_MS)), isNull(webhookDelivery.nextAttemptAt)));
 
-  return { retried: due.length, delivered, gaveUp, turnedOff: turnedOff.length };
+  return { retried: due.length, delivered, gaveUp, turnedOff: turnedOff.length + subsOff.length };
 }
 
-/** Events still waiting for another try, for /tools/api. */
+/** Events still waiting for another try at the endpoint, for /tools/api. */
 export async function pendingDeliveries(userId: string) {
   const rows = await db
     .select({ id: webhookDelivery.id })
     .from(webhookDelivery)
-    .where(and(eq(webhookDelivery.userId, userId), eq(webhookDelivery.status, "pending")));
+    .where(and(eq(webhookDelivery.userId, userId), isNull(webhookDelivery.subscriptionId), eq(webhookDelivery.status, "pending")));
   return rows.length;
 }
 
-/** Sends an event to the seller's endpoint if they've asked for it. Never throws. */
+/** Sends an event to the seller's endpoint and subscriptions that asked for it. Never throws. */
 async function emit(sellerId: string, type: WebhookEvent, load: () => Promise<unknown>) {
   try {
-    const endpoint = await getWebhook(sellerId);
-    if (!endpoint?.enabled || !endpoint.events.includes(type)) return;
+    const [endpoint, subscriptions] = await Promise.all([getWebhook(sellerId), listSubscriptions(sellerId)]);
+    const targets = [
+      ...(endpoint?.enabled && endpoint.events.includes(type) ? [endpointTarget(endpoint)] : []),
+      ...subscriptions.filter((s) => s.enabled && s.events.includes(type)).map(subscriptionTarget),
+    ];
+    if (targets.length === 0) return;
     const object = await load();
-    if (object) await deliver(endpoint, type, object);
+    if (!object) return;
+    const results = await Promise.allSettled(targets.map((t) => deliverTo(t, type, object)));
+    for (const r of results) if (r.status === "rejected") console.error(`[webhook] ${type} failed`, r.reason);
   } catch (error) {
     console.error(`[webhook] ${type} failed`, error);
   }
@@ -288,7 +416,7 @@ const listingCard = {
   status: listing.status,
 };
 
-async function offerObject(offerId: string) {
+export async function offerObject(offerId: string) {
   const [row] = await db
     .select({ offer, listing: listingCard, shop: { slug: shop.slug, name: shop.name, ownerId: shop.ownerId }, buyer: { name: user.name, email: user.email } })
     .from(offer)
@@ -309,7 +437,7 @@ async function offerObject(offerId: string) {
   };
 }
 
-async function orderObject(orderId: string) {
+export async function orderObject(orderId: string) {
   const [row] = await db
     .select({ order: orders, listing: listingCard, shop: { slug: shop.slug, name: shop.name, ownerId: shop.ownerId }, buyer: { name: user.name, email: user.email } })
     .from(orders)
@@ -346,20 +474,21 @@ export function emitOrderEvent(
   });
 }
 
-/** A buyer wrote to a shop. */
-export function emitQuestion(messageId: string) {
-  fire(async () => {
-    const [row] = await db
-      .select({ message, thread, shop: { slug: shop.slug, name: shop.name, ownerId: shop.ownerId }, buyer: { name: user.name, email: user.email }, listing: listingCard })
-      .from(message)
-      .innerJoin(thread, eq(thread.id, message.threadId))
-      .innerJoin(shop, eq(shop.id, thread.shopId))
-      .innerJoin(user, eq(user.id, thread.buyerId))
-      .leftJoin(listing, eq(listing.id, thread.listingId))
-      .where(eq(message.id, messageId));
-    if (!row || row.message.side !== "buyer") return;
-    const buyer = (row.buyer.name?.trim() || row.buyer.email.split("@")[0]!).split(/\s+/)[0]!;
-    await emit(row.shop.ownerId, "question.asked", async () => ({
+/** A buyer's message to a shop, as question.asked carries it; null for the seller's own. */
+export async function questionObject(messageId: string) {
+  const [row] = await db
+    .select({ message, thread, shop: { slug: shop.slug, name: shop.name, ownerId: shop.ownerId }, buyer: { name: user.name, email: user.email }, listing: listingCard })
+    .from(message)
+    .innerJoin(thread, eq(thread.id, message.threadId))
+    .innerJoin(shop, eq(shop.id, thread.shopId))
+    .innerJoin(user, eq(user.id, thread.buyerId))
+    .leftJoin(listing, eq(listing.id, thread.listingId))
+    .where(eq(message.id, messageId));
+  if (!row || row.message.side !== "buyer") return null;
+  const buyer = (row.buyer.name?.trim() || row.buyer.email.split("@")[0]!).split(/\s+/)[0]!;
+  return {
+    sellerId: row.shop.ownerId,
+    object: {
       object: "message",
       id: row.message.id,
       thread: row.thread.id,
@@ -374,22 +503,23 @@ export function emitQuestion(messageId: string) {
             url: row.listing.slug ? storeUrl(row.shop.slug, `/${row.listing.slug}`) : null,
           }
         : null,
-    }));
-  });
+    },
+  };
 }
 
-/** A buyer reviewed an order. Private reviews go too: they're the seller's to read. */
-export function emitReviewEvent(reviewId: string) {
-  fire(async () => {
-    const [row] = await db
-      .select({ review, shop: { slug: shop.slug, name: shop.name, ownerId: shop.ownerId }, buyer: { name: user.name }, listing: listingCard })
-      .from(review)
-      .innerJoin(shop, eq(shop.id, review.shopId))
-      .innerJoin(user, eq(user.id, review.buyerId))
-      .innerJoin(listing, eq(listing.id, review.listingId))
-      .where(eq(review.id, reviewId));
-    if (!row) return;
-    await emit(row.shop.ownerId, "review.created", async () => ({
+/** A review, as review.created carries it. Private reviews too: they're the seller's to read. */
+export async function reviewObject(reviewId: string) {
+  const [row] = await db
+    .select({ review, shop: { slug: shop.slug, name: shop.name, ownerId: shop.ownerId }, buyer: { name: user.name }, listing: listingCard })
+    .from(review)
+    .innerJoin(shop, eq(shop.id, review.shopId))
+    .innerJoin(user, eq(user.id, review.buyerId))
+    .innerJoin(listing, eq(listing.id, review.listingId))
+    .where(eq(review.id, reviewId));
+  if (!row) return null;
+  return {
+    sellerId: row.shop.ownerId,
+    object: {
       object: "review",
       id: row.review.id,
       order: row.review.orderId,
@@ -405,6 +535,22 @@ export function emitReviewEvent(reviewId: string) {
         title: row.listing.title ?? row.listing.name,
         url: row.listing.slug ? storeUrl(row.shop.slug, `/${row.listing.slug}`) : null,
       },
-    }));
+    },
+  };
+}
+
+/** A buyer wrote to a shop. */
+export function emitQuestion(messageId: string) {
+  fire(async () => {
+    const found = await questionObject(messageId);
+    if (found) await emit(found.sellerId, "question.asked", async () => found.object);
+  });
+}
+
+/** A buyer reviewed an order. */
+export function emitReviewEvent(reviewId: string) {
+  fire(async () => {
+    const found = await reviewObject(reviewId);
+    if (found) await emit(found.sellerId, "review.created", async () => found.object);
   });
 }

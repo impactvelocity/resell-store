@@ -153,9 +153,11 @@ export function ComingSoon({
 
         {children}
 
-        <div className="rounded-lg border-[1.5px] border-dashed border-border px-5 py-4 desk:rounded-xl desk:px-6">
-          <p className="text-sm text-text-muted">{preview}</p>
-        </div>
+        {preview && (
+          <div className="rounded-lg border-[1.5px] border-dashed border-border px-5 py-4 desk:rounded-xl desk:px-6">
+            <p className="text-sm text-text-muted">{preview}</p>
+          </div>
+        )}
       </Page>
     </>
   );

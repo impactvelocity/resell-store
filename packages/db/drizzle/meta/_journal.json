@@ -127,6 +127,13 @@
       "when": 1791085359331,
       "tag": "0017_key-reveal",
       "breakpoints": true
+    },
+    {
+      "idx": 18,
+      "version": "7",
+      "when": 1791089139317,
+      "tag": "0018_zapier-hooks",
+      "breakpoints": true
     }
   ]
 }

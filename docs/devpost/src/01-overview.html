@@ -20,7 +20,9 @@
   .agentband .spark svg { width: 32px; height: 32px; }
   .paypal { display: flex; flex-direction: column; gap: 22px; padding: 30px 34px; }
   .paypal img { height: 52px; }
-  .tools { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+  .tools { display: grid; grid-template-columns: repeat(6, 1fr); gap: 20px; }
+  .tool:nth-child(-n+3) { grid-column: span 2; }
+  .tool:nth-child(n+4) { grid-column: span 3; }
   .tool { display: flex; flex-direction: column; gap: 14px; padding: 24px 26px; }
   .tool .logo { height: 32px; align-self: flex-start; }
   .agentband { background: var(--leaf-100); border-color: var(--leaf-300); }
@@ -110,6 +112,8 @@
       <div class="card tool"><img class="logo" src="assets/channel3.png" alt="Channel3"><p class="small">Names the item, its new price and the maker's photos</p></div>
       <div class="card tool"><img class="logo" src="assets/kernel.png" alt="Kernel" style="height:28px"><p class="small">Cloud browsers check live prices on the big resale sites</p></div>
       <div class="card tool"><img class="logo" src="assets/render.png" alt="Render"><p class="small">Hosts the app, the database and the jobs that move money on time</p></div>
+      <div class="card tool"><img class="logo" src="assets/zapier.png" alt="Zapier" style="height:36px"><p class="small">Sales, offers, payouts and reviews start a Zap the moment they happen</p></div>
+      <div class="card tool"><img class="logo" src="assets/postman.png" alt="Postman" style="height:42px"><p class="small">Every API request in one collection, ready to try with your own key</p></div>
     </div>
   </div>
 

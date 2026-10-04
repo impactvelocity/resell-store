@@ -28,6 +28,7 @@ import {
   thread,
   user,
   webhookEndpoint,
+  webhookSubscription,
   type ListingStatus,
 } from "@repo/db";
 import { deleteFiles } from "./files";
@@ -365,6 +366,7 @@ export async function resetDemo() {
     await tx.delete(marketLogin).where(and(inArray(marketLogin.userId, ids), gt(marketLogin.createdAt, since)));
     await tx.delete(apiKey).where(inArray(apiKey.userId, ids));
     await tx.delete(webhookEndpoint).where(inArray(webhookEndpoint.userId, ids));
+    await tx.delete(webhookSubscription).where(inArray(webhookSubscription.userId, ids));
 
     await tx
       .insert(demoState)

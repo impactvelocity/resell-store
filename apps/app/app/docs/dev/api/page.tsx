@@ -165,6 +165,25 @@ export default async function ApiInternals() {
           Anything but a 2xx is retried by the webhook sweep about 5 minutes, 30 minutes, 2 hours, 6 hours and a day later, six
           tries in all, with the same event id. An endpoint failing for three days straight is turned off until it&apos;s saved again.
         </li>
+        <li>
+          Subscriptions (<C>webhook_subscription</C>) are more targets, each with its own events and secret: REST hooks, up to 50 a
+          person, upserted by address. <C>source</C> says who made one: <C>zapier</C> (the Zapier app, told apart by its{" "}
+          <C>resell-client: Zapier</C> header), <C>app</C> (pasted under Start a Zap on /tools/api) or <C>api</C>. <C>emit()</C> sends
+          each event to the endpoint and every enabled subscription that asked for it. Deliveries share the{" "}
+          <C>webhook_delivery</C> queue (<C>subscription_id</C> set), so retries and the three-day turn-off work per target. A
+          subscription that answers 410 is deleted, as Zapier asks.
+        </li>
+        <li>
+          Samples (<C>lib/server/api/webhook-samples.ts</C>) build an event from the seller&apos;s latest matching thing, or a made-up
+          one, with <C>test: true</C>. They back <C>GET /webhooks/samples/:event</C> (Zapier&apos;s trigger test) and Send a sample.
+          Tests and samples are never queued for retry.
+        </li>
+        <li>
+          The Zapier app is <C>integrations/zapier</C>: a Zapier Platform CLI app with one hook trigger per event, outside the pnpm
+          workspace. Its README covers testing and <C>zapier push</C>. Setting <C>ZAPIER_APP_URL</C> to its invite link shows Connect
+          on Zapier on /tools/api. A new webhook event needs a line in its <C>lib/events.js</C>; a test in apps/app fails until it has
+          one.
+        </li>
       </UL>
 
       <H2 id="mcp">The MCP package</H2>

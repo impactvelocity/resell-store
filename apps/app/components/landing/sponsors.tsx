@@ -32,6 +32,8 @@ type Sponsor = {
   docs: string;
   /** Our own write-up on the docs site. */
   notes?: string;
+  /** Label for the notes link, when it's a guide rather than a build write-up. */
+  notesLabel?: string;
 };
 
 const paypal = {
@@ -78,6 +80,26 @@ const live: Sponsor[] = [
     docs: "https://render.com/docs",
     notes: "/dev/stack/render",
   },
+  {
+    name: "Zapier",
+    logo: { src: "/sponsors/zapier.png", width: 443, height: 120, size: 30 },
+    use: "Nine triggers, from a new sale or offer to a payout or review, each one a Zap the moment it happens. Sellers connect with their API key and can pick a single shop; events arrive signed and are retried if Zapier misses them.",
+    benefit:
+      "Sellers log sales to a sheet, get a text for every offer or post reviews to Slack, without us building each one.",
+    docs: "https://docs.zapier.com/",
+    notes: "/api/zapier",
+    notesLabel: "Start a Zap",
+  },
+  {
+    name: "Postman",
+    logo: { src: "/sponsors/postman.png", width: 403, height: 120, size: 36 },
+    use: "A collection with every request in the seller API, built from the same definitions as the API so it never falls behind. Download it from the app with your key already filled in, or import it by link.",
+    benefit:
+      "Developers can try every call with their own key before writing any code.",
+    docs: "https://learning.postman.com/docs/",
+    notes: "/api/postman",
+    notesLabel: "Try it in Postman",
+  },
 ];
 
 /** Hidden for now; flip to bring the build list back. */
@@ -91,22 +113,6 @@ const next: Sponsor[] = [
     benefit:
       "So buyers find the thing they want even when they spell it wrong.",
     docs: "https://www.elastic.co/docs",
-  },
-  {
-    name: "Zapier",
-    logo: { src: "/sponsors/zapier.png", width: 443, height: 120, size: 30 },
-    use: "Sales, offers and messages sent on to thousands of other apps.",
-    benefit:
-      "So sellers can log sales to a sheet or get a text, without us building each one.",
-    docs: "https://docs.zapier.com/",
-  },
-  {
-    name: "Postman",
-    logo: { src: "/sponsors/postman.png", width: 403, height: 120, size: 36 },
-    use: "A public collection for the seller API, on top of the OpenAPI file that imports today.",
-    benefit:
-      "So developers can try every call with their own key before writing code.",
-    docs: "https://learning.postman.com/docs/",
   },
   {
     name: "APIMatic",
@@ -182,7 +188,15 @@ function OutLink({
   );
 }
 
-function NotesLink({ path, className }: { path: string; className?: string }) {
+function NotesLink({
+  path,
+  label = "How we built it",
+  className,
+}: {
+  path: string;
+  label?: string;
+  className?: string;
+}) {
   return (
     <a
       href={docsUrl(path)}
@@ -191,7 +205,7 @@ function NotesLink({ path, className }: { path: string; className?: string }) {
         className,
       )}
     >
-      How we built it
+      {label}
     </a>
   );
 }
@@ -259,9 +273,13 @@ export function Sponsors() {
       </Reveal>
 
       <GroupHeading>Working in the app today</GroupHeading>
-      <ul className="grid gap-3 md:grid-cols-3 md:gap-4">
+      <ul className="grid gap-3 md:grid-cols-6 md:gap-4">
         {live.map((s, i) => (
-          <li key={s.name}>
+          // Three across, then the rest share the last row.
+          <li
+            key={s.name}
+            className={i < 3 ? "md:col-span-2" : "md:col-span-3"}
+          >
             <Reveal
               delay={i * 0.06}
               y={24}
@@ -277,7 +295,7 @@ export function Sponsors() {
               </p>
               <div className="flex flex-wrap gap-x-5 gap-y-2 border-t border-border pt-5 text-sm text-secondary">
                 <OutLink href={s.docs}>{s.name} docs</OutLink>
-                {s.notes && <NotesLink path={s.notes} />}
+                {s.notes && <NotesLink path={s.notes} label={s.notesLabel} />}
               </div>
             </Reveal>
           </li>

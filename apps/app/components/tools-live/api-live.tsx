@@ -6,20 +6,25 @@ import { ArrowUpRightIcon, LockIcon } from "@repo/ui/icons";
 import { useToast } from "@repo/ui/toast";
 import { cn } from "@repo/ui/lib/utils";
 import {
+  addZapHook,
   deleteApiKey,
   makeApiKey,
   newWebhookSecret,
   removeWebhook,
+  removeZapHook,
   saveWebhookSettings,
   sendTestWebhook,
+  sendZapSample,
 } from "../../app/actions/developer";
 import { MobileBackHeader, Page, PageHeader } from "../shell/page";
-import { MiniSpinner, TextAction, useCopy } from "../tools/parts";
+import { MiniSpinner, StatusPill, TextAction, useCopy } from "../tools/parts";
 import { ConfirmDialog } from "./confirm";
 
 /*
  * D3 API, live: the secret key (masked, with Show and Copy), this month's
- * requests, a request to try, what you can reach, and webhooks.
+ * requests, a request to try, what you can reach, webhooks, and Zaps
+ * (webhook subscriptions: one per Zap from the resell.store Zapier app, or a
+ * pasted Webhooks by Zapier address).
  */
 
 export type ApiScreenData = {
@@ -27,7 +32,7 @@ export type ApiScreenData = {
   key: { masked: string; token: string | null; made: string; lastUsed: string | null } | null;
   usage: { used: number; limit: number; resets: string };
   apiBase: string;
-  docs: { home: string; postman: string; groups: { title: string; href: string; blurb: string }[] };
+  docs: { home: string; postman: string; zapier: string; groups: { title: string; href: string; blurb: string }[] };
   webhook: {
     url: string;
     events: string[];
@@ -39,6 +44,20 @@ export type ApiScreenData = {
     retrying: number;
   } | null;
   events: { id: string; what: string }[];
+  zapier: {
+    /** The resell.store app on Zapier (its invite link), once it's there. */
+    appUrl: string | null;
+    hooks: {
+      id: string;
+      url: string;
+      name: string | null;
+      /** "zapier": made by a Zap; "app": pasted here; "api": made with a key. */
+      source: "zapier" | "app" | "api";
+      events: string[];
+      enabled: boolean;
+      last: { at: string; status: number | null; error: string | null } | null;
+    }[];
+  };
   shop: string | null;
 };
 
@@ -350,6 +369,32 @@ function PostmanCard({ apiBase, docs, token }: { apiBase: string; docs: string; 
   );
 }
 
+/** The events as on/off chips; hover one for what it means. */
+function EventChips({ events, value, onChange }: { events: ApiScreenData["events"]; value: string[]; onChange: (next: string[]) => void }) {
+  return (
+    <div className="flex flex-wrap items-center gap-2">
+      {events.map((e) => {
+        const on = value.includes(e.id);
+        return (
+          <button
+            key={e.id}
+            type="button"
+            title={e.what}
+            aria-pressed={on}
+            onClick={() => onChange(on ? value.filter((x) => x !== e.id) : [...value, e.id])}
+            className={cn(
+              "flex h-8 cursor-pointer items-center rounded-full px-3 font-mono text-sm font-medium transition-colors outline-none focus-visible:outline-2 focus-visible:outline-secondary",
+              on ? "bg-secondary-soft text-text hover:bg-leaf-300/50" : "bg-surface-muted text-text-muted hover:bg-border",
+            )}
+          >
+            {e.id}
+          </button>
+        );
+      })}
+    </div>
+  );
+}
+
 function WebhooksCard({ data }: { data: ApiScreenData }) {
   const toast = useToast();
   const saved = data.webhook;
@@ -410,30 +455,14 @@ function WebhooksCard({ data }: { data: ApiScreenData }) {
           {editing ? "Save" : "Edit"}
         </TextAction>
       </form>
-      <div className="flex flex-wrap items-center gap-2">
-        {data.events.map((e) => {
-          const on = events.includes(e.id);
-          return (
-            <button
-              key={e.id}
-              type="button"
-              title={e.what}
-              aria-pressed={on}
-              onClick={() => {
-                const next = on ? events.filter((x) => x !== e.id) : [...events, e.id];
-                setEvents(next);
-                if (!editing && saved) void save(next);
-              }}
-              className={cn(
-                "flex h-8 cursor-pointer items-center rounded-full px-3 font-mono text-sm font-medium transition-colors outline-none focus-visible:outline-2 focus-visible:outline-secondary",
-                on ? "bg-secondary-soft text-text hover:bg-leaf-300/50" : "bg-surface-muted text-text-muted hover:bg-border",
-              )}
-            >
-              {e.id}
-            </button>
-          );
-        })}
-      </div>
+      <EventChips
+        events={data.events}
+        value={events}
+        onChange={(next) => {
+          setEvents(next);
+          if (!editing && saved) void save(next);
+        }}
+      />
       {secret && <FreshSecret value={secret} what="signing secret" onDone={() => setSecret(null)} />}
       {saved && !editing && (
         <div className="flex flex-col gap-3 border-t border-border pt-3.5 desk:flex-row desk:items-center desk:justify-between">
@@ -490,6 +519,172 @@ function WebhooksCard({ data }: { data: ApiScreenData }) {
   );
 }
 
+type Hook = ApiScreenData["zapier"]["hooks"][number];
+
+function hookStatus(h: Hook) {
+  if (!h.enabled) return h.last?.error ?? "Turned off.";
+  if (!h.last) return "Nothing sent yet.";
+  if (h.last.error) return `Last delivery failed: ${h.last.error}`;
+  return `Last sent ${h.last.at}: Zapier said ${h.last.status}.`;
+}
+
+function HookRow({ hook }: { hook: Hook }) {
+  const toast = useToast();
+  const [busy, setBusy] = useState<"sample" | "remove" | null>(null);
+  const fromZap = hook.source === "zapier";
+  return (
+    <li className="flex flex-col gap-2 border-b border-border py-3.5 last:border-b-0">
+      <div className="flex items-center justify-between gap-3">
+        <span className="min-w-0 truncate text-sm font-bold">{hook.name ?? (fromZap ? "A Zap" : new URL(hook.url).hostname)}</span>
+        {hook.enabled ? (
+          <StatusPill tone="leaf">{fromZap ? "Zap on" : "On"}</StatusPill>
+        ) : (
+          <StatusPill tone="pink">Off</StatusPill>
+        )}
+      </div>
+      <p className="font-mono text-sm text-text-muted">{hook.events.join(", ")}</p>
+      <div className="flex flex-col gap-2 desk:flex-row desk:items-center desk:justify-between">
+        <p className="text-sm text-text-muted">{hookStatus(hook)}</p>
+        <div className="flex shrink-0 gap-5">
+          <TextAction
+            disabled={busy !== null}
+            onClick={async () => {
+              setBusy("sample");
+              const res = await sendZapSample(hook.id);
+              setBusy(null);
+              if (!res.ok) return toast.add({ title: res.error });
+              toast.add({ title: res.error ? res.error : `Sent a sample ${res.event}. Zapier said ${res.status}.` });
+            }}
+          >
+            {busy === "sample" ? "Sending…" : "Send a sample"}
+          </TextAction>
+          <TextAction
+            tone="danger"
+            disabled={busy !== null}
+            onClick={async () => {
+              setBusy("remove");
+              const res = await removeZapHook(hook.id);
+              setBusy(null);
+              if (!res.ok) return toast.add({ title: res.error });
+              toast.add({ title: fromZap ? "Removed. Turn the Zap off in Zapier too." : "Removed. We won't send anything there." });
+            }}
+          >
+            Remove
+          </TextAction>
+        </div>
+      </div>
+    </li>
+  );
+}
+
+function ZapierCard({ data }: { data: ApiScreenData }) {
+  const toast = useToast();
+  const [url, setUrl] = useState("");
+  const [events, setEvents] = useState<string[]>(["listing.sold"]);
+  const [busy, setBusy] = useState(false);
+  const { appUrl, hooks } = data.zapier;
+
+  const add = async () => {
+    if (!url.trim()) return toast.add({ title: "Paste the Catch Hook address first." });
+    setBusy(true);
+    const res = await addZapHook({ url: url.trim(), events: events as never });
+    if (!res.ok) {
+      setBusy(false);
+      return toast.add({ title: res.error });
+    }
+    // Zapier's "Test trigger" waits for a request, so send one straight away
+    const sample = await sendZapSample(res.id);
+    setBusy(false);
+    setUrl("");
+    toast.add({
+      title:
+        sample.ok && !sample.error
+          ? "Added, and we sent a sample. Choose Test trigger in Zapier to see it."
+          : "Added. Send a sample when Zapier is ready for one.",
+    });
+  };
+
+  return (
+    <section className={cn(card, "gap-5 desk:gap-6")}>
+      <div className="flex flex-col gap-3">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src="/sponsors/zapier.png" alt="Zapier" width={443} height={120} className="h-7 w-auto self-start desk:h-8" />
+        <div className="flex flex-col gap-1">
+          <h2 className="font-display text-2xl font-extrabold tracking-tight desk:text-[28px] desk:leading-9">Start a Zap</h2>
+          <p className="text-base text-text-muted">
+            Run a Zap when something happens on your shops: add each sale to a sheet, get a text for every offer, post reviews to Slack.
+          </p>
+        </div>
+      </div>
+
+      {appUrl && (
+        <div className="flex flex-col gap-3 desk:flex-row desk:items-center desk:gap-5">
+          <a
+            href={appUrl}
+            target="_blank"
+            rel="noreferrer"
+            className="inline-flex h-[52px] items-center justify-center gap-2 rounded-full bg-primary px-7 font-bold text-on-primary transition-colors hover:bg-lemon-300"
+          >
+            Connect on Zapier
+            <ArrowUpRightIcon size={16} strokeWidth={2.4} />
+          </a>
+          <p className="text-sm text-text-muted">Choose resell.store as the trigger, then sign in with your secret key above.</p>
+        </div>
+      )}
+
+      <form
+        className={cn("flex flex-col gap-3", appUrl && "border-t border-border pt-4")}
+        onSubmit={(e) => {
+          e.preventDefault();
+          void add();
+        }}
+      >
+        <p className="text-sm text-text-muted">
+          {appUrl ? "Or use Webhooks by Zapier: " : "In your Zap, choose "}
+          <strong className="text-text">Webhooks by Zapier</strong>, then <strong className="text-text">Catch Hook</strong>. Copy its
+          address, paste it here and pick what should start the Zap.
+        </p>
+        <div className="flex h-[52px] w-full items-center gap-3 rounded-full border-[1.5px] border-border bg-surface pr-1.5 pl-5 focus-within:border-secondary">
+          <input
+            type="url"
+            aria-label="Catch Hook address"
+            placeholder="https://hooks.zapier.com/hooks/catch/…"
+            value={url}
+            onChange={(e) => setUrl(e.target.value)}
+            className="min-w-0 flex-1 bg-transparent font-mono text-sm font-medium outline-none placeholder:text-text-muted"
+          />
+          <Button type="submit" size="md" className="h-10 shrink-0 px-4" disabled={busy}>
+            {busy && <MiniSpinner />}
+            Add
+          </Button>
+        </div>
+        <EventChips events={data.events} value={events} onChange={setEvents} />
+      </form>
+
+      {hooks.length > 0 && (
+        <div className="flex flex-col border-t border-border pt-1">
+          <h3 className="pt-3 text-sm font-bold">Sending to</h3>
+          <ul>
+            {hooks.map((h) => (
+              <HookRow key={h.id} hook={h} />
+            ))}
+          </ul>
+        </div>
+      )}
+
+      <a
+        href={data.docs.zapier}
+        target="_blank"
+        rel="noreferrer"
+        className="inline-flex w-fit items-center gap-1 rounded-sm text-sm font-bold text-secondary outline-none hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-secondary"
+      >
+        How to set it up
+        <ArrowUpRightIcon size={14} strokeWidth={2.4} />
+      </a>
+    </section>
+  );
+}
+
 export function ApiLiveScreen({ data }: { data: ApiScreenData }) {
   const [token, setToken] = useState<string | null>(data.key?.token ?? null);
   return (
@@ -514,6 +709,9 @@ export function ApiLiveScreen({ data }: { data: ApiScreenData }) {
             <div className="order-6 desk:order-none">
               <WebhooksCard data={data} />
             </div>
+            <div className="order-7 desk:order-none">
+              <ZapierCard data={data} />
+            </div>
           </div>
           <div className="contents desk:flex desk:min-w-0 desk:flex-[1.15] desk:flex-col desk:gap-6">
             <div className="order-3 min-w-0 desk:order-none">
@@ -526,7 +724,7 @@ export function ApiLiveScreen({ data }: { data: ApiScreenData }) {
               <EndpointsCard docs={data.docs} />
             </div>
           </div>
-          <div className="order-7 desk:hidden">
+          <div className="order-8 desk:hidden">
             <ReadTheDocs href={data.docs.home} className="h-[52px] w-full" />
           </div>
         </div>

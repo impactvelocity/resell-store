@@ -191,7 +191,7 @@ export function createRouter(defs: RouteDef[]) {
         } catch {}
       }
       if (out === undefined) return json(204, null, headers);
-      return json(r.method === "POST" && /\/(shops|listings|offers|threads|research)$/.test(r.path) ? 201 : 200, out, headers);
+      return json(r.method === "POST" && /\/(shops|listings|offers|threads|research|subscriptions)$/.test(r.path) ? 201 : 200, out, headers);
     } catch (error) {
       const known = toApiError(error);
       // The owner should see what it tried and wasn't allowed to do

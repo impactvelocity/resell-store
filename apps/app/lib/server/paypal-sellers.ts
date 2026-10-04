@@ -5,6 +5,7 @@ import {
   createSellerSignupLink,
   demoSellerId,
   paypalEnabled,
+  paypalLoginProfile,
   sellerByMerchantId,
   sellerByTrackingId,
   type SellerStatus,
@@ -30,9 +31,12 @@ export async function getPayPalAccount(userId: string) {
   return row ?? null;
 }
 
-/** The PayPal page where the seller signs in (or signs up) and connects. */
-export function connectLink(userId: string) {
-  return createSellerSignupLink({ trackingId: userId, returnUrl: siteUrl("/api/paypal/connect/return") });
+/**
+ * The PayPal page where the seller signs in (or signs up) and connects, with
+ * their email already filled in.
+ */
+export function connectLink(userId: string, email?: string | null) {
+  return createSellerSignupLink({ trackingId: userId, returnUrl: siteUrl("/api/paypal/connect/return"), email });
 }
 
 /**
@@ -41,12 +45,30 @@ export function connectLink(userId: string) {
  * says which to check (by default, whatever they're linked to now).
  */
 export async function syncPayPalAccount(userId: string, opts: { demo?: boolean } = {}) {
-  const demo = opts.demo ?? (await getPayPalAccount(userId))?.demo ?? false;
+  const row = await getPayPalAccount(userId);
+  const demo = opts.demo ?? row?.demo ?? false;
   const demoId = demoSellerId();
   if (demo && !demoId) return null;
-  const status = demo ? await sellerByMerchantId(demoId!) : await sellerByTrackingId(userId);
+  const status = demo
+    ? await sellerByMerchantId(demoId!)
+    : // Linked from their PayPal sign-in, they may have connected under another tracking id
+      ((await sellerByTrackingId(userId)) ?? (row && !row.demo ? await sellerByMerchantId(row.merchantId) : null));
   if (!status) return null;
   return save(userId, status, demo);
+}
+
+/**
+ * After "Log in with PayPal": if that PayPal account is already connected to
+ * us (they connected before, or under another of our accounts), link it now so
+ * there's nothing to do on Connections. Null when there's nothing to link:
+ * already linked, PayPal didn't share the payer id, or they never connected.
+ */
+export async function linkFromPayPalLogin(userId: string, userAccessToken: string) {
+  if (!paypalEnabled() || (await getPayPalAccount(userId))) return null;
+  const { payerId } = await paypalLoginProfile(userAccessToken);
+  if (!payerId) return null;
+  const status = await sellerByMerchantId(payerId);
+  return status ? save(userId, status, false) : null;
 }
 
 /**

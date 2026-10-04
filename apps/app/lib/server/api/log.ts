@@ -138,6 +138,12 @@ const describers: Record<string, (c: Context) => Described> = {
   "DELETE /webhooks": () => ({ text: "Stopped your webhook", href: "/tools/api" }),
   "POST /webhooks/rotate-secret": () => ({ text: "Made a new webhook signing secret", href: "/tools/api" }),
   "POST /webhooks/test": () => ({ text: "Sent a test webhook", href: "/tools/api" }),
+  "POST /webhooks/subscriptions": ({ out }) => ({
+    text: str(out.name) ? `Connected "${out.name}" to your events` : "Connected an address to your events",
+    href: "/tools/api",
+  }),
+  "DELETE /webhooks/subscriptions/:id": () => ({ text: "Disconnected an address from your events", href: "/tools/api" }),
+  "POST /webhooks/subscriptions/:id/test": () => ({ text: "Sent a sample event", href: "/tools/api" }),
 
   "POST /orders/:id/cancel": fixed("Cancelled an order"),
   "POST /orders/:id/problem": fixed("Reported a problem"),

@@ -1,0 +1,17 @@
+{
+  "name": "resell-store-zapier",
+  "version": "1.0.0",
+  "description": "The resell.store app on Zapier: start a Zap when something happens on your shops.",
+  "private": true,
+  "license": "MIT",
+  "main": "index.js",
+  "scripts": {
+    "test": "node --test"
+  },
+  "engines": {
+    "node": ">=22"
+  },
+  "dependencies": {
+    "zapier-platform-core": "19.1.0"
+  }
+}

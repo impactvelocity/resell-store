@@ -4,10 +4,15 @@ import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import type { ApiScope, WebhookEvent } from "@repo/db";
 import { agentScopeChoices, issueKey, revokeKey, setAgentPermissions, setShoppingRules } from "../../lib/server/api/keys";
+import { sendSample } from "../../lib/server/api/webhook-samples";
 import {
+  addSubscription,
   deleteWebhook,
   deliver,
+  getSubscription,
   getWebhook,
+  MAX_SUBSCRIPTIONS,
+  removeSubscription,
   rotateWebhookSecret,
   saveWebhook,
   webhookEvents,
@@ -19,7 +24,7 @@ import { mcpUrl } from "../../lib/urls";
 
 /*
  * D2 Your agent, P7 For your agent and D3 API: keys, the agent link, what it
- * may do, webhooks.
+ * may do, webhooks, and Zaps (webhook subscriptions).
  * The screens can show tokens again (keys.ts keeps them sealed); the action that
  * makes one also returns it, so it's on screen before the page data refreshes.
  */
@@ -115,16 +120,17 @@ export async function setShoppingLimits(input: z.input<typeof shoppingInput>): P
 }
 
 const eventIds = webhookEvents.map((e) => e.id) as [WebhookEvent, ...WebhookEvent[]];
+const hookUrl = z
+  .string()
+  .trim()
+  .url("That isn't a web address.")
+  .max(500)
+  .refine(
+    (u) => u.startsWith("https://") || /^http:\/\/(localhost|127\.0\.0\.1)(:\d+)?\//.test(u),
+    "Use an https:// address.",
+  );
 const webhookInput = z.object({
-  url: z
-    .string()
-    .trim()
-    .url("That isn't a web address.")
-    .max(500)
-    .refine(
-      (u) => u.startsWith("https://") || /^http:\/\/(localhost|127\.0\.0\.1)(:\d+)?\//.test(u),
-      "Use an https:// address.",
-    ),
+  url: hookUrl,
   events: z.array(z.enum(eventIds)).max(20),
 });
 
@@ -170,4 +176,48 @@ export async function sendTestWebhook(): Promise<Result<{ status: number | null;
   const result = await deliver(row, "ping", { object: "ping", message: "Hello from resell.store" });
   revalidatePath("/tools/api");
   return { ok: true, status: result.status, error: result.error };
+}
+
+const zapInput = z.object({
+  url: hookUrl,
+  events: z.array(z.enum(eventIds)).min(1, "Choose at least one event.").max(20),
+});
+
+/** "Zaps": add a Webhooks by Zapier (or other) address with its own events, or update the one already there. */
+export async function addZapHook(input: z.input<typeof zapInput>): Promise<Result<{ id: string }>> {
+  const user = await requireUser();
+  const demo = demoBlocked(user, "keys");
+  if (demo) return { ok: false, error: demo };
+  const parsed = zapInput.safeParse(input);
+  if (!parsed.success) return { ok: false, error: parsed.error.issues[0]?.message ?? "Check the address." };
+  const host = new URL(parsed.data.url).hostname;
+  const row = await addSubscription(user.id, {
+    ...parsed.data,
+    source: "app",
+    name: /(^|\.)zapier\.com$/.test(host) ? "Webhooks by Zapier" : host,
+  });
+  if (!row) return { ok: false, error: `That's ${MAX_SUBSCRIPTIONS} already. Remove one first.` };
+  revalidatePath("/tools/api");
+  return { ok: true, id: row.id };
+}
+
+export async function removeZapHook(id: string): Promise<Result> {
+  const user = await requireUser();
+  const demo = demoBlocked(user, "keys");
+  if (demo) return { ok: false, error: demo };
+  await removeSubscription(user.id, z.string().max(64).parse(id));
+  revalidatePath("/tools/api");
+  return { ok: true };
+}
+
+/** Posts a sample event, so a Zap waiting on "Test trigger" has something to find. */
+export async function sendZapSample(id: string): Promise<Result<{ event: string; status: number | null; error: string | null }>> {
+  const user = await requireUser();
+  const demo = demoBlocked(user, "keys");
+  if (demo) return { ok: false, error: demo };
+  const row = await getSubscription(user.id, z.string().max(64).parse(id));
+  if (!row) return { ok: false, error: "That one's gone. Add it again." };
+  const result = await sendSample(row);
+  revalidatePath("/tools/api");
+  return { ok: true, event: result.event, status: result.status, error: result.error };
 }

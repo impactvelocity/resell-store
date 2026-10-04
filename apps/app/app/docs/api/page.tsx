@@ -83,7 +83,8 @@ export default async function ApiIntro() {
       <P>
         Prefer a machine-readable description? <A href={`${api}/openapi.json`}>openapi.json</A> works with Insomnia and code generators. For Postman,
         import <A href={`${api}/postman.json`}>postman.json</A>: every request is ready, and you set your key once. See{" "}
-        <A href={`${base}/api/postman`}>Postman</A>.
+        <A href={`${base}/api/postman`}>Postman</A>. To start a Zap when something happens, without code, see{" "}
+        <A href={`${base}/api/zapier`}>Zapier</A>.
       </P>
       <CardGrid>
         {apiGroups.map((g) => (

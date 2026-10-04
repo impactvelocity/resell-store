@@ -92,6 +92,10 @@ Kernel's cloud browsers read live listings for the same item on eBay, Poshmark a
 
 One Render web service hosts the marketing site, the seller app, the marketplace, every shop subdomain, the docs, the API and the MCP servers, routed by host. Render Postgres with pgvector holds everything, including the embeddings for search. **Render Workflows** run the jobs that have to happen on time even when nobody is looking: offer expiry and reminders, ship-by reminders, auto-cancel, "did it arrive?" check-ins, auto-release of held money, webhook retries, follower digests, the agent's evening summary, and the demo reset. The whole stack deploys from one `render.yaml` Blueprint.
 
+### Zapier: connect any app
+
+- **Zapier**: any resell.store event can trigger a Zap, from sales and offers to buyer messages, payouts and reviews. Sellers choose all events or just the ones they want, then connect whatever tools they already use, like a sales sheet, a text alert or a Slack post, from Zapier's thousands of apps.
+
 ## How I built it
 
 - **Next.js 16 + React** in a Turborepo monorepo on pnpm, with my own design system (24 components on Base UI and Tailwind CSS v4), designed in Paper first and built from a clickable prototype of every screen.
@@ -194,9 +198,10 @@ How each sponsor is used, in the developer docs:
 - Channel3: [docs.resell.store/dev/stack/channel3](https://docs.resell.store/dev/stack/channel3)
 - Kernel: [docs.resell.store/dev/stack/kernel](https://docs.resell.store/dev/stack/kernel)
 - Render: [docs.resell.store/dev/stack/render](https://docs.resell.store/dev/stack/render)
+- Zapier: [docs.resell.store/api/zapier](https://docs.resell.store/api/zapier)
 
 PayPal runs in sandbox mode, so no real money moves.
 
 ## Built with
 
-PayPal Channel3 Kernel Render Next.js React TypeScript PostgreSQL pgvector Drizzle Turborepo MCP Vercel-AI-SDK Tailwind
+PayPal Channel3 Kernel Render Zapier Next.js React TypeScript PostgreSQL pgvector Drizzle Turborepo MCP Vercel-AI-SDK Tailwind

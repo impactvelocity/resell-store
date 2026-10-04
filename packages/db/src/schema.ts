@@ -982,7 +982,7 @@ export type WebhookEvent =
   | "payout.sent"
   | "review.created";
 
-/** Where we tell a seller's server about things (one per person for now). */
+/** Where we tell a seller's server about things (one per person; Zaps and other tools use subscriptions). */
 export const webhookEndpoint = pgTable("webhook_endpoint", {
   userId: text("user_id")
     .primaryKey()
@@ -1001,6 +1001,40 @@ export const webhookEndpoint = pgTable("webhook_endpoint", {
   updatedAt: updatedAt(),
 });
 
+/** Who added a hook subscription: the resell.store Zapier app, the API page (a pasted Zapier or other address), or a key. */
+export type WebhookSubscriptionSource = "zapier" | "app" | "api";
+
+/**
+ * Extra places to send events, each with its own events (REST hooks). The
+ * resell.store Zapier app makes one when a Zap is turned on and deletes it
+ * when the Zap is turned off; a seller can also paste a Webhooks by Zapier
+ * (or Make, n8n…) address on the API page. Signed like the endpoint, with
+ * their own secret.
+ */
+export const webhookSubscription = pgTable(
+  "webhook_subscription",
+  {
+    id: id(),
+    userId: text("user_id")
+      .notNull()
+      .references(() => user.id, { onDelete: "cascade" }),
+    url: text("url").notNull(),
+    events: jsonb("events").$type<WebhookEvent[]>().notNull().default([]),
+    secret: text("secret").notNull(),
+    source: text("source").$type<WebhookSubscriptionSource>().notNull(),
+    /** What the owner sees it called: the Zap's name, or what they typed. */
+    name: text("name"),
+    enabled: boolean("enabled").notNull().default(true),
+    lastStatus: integer("last_status"),
+    lastError: text("last_error"),
+    lastDeliveredAt: timestamp("last_delivered_at"),
+    /** As on the endpoint: three days of failures turns it off. */
+    failingSince: timestamp("failing_since"),
+    createdAt: createdAt(),
+  },
+  (t) => [index("webhook_subscription_user_idx").on(t.userId)],
+);
+
 export type WebhookDeliveryStatus = "pending" | "delivered" | "failed";
 
 /**
@@ -1014,6 +1048,8 @@ export const webhookDelivery = pgTable(
     userId: text("user_id")
       .notNull()
       .references(() => user.id, { onDelete: "cascade" }),
+    /** Set when it's going to a subscription; null for the seller's endpoint. */
+    subscriptionId: text("subscription_id").references(() => webhookSubscription.id, { onDelete: "cascade" }),
     /** "evt_…", the same on every attempt so receivers can skip repeats. */
     eventId: text("event_id").notNull(),
     type: text("type").notNull(),

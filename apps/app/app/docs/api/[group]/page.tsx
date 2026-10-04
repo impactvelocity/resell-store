@@ -59,6 +59,7 @@ function intro(group: string, base: string): { toc: { id: string; title: string 
         { id: "payload", title: "What we send" },
         { id: "retries", title: "When it fails" },
         { id: "verifying", title: "Checking it's us" },
+        { id: "subscriptions", title: "More addresses (Zapier)" },
       ],
       body: (
         <>
@@ -92,6 +93,17 @@ function intro(group: string, base: string): { toc: { id: string; title: string 
             minutes.
           </P>
           <CodeBlock title="Node" code={verifyNode} />
+          <H2 id="subscriptions">More addresses (Zapier)</H2>
+          <P>
+            Your webhook is one address. Subscriptions are more of them, each with its own events and its own signing secret, sent the
+            same way and retried the same way. They&apos;re REST hooks: the resell.store Zapier app subscribes when a Zap is turned on
+            and unsubscribes when it&apos;s turned off, and Make, n8n or your own integration can do the same. Answer a delivery with{" "}
+            <C>410 Gone</C> and we delete the subscription.
+          </P>
+          <P>
+            Samples (<C>GET /webhooks/samples/:event</C>) are events built from your own latest things, with <C>test: true</C>, for
+            showing fields while a Zap is set up. See <A href={`${base}/api/zapier`}>Zapier</A> for setting one up without code.
+          </P>
         </>
       ),
     };

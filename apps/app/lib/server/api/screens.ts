@@ -5,7 +5,7 @@ import { apiUrl, docsUrl, mcpUrl } from "../../urls";
 import { listOwnedShops } from "../shops";
 import { currentKey, DEFAULT_MAX_OFFER_CENTS, defaultAgentAskFirst, maskedKey, MONTHLY_LIMIT, monthUsage, openToken } from "./keys";
 import { keyClients, recentActivity, unnamed } from "./log";
-import { getWebhook, pendingDeliveries, webhookEvents } from "./webhooks";
+import { getWebhook, listSubscriptions, pendingDeliveries, webhookEvents } from "./webhooks";
 
 /* What the D2 and D3 screens show, serializable for their client components. */
 
@@ -29,12 +29,13 @@ function nextMonth() {
 }
 
 export async function apiScreenData(userId: string) {
-  const [key, used, webhook, shops, retrying] = await Promise.all([
+  const [key, used, webhook, shops, retrying, subscriptions] = await Promise.all([
     currentKey(userId, "api"),
     monthUsage(userId),
     getWebhook(userId),
     listOwnedShops(userId),
     pendingDeliveries(userId),
+    listSubscriptions(userId),
   ]);
   return {
     key: key
@@ -51,6 +52,7 @@ export async function apiScreenData(userId: string) {
     docs: {
       home: docsUrl("/api"),
       postman: docsUrl("/api/postman"),
+      zapier: docsUrl("/api/zapier"),
       groups: apiGroups.slice(0, 10).map((g) => ({ title: g.title, href: docsUrl(`/api/${g.id}`), blurb: g.blurb })),
     },
     webhook: webhook
@@ -66,6 +68,19 @@ export async function apiScreenData(userId: string) {
         }
       : null,
     events: webhookEvents,
+    zapier: {
+      /** The resell.store app's invite link on Zapier; until it's set, Zaps start from Webhooks by Zapier. */
+      appUrl: process.env.ZAPIER_APP_URL?.trim() || null,
+      hooks: subscriptions.map((s) => ({
+        id: s.id,
+        url: s.url,
+        name: s.name,
+        source: s.source,
+        events: s.events,
+        enabled: s.enabled,
+        last: s.lastDeliveredAt ? { at: ago(s.lastDeliveredAt), status: s.lastStatus, error: s.lastError } : null,
+      })),
+    },
     shop: shops[0]?.slug ?? null,
   };
 }

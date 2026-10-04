@@ -150,10 +150,14 @@ const toCents = (m?: { value: string }) => (m ? Math.round(Number(m.value) * 100
 /** What a connected seller grants: take payments, refund, our fee, and holding the money. */
 const SELLER_FEATURES = ["PAYMENT", "REFUND", "PARTNER_FEE", "DELAY_FUNDS_DISBURSEMENT"];
 
-/** A one-time PayPal sign-up link. PayPal sends the seller back to returnUrl when done. */
-export async function createSellerSignupLink(input: { trackingId: string; returnUrl: string }) {
+/**
+ * A one-time PayPal sign-up link. PayPal sends the seller back to returnUrl when
+ * done. `email` fills in PayPal's first screen.
+ */
+export async function createSellerSignupLink(input: { trackingId: string; returnUrl: string; email?: string | null }) {
   const res = await call<{ links: { rel: string; href: string }[] }>("POST", "/v2/customer/partner-referrals", {
     body: {
+      ...(input.email ? { email: input.email } : {}),
       tracking_id: input.trackingId,
       operations: [
         {
@@ -175,6 +179,26 @@ export async function createSellerSignupLink(input: { trackingId: string; return
   const link = res.links.find((l) => l.rel === "action_url");
   if (!link) throw new PayPalError("PayPal didn't return a sign-up link.", 502);
   return link.href;
+}
+
+/**
+ * Who signed in with "Log in with PayPal", from their own access token. payer_id
+ * (their merchant id) only comes when the app's Log in with PayPal settings
+ * share "PayPal account ID".
+ */
+export async function paypalLoginProfile(userAccessToken: string) {
+  const res = await fetch(`${base}/v1/identity/oauth2/userinfo?schema=paypalv1.1`, {
+    headers: { Authorization: `Bearer ${userAccessToken}`, Accept: "application/json" },
+    cache: "no-store",
+  });
+  if (!res.ok) throw new PayPalError("PayPal didn't say who signed in.", res.status);
+  const json = (await res.json()) as {
+    payer_id?: string;
+    emails?: { value: string; primary?: boolean }[];
+    email?: string;
+  };
+  const email = json.emails?.find((e) => e.primary)?.value ?? json.emails?.[0]?.value ?? json.email ?? null;
+  return { payerId: json.payer_id ?? null, email };
 }
 
 export type SellerStatus = {
