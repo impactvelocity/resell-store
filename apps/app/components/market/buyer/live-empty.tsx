@@ -1,7 +1,9 @@
+import { cn } from "@repo/ui/lib/utils";
 import { EmptyState } from "../../empty-state";
 import { signInHref } from "../../../lib/safe-next";
 import { SiteLink } from "../links";
 import { pillLink } from "../parts";
+import { SignOutButton } from "./account";
 
 /*
  * P6 Messages and P8 Account for real people: a sign-in prompt when signed
@@ -75,11 +77,21 @@ export function AlsoSelling() {
 export function EmptyAccount({ firstName, sells }: { firstName: string; sells?: boolean }) {
   return (
     <main className="mx-auto flex max-w-[1080px] flex-col gap-10 px-4 pt-8 pb-16 desk:px-16 desk:pt-14 desk:pb-20">
-      <div className="flex flex-col gap-2.5">
-        <h1 className="font-display text-4xl font-extrabold tracking-tight">Hi {firstName}.</h1>
-        <p className="text-lg text-public-text-muted">
-          Nothing needs you today. Your orders, offers and the shops you follow will gather here.
-        </p>
+      <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+        <div className="flex flex-col gap-2.5">
+          <h1 className="font-display text-4xl font-extrabold tracking-tight">Hi {firstName}.</h1>
+          <p className="text-lg text-public-text-muted">
+            Nothing needs you today. Your orders, offers and the shops you follow will gather here.
+          </p>
+        </div>
+        <div className="flex shrink-0 items-center gap-2">
+          {!sells && (
+            <SiteLink href="/home?mode=selling" className={pillLink.outline}>
+              Start selling
+            </SiteLink>
+          )}
+          <SignOutButton className={cn(pillLink.outline, "cursor-pointer disabled:opacity-60")} />
+        </div>
       </div>
 
       {sells && <AlsoSelling />}

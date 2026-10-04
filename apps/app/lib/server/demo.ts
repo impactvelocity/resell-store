@@ -72,6 +72,15 @@ export function isDemoUser(person: { email: string } | null | undefined) {
   return email === demoEmails.seller || email === demoEmails.buyer;
 }
 
+/**
+ * A made-up address checkout starts with while the demo is on, so trying a
+ * purchase doesn't mean typing one. Null when the demo is off. Still editable.
+ */
+export function demoShipTo(name: string) {
+  if (!demoEnabled) return null;
+  return { name, address: "350 Demo Street, Apt 4, Portland, OR 97209", country: "United States" };
+}
+
 /** What a demo account sees instead of doing the thing. */
 export const demoMessages = {
   publish: "The demo can't put listings live. Sign up with your email to sell for real.",

@@ -34,9 +34,13 @@ const navItems: { id: string; label: string; count?: number }[] = [
  */
 export function AccountNav({
   live,
-}: { live?: { orders: number; offers: number; saved?: number; following?: number } } = {}) {
+  sells = false,
+}: {
+  live?: { orders: number; offers: number; saved?: number; following?: number };
+  /** They own a shop: "Manage your stores" rather than "Start selling" */
+  sells?: boolean;
+} = {}) {
   const toast = useToast();
-  const router = useRouter();
   const [active, setActive] = useState("overview");
   const items = live
     ? [
@@ -78,6 +82,9 @@ export function AccountNav({
       <SiteLink href="/agent" className={item(false)}>
         My agent
       </SiteLink>
+      <SiteLink href="/home?mode=selling" className={item(false)}>
+        {sells ? "Manage your stores" : "Start selling"}
+      </SiteLink>
       <button
         type="button"
         onClick={() =>
@@ -92,23 +99,34 @@ export function AccountNav({
         Addresses and payment
       </button>
       {live ? (
-        <button
-          type="button"
-          onClick={async () => {
-            await signOut().catch(() => {});
-            router.push("/discover");
-            router.refresh();
-          }}
-          className={cn(item(false), "cursor-pointer text-left text-public-text-muted")}
-        >
-          Sign out
-        </button>
+        <SignOutButton className={cn(item(false), "cursor-pointer text-left text-public-text-muted")} />
       ) : (
         <SiteLink href="/discover" className={cn(item(false), "text-public-text-muted")}>
           Sign out
         </SiteLink>
       )}
     </nav>
+  );
+}
+
+/** Signs out of the marketplace and lands back on Discover. */
+export function SignOutButton({ className }: { className?: string }) {
+  const router = useRouter();
+  const [busy, setBusy] = useState(false);
+  return (
+    <button
+      type="button"
+      disabled={busy}
+      onClick={async () => {
+        setBusy(true);
+        await signOut().catch(() => {});
+        router.push("/discover");
+        router.refresh();
+      }}
+      className={className}
+    >
+      {busy ? "Signing out…" : "Sign out"}
+    </button>
   );
 }
 

@@ -1,4 +1,5 @@
 import "server-only";
+import { db, paypalEvent } from "@repo/db";
 
 /*
  * PayPal REST, multiparty (we're the platform, sellers are connected merchants).
@@ -113,9 +114,32 @@ async function call<T>(
   if (!res.ok) {
     const issue = json.details?.[0]?.issue ?? json.name;
     const message = json.details?.[0]?.description ?? json.message ?? `PayPal ${method} ${path} failed`;
+    // A 404 on a lookup just means "not there"
+    if (!(method === "GET" && res.status === 404)) await recordApiError(method, path, res.status, json);
     throw new PayPalError(message, res.status, issue, json.debug_id);
   }
   return json as T;
+}
+
+/**
+ * A call PayPal turned down, kept in paypal_event (type API_ERROR) beside the
+ * webhooks: a refused capture sends no webhook, so this is the only record of
+ * why. Never fails the caller.
+ */
+async function recordApiError(method: string, path: string, status: number, response: Record<string, any>) {
+  const issue = response.details?.[0]?.issue ?? response.name ?? null;
+  console.error("[paypal api]", method, path, status, issue, response.debug_id, JSON.stringify(response));
+  await db
+    .insert(paypalEvent)
+    .values({
+      id: `api-${crypto.randomUUID()}`,
+      type: "API_ERROR",
+      resourceId: path,
+      payload: { method, path, status, issue, debugId: response.debug_id ?? null, response },
+      processedAt: new Date(),
+      error: issue,
+    })
+    .catch((error) => console.error("[paypal api] couldn't record the error", error));
 }
 
 const usd = (cents: number) => ({ currency_code: "USD", value: (cents / 100).toFixed(2) });

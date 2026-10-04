@@ -4,6 +4,7 @@ import { CheckoutForm } from "../../../../components/market/checkout/checkout-fo
 import { CheckoutHeader } from "../../../../components/market/checkout/checkout-header";
 import { CheckoutNotice } from "../../../../components/market/checkout/notice";
 import { agreedCents, lastShipTo } from "../../../../lib/server/commerce";
+import { demoShipTo } from "../../../../lib/server/demo";
 import { paypalEnabled, paypalSandbox, sandboxLogin } from "../../../../lib/server/paypal";
 import { toDollars } from "../../../../lib/money";
 import { loadForBuying } from "../../load";
@@ -84,7 +85,8 @@ export default async function Page({
           asking: found.asking,
           offer: accepted && { id: accepted.id, amount: toDollars(agreedCents(accepted))! },
           shipping: found.shipping,
-          shipTo: await lastShipTo(viewer.id),
+          // Their last address; in the demo, a made-up one so they can go straight to paying
+          shipTo: (await lastShipTo(viewer.id)) ?? demoShipTo(viewer.name),
           name: viewer.name,
           paid: null,
           payments,

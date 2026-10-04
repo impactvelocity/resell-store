@@ -109,6 +109,7 @@ export function LiveAccount({
     <div className="mx-auto flex w-full max-w-[1440px] flex-col gap-8 px-4 pt-6 pb-16 desk:flex-row desk:items-start desk:gap-12 desk:px-16 desk:pt-14 desk:pb-20 xl:gap-[72px]">
       <AccountNav
         live={{ orders: orders.length, offers: offers.length, saved: saved.length, following: following.length }}
+        sells={sells}
       />
 
       <main className="flex min-w-0 flex-1 flex-col gap-12 desk:gap-14">

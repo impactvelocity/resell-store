@@ -11,11 +11,13 @@ import { syncPayPalAccount } from "./paypal-sellers";
  * by PayPal's id first, so a redelivery of one we've handled is a no-op, and
  * every handler only moves an order forward, so handling one twice is too.
  *
- * Subscribe the webhook (PAYPAL_WEBHOOK_ID) to:
+ * The sandbox webhook (PAYPAL_WEBHOOK_ID, 6PW53987YK5646426) takes every
+ * event type ("*"), so all of them land in paypal_event; the ones acted on:
  *   PAYMENT.CAPTURE.COMPLETED / DENIED / DECLINED / REFUNDED / REVERSED
  *   CUSTOMER.DISPUTE.CREATED / UPDATED / RESOLVED
  *   MERCHANT.ONBOARDING.COMPLETED, MERCHANT.PARTNER-CONSENT.REVOKED
  *   PAYMENT.REFERENCED-PAYOUT-ITEM.COMPLETED / FAILED
+ * Failed API calls are kept there too, as type API_ERROR (paypal.ts).
  */
 
 export type PayPalEvent = {

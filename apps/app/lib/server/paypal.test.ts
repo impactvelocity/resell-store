@@ -1,4 +1,6 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
+import { db, paypalEvent } from "@repo/db";
+import { resetDb } from "../../test/db";
 
 /*
  * The PayPal REST client, with fetch mocked: nothing reaches PayPal. The module
@@ -190,6 +192,31 @@ describe("errors", () => {
     const error = await p.captureOrder("ORDER-1", "capture-1").catch((e) => e);
     expect(error.issue).toBe("INVALID_REQUEST");
     expect(error.message).toBe("Bad request");
+  });
+
+  it("keeps a refused call in paypal_event, since PayPal sends no webhook for it", async () => {
+    await resetDb();
+    const body = { name: "UNPROCESSABLE_ENTITY", debug_id: "dbg-7", details: [{ issue: "PAYEE_NOT_CONSENTED" }] };
+    mockFetch(() => ({ status: 422, body }));
+    const p = await load();
+    await p.captureOrder("ORDER-1", "capture-1").catch(() => null);
+    const rows = await db.select().from(paypalEvent);
+    expect(rows).toHaveLength(1);
+    expect(rows[0]).toMatchObject({
+      type: "API_ERROR",
+      resourceId: "/v2/checkout/orders/ORDER-1/capture",
+      error: "PAYEE_NOT_CONSENTED",
+      payload: { method: "POST", status: 422, issue: "PAYEE_NOT_CONSENTED", debugId: "dbg-7", response: body },
+    });
+    expect(rows[0]!.processedAt).not.toBeNull();
+  });
+
+  it("doesn't keep a lookup that just found nothing", async () => {
+    await resetDb();
+    mockFetch(() => ({ status: 404, body: { name: "RESOURCE_NOT_FOUND" } }));
+    const p = await load();
+    expect(await p.sellerByMerchantId("NOBODY")).toBeNull();
+    expect(await db.select().from(paypalEvent)).toHaveLength(0);
   });
 
   it("has a generic message when the error body isn't JSON", async () => {
