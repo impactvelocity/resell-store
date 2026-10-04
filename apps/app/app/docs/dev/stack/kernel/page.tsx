@@ -13,7 +13,7 @@ export default async function KernelPage() {
       path="/dev/stack/kernel"
       eyebrow="Built with"
       title="Kernel"
-      lead="Kernel runs cloud browsers. resell.store uses them to read what the same item is listed for on eBay, Poshmark and Depop right now, and to read product pages people paste into the shopping sidekick."
+      lead="Kernel runs cloud browsers. resell.store uses them to read what the same item is listed for on popular marketplaces right now, and to read product pages people paste into the shopping sidekick."
       toc={[
         { id: "what", title: "What it does here" },
         { id: "browsers", title: "Browsers and limits" },
@@ -59,8 +59,8 @@ export default async function KernelPage() {
         </li>
         <li>Images, media and fonts are blocked. Pages load faster and don&apos;t crash, and cards keep their image links.</li>
         <li>
-          Plain browsers, not stealth: in testing the stealth proxy made eBay serve error pages. eBay&apos;s &quot;something went
-          wrong&quot; page is retried up to three times. Mercari crashed the page every time, so it isn&apos;t searched.
+          Plain browsers, not stealth: in testing the stealth proxy made some sites serve error pages. A site&apos;s &quot;something went
+          wrong&quot; page is retried up to three times. Sites that crash the page every time aren&apos;t searched.
         </li>
       </UL>
 
@@ -70,7 +70,7 @@ export default async function KernelPage() {
       </P>
       <OL>
         <li>The fast model writes 1 to 3 search queries the way a reseller would type them, most specific first.</li>
-        <li>eBay, Poshmark and Depop are searched at once, one browser each. Up to 16 cards from each site are kept, so one big site doesn&apos;t crowd out the rest.</li>
+        <li>Each marketplace is searched at the same time, one browser each. Up to 16 cards from each site are kept, so one big site doesn&apos;t crowd out the rest.</li>
         <li>
           The main model checks every card against the item: the <C>same</C> model (any colour), a <C>bundle</C> with real extras, or{" "}
           <C>different</C> (another generation or size, parts, lots, broken). It reads the asking price and the condition.
@@ -94,9 +94,9 @@ export default async function KernelPage() {
 
       <H2 id="listed-not-sold">Listing prices, not sold prices</H2>
       <P>
-        What something actually sold for is the best evidence, but it&apos;s out of reach. eBay&apos;s sold and completed search moved
-        behind a sign-in in 2026, and its official sold-data APIs are shut down or closed to new apps. Searching signed in to a
-        real account would break eBay&apos;s terms. So comps read what the same thing is listed for right now and assume it sells a
+        What something actually sold for is the best evidence, but it&apos;s out of reach. The big marketplaces moved sold and completed search
+        behind a sign-in in 2026, and their official sold-data APIs are shut down or closed to new apps. Searching signed in to a
+        real account would break their terms. So comps read what the same thing is listed for right now and assume it sells a
         little under that. The page says what things are listed for, never what they sold for. The price prompt tells the model the same:
         listings usually sell 0 to 15 percent under their ask.
       </P>
@@ -115,15 +115,15 @@ export default async function KernelPage() {
       <H2 id="not-built">Not built yet</H2>
       <Callout tone="warn" title="Signed-in sites are not wired">
         There&apos;s groundwork for searching with a seller&apos;s own signed-in profile through Kernel&apos;s managed auth (
-        <C>lib/server/market-logins.ts</C>, the <C>market_login</C> table and a sold-search URL for eBay), which would open up
-        eBay&apos;s sold prices and Facebook Marketplace. Nothing calls it. Comps today search public listings on eBay, Poshmark and
-        Depop only.
+        <C>lib/server/market-logins.ts</C>, the <C>market_login</C> table and a sold-search URL), which would open up
+        sold prices and marketplaces that need a login. Nothing calls it. Comps today search public listings on popular
+        marketplaces only.
       </Callout>
 
       <H2 id="unlocks">What it unlocks</H2>
       <UL>
         <li>Prices grounded in what the same thing is for sale for today, checked one listing at a time, not a guess.</li>
-        <li>A &quot;Listed now on eBay, Poshmark and Depop&quot; source on the findings sheet, with links to each listing.</li>
+        <li>A &quot;Listed now on popular marketplaces&quot; source on the findings sheet, with links to each listing.</li>
         <li>The shopping sidekick: &quot;is this worth buying to resell?&quot; with a holds-its-value score.</li>
         <li>Reading product pages that don&apos;t have an API.</li>
       </UL>

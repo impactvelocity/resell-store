@@ -93,7 +93,7 @@ export default async function DevOverview() {
         rows={[
           ["AI model (Anthropic by default, via the AI SDK)", "Identifies items, prices them, writes listings, runs the listing chat, the store agent and the negotiator's wording"],
           ["Channel3", "Product catalog: what an item is, what it costs new, second-hand offers"],
-          ["Kernel", "Headless browsers that read public listings on eBay, Poshmark and Depop for comps and the Shopping sidekick"],
+          ["Kernel", "Headless browsers that read public listings on popular marketplaces for comps and the Shopping sidekick"],
           ["Jina", "Embeddings for semantic search, stored in pgvector"],
           ["PayPal (sandbox)", "Checkout, the platform fee, held money, payouts, refunds and disputes"],
           ["Resend", "Email: sign-in links and notifications"],

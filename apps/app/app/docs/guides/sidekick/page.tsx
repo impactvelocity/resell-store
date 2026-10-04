@@ -58,7 +58,7 @@ export default async function Sidekick() {
           what it costs new in a large product catalog and tells you where that price came from.
         </li>
         <li>
-          <strong>What it sells on for</strong>: the same thing listed second hand on eBay, Poshmark and Depop right now. It keeps
+          <strong>What it sells on for</strong>: the same thing listed second hand on popular marketplaces right now. It keeps
           the real matches and drops the odd ones out.
         </li>
       </UL>

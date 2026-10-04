@@ -83,7 +83,7 @@ export default async function Env() {
       <H2 id="research">Research</H2>
       {table([
         ["CHANNEL3_API_KEY", "Recommended", "The product catalog: what an item is, new prices, used offers, maker photos", "Research skips the catalog step and prices from comps and the model"],
-        ["KERNEL_API_KEY", "Optional", "Headless browsers that read public listings on eBay, Poshmark and Depop. Needs ANTHROPIC_API_KEY too", "No live comps step in research; the Shopping sidekick shows Coming soon"],
+        ["KERNEL_API_KEY", "Optional", "Headless browsers that read public listings on popular marketplaces. Needs ANTHROPIC_API_KEY too", "No live comps step in research; the Shopping sidekick shows Coming soon"],
         ["KERNEL_MAX_BROWSERS", "Optional", "How many Kernel browsers may run at once; extra searches queue", "5, the free plan's limit"],
       ])}
 

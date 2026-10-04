@@ -65,7 +65,7 @@ const live: Sponsor[] = [
   {
     name: "Kernel",
     logo: { src: "/sponsors/kernel.png", width: 400, height: 84, size: 24 },
-    use: "Cloud browsers that search eBay, Poshmark and Depop side by side for the same item and read what each one is listed for, plus any product link you paste into the shopping sidekick.",
+    use: "Cloud browsers that search popular marketplaces side by side for the same item and read what each one is listed for, plus any product link you paste into the shopping sidekick.",
     benefit:
       "Prices come from what's for sale today, not a guess, and one slow site never holds up the rest.",
     docs: "https://www.kernel.sh/docs",

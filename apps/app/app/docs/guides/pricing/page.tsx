@@ -42,7 +42,7 @@ export default async function Pricing() {
           <strong>It finds second-hand prices.</strong>
         </li>
         <li>
-          <strong>It checks eBay, Poshmark and Depop</strong> for live listings of the same thing, keeps up to 10 real matches,
+          <strong>It checks popular marketplaces</strong> for live listings of the same thing, keeps up to 10 real matches,
           and drops any odd prices that would skew things.
         </li>
         <li>
@@ -56,8 +56,8 @@ export default async function Pricing() {
 
       <H2 id="honest">Asking prices, not sold prices</H2>
       <P>
-        We want to be straight with you about this. The prices the agent finds on eBay, Poshmark and Depop are what people are{" "}
-        <em>asking</em> right now, not what things actually sold for. Sold prices aren&apos;t open to look up any more (eBay keeps
+        We want to be straight with you about this. The prices the agent finds on popular marketplaces are what people are{" "}
+        <em>asking</em> right now, not what things actually sold for. Sold prices aren&apos;t open to look up any more (the big marketplaces keep
         them behind a login). Things usually sell for up to about 15% under their asking price, and the agent takes that into
         account.
       </P>

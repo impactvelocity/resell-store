@@ -41,7 +41,7 @@ export default async function ListAnItem() {
       <H2 id="research">1. Research</H2>
       <P>
         The agent works out what your thing is, finds it in a catalog of about 100 million products, and looks at what similar
-        ones are listed for on eBay, Poshmark and Depop. The page updates as it goes. When it&apos;s done you see a price range and
+        ones are listed for on popular marketplaces. The page updates as it goes. When it&apos;s done you see a price range and
         a suggested price. <A href={`${base}/guides/pricing`}>Prices and research</A> explains where the numbers come from.
       </P>
       <P>

@@ -1,0 +1,122 @@
+<!doctype html>
+<!--
+  Devpost project thumbnail (3:2). Rendered to thumbnail.png at 2x by render.sh.
+  Numbers follow the negotiator: $72 listing, $56 offer, counter halfway at $64.
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>resell.store thumbnail</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,700;12..96,800&family=Figtree:wght@500;600;700&display=block" rel="stylesheet">
+<style>
+  :root {
+    --lemon-100: #fff6c2; --lemon-300: #ffe873; --lemon-400: #ffd934; --lemon-500: #f5be0b;
+    --leaf-100: #ddf0e3; --leaf-300: #8cc9a4; --leaf-600: #256b4c; --leaf-900: #14261d;
+    --pink-100: #ffdceb; --pink-400: #ff5fa8; --pink-600: #c9246f;
+    --cream: #fffdf2;
+  }
+  * { box-sizing: border-box; margin: 0; }
+  html, body { width: 1200px; height: 800px; overflow: hidden; }
+  body {
+    background: var(--lemon-400);
+    color: var(--leaf-900);
+    font-family: Figtree, system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    position: relative;
+  }
+  .display { font-family: "Bricolage Grotesque", system-ui, sans-serif; font-weight: 800; }
+
+  /* Left column */
+  .left { position: absolute; left: 72px; top: 64px; width: 600px; height: 672px; display: flex; flex-direction: column; }
+  .wordmark { font-size: 44px; letter-spacing: -0.03em; display: inline-flex; align-items: baseline; line-height: 1; }
+  .wordmark .dot { display: inline-block; width: 0.34em; height: 0.34em; border-radius: 50%; background: #fff; margin: 0 0.06em; }
+  h1 { font-size: 90px; line-height: 0.95; letter-spacing: -0.045em; margin-top: 56px; }
+  .sub { font-size: 25px; line-height: 1.35; font-weight: 600; margin-top: 26px; max-width: 520px; color: #3a4a2f; }
+  .badge {
+    margin-top: auto; align-self: flex-start;
+    display: inline-flex; align-items: center; gap: 14px;
+    background: #fff; border: 3px solid var(--leaf-900); border-radius: 999px;
+    padding: 12px 24px 12px 20px; font-size: 21px; font-weight: 700;
+  }
+  .badge img { height: 26px; display: block; }
+
+  /* Right visual */
+  .stage { position: absolute; left: 640px; top: 0; width: 560px; height: 800px; }
+  .disc { position: absolute; left: 70px; top: 140px; width: 470px; height: 470px; border-radius: 50%; background: var(--leaf-100); }
+  .oven { position: absolute; left: 115px; top: 160px; width: 380px; }
+  .tag {
+    position: absolute; left: 400px; top: 196px; transform: rotate(10deg);
+    background: var(--leaf-900); color: var(--lemon-400);
+    font-size: 40px; padding: 10px 22px 12px; border-radius: 18px; letter-spacing: -0.02em;
+  }
+  .bubble {
+    position: absolute; font-size: 22px; font-weight: 600; line-height: 1.3;
+    padding: 16px 22px; border-radius: 26px; white-space: nowrap;
+    box-shadow: 0 0 0 3px var(--leaf-900);
+  }
+  .buyer { left: 28px; top: 92px; background: #fff; border-bottom-left-radius: 8px; }
+  .buyer small, .agent small { display: block; font-size: 15px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 2px; }
+  .buyer small { color: var(--pink-600); }
+  .agent {
+    left: 60px; top: 528px; background: var(--leaf-900); color: #fff; border-bottom-right-radius: 8px;
+    display: flex; gap: 14px; align-items: center;
+  }
+  .agent small { color: var(--lemon-400); }
+  .spark { width: 40px; height: 40px; border-radius: 50%; background: var(--pink-400); display: grid; place-items: center; flex-shrink: 0; }
+  .held {
+    position: absolute; left: 60px; top: 650px;
+    display: inline-flex; align-items: center; gap: 12px;
+    background: #fff; border-radius: 999px; padding: 12px 22px 12px 12px;
+    font-size: 21px; font-weight: 700; box-shadow: 0 0 0 3px var(--leaf-900);
+  }
+  .check { width: 34px; height: 34px; border-radius: 50%; background: var(--leaf-600); display: grid; place-items: center; }
+  .flower { position: absolute; right: 36px; top: 40px; width: 78px; transform: rotate(-14deg); }
+  .flower.small { right: auto; left: 548px; top: 690px; width: 44px; transform: rotate(20deg); }
+</style>
+</head>
+<body>
+  <div class="left">
+    <div class="wordmark display">resell<span class="dot"></span>store</div>
+    <h1 class="display">Sell your stuff without doing the selling</h1>
+    <p class="sub">Snap a photo. An AI agent prices it, lists it, answers buyers and haggles. You just say yes.</p>
+    <div class="badge"><img src="../src/assets/paypal.svg" alt="PayPal"> Built for the PayPal AI Hackathon</div>
+  </div>
+
+  <div class="stage">
+    <div class="disc"></div>
+
+    <!-- Dutch oven in the seed art style: flat fills, no outlines -->
+    <svg class="oven" viewBox="0 0 320 320" aria-hidden="true">
+      <rect x="66" y="160" width="40" height="24" rx="12" fill="#f5be0b"/>
+      <rect x="214" y="160" width="40" height="24" rx="12" fill="#f5be0b"/>
+      <path d="M86 156h148v52a32 32 0 0 1-32 32H118a32 32 0 0 1-32-32Z" fill="#ffd934"/>
+      <path d="M90 150a70 38 0 0 1 140 0Z" fill="#f5be0b"/>
+      <rect x="82" y="148" width="156" height="10" rx="5" fill="#fff6c2"/>
+      <circle cx="160" cy="104" r="13" fill="#14261d"/>
+      <path d="M108 196h104" stroke="#14261d" stroke-width="5" stroke-linecap="round" stroke-dasharray="1 13"/>
+    </svg>
+
+    <div class="tag display">$72</div>
+
+    <div class="bubble buyer"><small>Buyer</small>Would you take $56?</div>
+
+    <div class="bubble agent">
+      <span class="spark">
+        <svg width="22" height="22" viewBox="0 0 24 24"><path d="M12 1.5c.8 5.6 4.9 9.7 10.5 10.5-5.6.8-9.7 4.9-10.5 10.5C11.2 16.9 7.1 12.8 1.5 12 7.1 11.2 11.2 7.1 12 1.5Z" fill="#fff"/></svg>
+      </span>
+      <span><small>Shop agent</small>I can do $64. The lid fits perfectly.</span>
+    </div>
+
+    <div class="held">
+      <span class="check"><svg width="18" height="18" viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5" fill="none" stroke="#fff" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+      Paid. Held until it arrives
+    </div>
+
+    <svg class="flower" viewBox="0 0 64 64" aria-hidden="true">
+      <g fill="#ff5fa8"><circle cx="32" cy="18" r="11"/><circle cx="45.3" cy="27.7" r="11"/><circle cx="40.2" cy="43.3" r="11"/><circle cx="23.8" cy="43.3" r="11"/><circle cx="18.7" cy="27.7" r="11"/></g>
+      <circle cx="32" cy="32" r="8" fill="#ffd934"/>
+    </svg>
+  </div>
+</body>
+</html>

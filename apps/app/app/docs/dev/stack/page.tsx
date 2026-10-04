@@ -30,7 +30,7 @@ export default async function Stack() {
           ["PayPal", "Multiparty payments: sellers connect, orders paid to them with our fee, money held until delivery", "Real checkout (PayPal or guest card), escrow, automatic payouts, refunds", "Optional: a test checkout without it"],
           ["AI model (Anthropic by default, via the AI SDK)", "Identifies items, prices them, writes listings, answers buyers, words counters", "Every agent", "Optional: research falls back to plain numbers"],
           ["Channel3", "Product catalog: what it is, new and resale prices, maker photos", "The catalog and resale research steps", "Optional"],
-          ["Kernel", "Cloud browsers reading eBay, Poshmark and Depop listings", "Live comps and the shopping sidekick", "Optional"],
+          ["Kernel", "Cloud browsers reading listings on popular marketplaces", "Live comps and the shopping sidekick", "Optional"],
           ["Render", "Web service, Postgres, Workflows and a Cron Job", "Hosting with store subdomains, retried timers that move money", "Where it runs; locally, a cron route does the timers"],
           ["Postgres + pgvector", "Everything, plus listing embeddings", "Search by meaning", req],
           ["Jina", "Embeddings for listings and searches", "Semantic search", "Optional: text search alone"],
@@ -58,7 +58,7 @@ export default async function Stack() {
         </li>
         <li>
           <strong>Research.</strong> The AI model looks at the photo and names it. Channel3 finds the product and what it costs new. Kernel
-          browsers read what the same pot is listed for on eBay, Poshmark and Depop. The model weighs it all and suggests $185.
+          browsers read what the same pot is listed for on popular marketplaces. The model weighs it all and suggests $185.
         </li>
         <li>
           <strong>Published.</strong> The model writes the words. On publish, Jina embeds the listing into a pgvector column.

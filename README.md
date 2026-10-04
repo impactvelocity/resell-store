@@ -20,7 +20,7 @@ The average home is full of things nobody uses. They stay in the cupboard becaus
 
 ## What it does
 
-- **One photo to a priced listing.** The agent identifies the item, checks what it costs new and what the same thing is listed for on eBay, Poshmark and Depop right now, then suggests a price.
+- **One photo to a priced listing.** The agent identifies the item, checks what it costs new and what the same thing is listed for on popular marketplaces right now, then suggests a price.
 - **Your own shop.** Every seller gets a storefront on their own subdomain, like `claspandcarry.resell.store`, searchable by meaning, not just keywords.
 - **An agent that answers buyers.** Questions get answered from the listing's facts, at any hour.
 - **An agent that haggles.** Low offers get countered inside the limits you set. It never goes under your lowest, and good offers wait for your yes.
@@ -68,7 +68,7 @@ resell.store is our entry to the [PayPal AI Hackathon](https://paypalaihackathon
 | -------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
 | [**PayPal**](https://developer.paypal.com/)        | Checkout straight to the seller's PayPal with our fee split in, money held until the item arrives, then payouts, refunds and disputes       |
 | [**Channel3**](https://trychannel3.com/developers) | Names the item from 100M products, finds what it costs new and pulls the maker's photos                                                     |
-| [**Kernel**](https://www.kernel.sh/)               | Cloud browsers that read live eBay, Poshmark and Depop listings for the same item, for pricing and the sidekick                             |
+| [**Kernel**](https://www.kernel.sh/)               | Cloud browsers that read live listings for the same item on popular marketplaces, for pricing and the sidekick                             |
 | [**Render**](https://render.com/)                  | Hosts the app, every shop subdomain and Postgres with pgvector, and runs the timed jobs: payouts, offer expiry, digests and webhook retries |
 
 <p align="center">

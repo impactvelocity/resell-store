@@ -33,7 +33,7 @@ resell.store is one app with three ways in: a seller app, a marketplace of littl
 
 ### An agent that sells for you
 
-- **One photo to a priced listing.** The agent identifies the item, finds what it costs new, and reads what the same thing is listed for on eBay, Poshmark and Depop right now. It suggests a price and shows where every number came from.
+- **One photo to a priced listing.** The agent identifies the item, finds what it costs new, and reads what the same thing is listed for on popular marketplaces right now. It suggests a price and shows where every number came from.
 - **It writes the listing.** It only asks what a photo can't show (does it have chips, does the lid fit), then writes the title, description and details.
 - **Your own shop.** Every seller gets a storefront on their own subdomain, like `claspandcarry.resell.store`, with a link to share anywhere.
 - **It answers buyers.** Questions get answered at any hour, only from the listing's facts and your earlier replies. When it doesn't know, it says so kindly and flags the thread "Needs you."
@@ -86,7 +86,7 @@ Channel3's product catalogue (100M+ products) turns a photo and a line of text i
 
 ### Kernel: what's it going for right now?
 
-Kernel's cloud browsers read live listings for the same item on eBay, Poshmark and Depop, one browser per site, all in parallel. I match the cards with the model, keep only used or unstated-condition listings, and price from those. The sidekick uses Kernel twice: once to read the page you pasted, and once to check resale listings.
+Kernel's cloud browsers read live listings for the same item on popular marketplaces, one browser per site, all in parallel. I match the cards with the model, keep only used or unstated-condition listings, and price from those. The sidekick uses Kernel twice: once to read the page you pasted, and once to check resale listings.
 
 ### Render: the whole thing runs here
 

@@ -16,7 +16,7 @@ const pollResponse = `{
         "title": "Matched Le Creuset Signature Round Dutch Oven", "detail": "New from $420 at lecreuset.com" },
       { "key": "resale", "tag": "Resale", "state": "running",
         "title": "Finding second-hand prices", "detail": "Resale shops and marketplaces" },
-      { "key": "listings", "tag": "Listings", "state": "running", "title": "Checking eBay, Poshmark and Depop", … },
+      { "key": "listings", "tag": "Listings", "state": "running", "title": "Checking popular marketplaces", … },
       { "key": "price", "tag": "Price", "state": "queued", "title": "Work out a fair price", "detail": "Up next" }
     ]
   },
@@ -94,7 +94,7 @@ export default async function Agents() {
         </li>
         <li>
           <strong>Listings.</strong> Started straight after identify, in parallel, because it&apos;s the slow one: Kernel browsers
-          search eBay, Poshmark and Depop for the same item (<C>findComps</C> in <C>lib/server/comps.ts</C>). Only when both Kernel and
+          search popular marketplaces for the same item (<C>findComps</C> in <C>lib/server/comps.ts</C>). Only when both Kernel and
           Anthropic keys are set. See <A href={`${base}/dev/stack/kernel`}>Kernel</A>.
         </li>
         <li>
