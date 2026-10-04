@@ -20,13 +20,13 @@ The average home is full of things nobody uses. They stay in the cupboard becaus
 
 ## What it does
 
-- 📸 **One photo to a priced listing.** The agent identifies the item, checks what it costs new and what the same thing is listed for on eBay, Poshmark and Depop right now, then suggests a price.
-- 🏪 **Your own shop.** Every seller gets a storefront on their own subdomain, like `claspandcarry.resell.store`, searchable by meaning, not just keywords.
-- 💬 **An agent that answers buyers.** Questions get answered from the listing's facts, at any hour.
-- 🤝 **An agent that haggles.** Low offers get countered inside the limits you set. It never goes under your lowest, and good offers wait for your yes.
-- 🔒 **Money held until it arrives.** Buyers pay with PayPal or a card. The money waits at PayPal and lands in your own PayPal once the item arrives.
-- 🛍️ **A shopping sidekick.** Paste a link before you buy and find out if it's worth it, or what it'll be worth later.
-- 🤖 **Bring your own AI.** A public API and two MCP servers let any assistant run a shop or go shopping, with guardrails.
+- **One photo to a priced listing.** The agent identifies the item, checks what it costs new and what the same thing is listed for on eBay, Poshmark and Depop right now, then suggests a price.
+- **Your own shop.** Every seller gets a storefront on their own subdomain, like `claspandcarry.resell.store`, searchable by meaning, not just keywords.
+- **An agent that answers buyers.** Questions get answered from the listing's facts, at any hour.
+- **An agent that haggles.** Low offers get countered inside the limits you set. It never goes under your lowest, and good offers wait for your yes.
+- **Money held until it arrives.** Buyers pay with PayPal or a card. The money waits at PayPal and lands in your own PayPal once the item arrives.
+- **A shopping sidekick.** Paste a link before you buy and find out if it's worth it, or what it'll be worth later.
+- **Bring your own AI.** A public API and two MCP servers let any assistant run a shop or go shopping, with guardrails.
 
 ## How it works
 
@@ -77,10 +77,10 @@ resell.store is our entry to the [PayPal AI Hackathon](https://paypalaihackathon
 
 ## Try it
 
-- 🛒 **Shop:** [resell.store](https://resell.store), or visit a seeded store like [claspandcarry.resell.store](https://claspandcarry.resell.store)
-- 🎬 **Watch:** the [2-minute demo](https://www.youtube.com/watch?v=Nus5lpO5wL0)
-- 📚 **Read:** guides for sellers and buyers, the API and MCP reference, and developer docs at [docs.resell.store](https://docs.resell.store)
-- 🔌 **Connect your AI:** the API lives at [api.resell.store](https://api.resell.store/v1/openapi.json), the MCP servers at `mcp.resell.store`
+- **Shop:** [resell.store](https://resell.store), or visit a seeded store like [claspandcarry.resell.store](https://claspandcarry.resell.store)
+- **Watch:** the [2-minute demo](https://www.youtube.com/watch?v=Nus5lpO5wL0)
+- **Read:** guides for sellers and buyers, the API and MCP reference, and developer docs at [docs.resell.store](https://docs.resell.store)
+- **Connect your AI:** the API lives at [api.resell.store](https://api.resell.store/v1/openapi.json), the MCP servers at `mcp.resell.store`
 
 PayPal runs in sandbox mode, so no real money moves.
 

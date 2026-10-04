@@ -128,7 +128,7 @@ export default async function ApiGroupPage({ params }: Props) {
   const g = apiGroups.find((x) => x.id === group);
   if (!g) notFound();
   const base = await docsBase();
-  const routes = apiRoutes.filter((r) => groupId(r.group) === g.id && r.path !== "/openapi.json");
+  const routes = apiRoutes.filter((r) => groupId(r.group) === g.id && r.path !== "/openapi.json" && r.path !== "/postman.json");
   const extra = intro(g.id, base);
 
   return (

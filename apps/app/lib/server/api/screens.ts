@@ -3,7 +3,7 @@ import { apiGroups } from "../../docs/nav";
 import { signInHref } from "../../safe-next";
 import { apiUrl, docsUrl, mcpUrl } from "../../urls";
 import { listOwnedShops } from "../shops";
-import { currentKey, DEFAULT_MAX_OFFER_CENTS, defaultAgentAskFirst, maskedKey, MONTHLY_LIMIT, monthUsage } from "./keys";
+import { currentKey, DEFAULT_MAX_OFFER_CENTS, defaultAgentAskFirst, maskedKey, MONTHLY_LIMIT, monthUsage, openToken } from "./keys";
 import { keyClients, recentActivity, unnamed } from "./log";
 import { getWebhook, pendingDeliveries, webhookEvents } from "./webhooks";
 
@@ -38,7 +38,13 @@ export async function apiScreenData(userId: string) {
   ]);
   return {
     key: key
-      ? { masked: maskedKey(key), made: `Made ${day.format(key.createdAt)}`, lastUsed: key.lastUsedAt ? ago(key.lastUsedAt) : null }
+      ? {
+          masked: maskedKey(key),
+          // The full key, for Show and Copy; null for keys made before we kept them
+          token: openToken(key.tokenSealed),
+          made: `Made ${day.format(key.createdAt)}`,
+          lastUsed: key.lastUsedAt ? ago(key.lastUsedAt) : null,
+        }
       : null,
     usage: { used, limit: MONTHLY_LIMIT, resets: nextMonth() },
     apiBase: apiUrl(),
@@ -90,10 +96,13 @@ async function linkActivity(userId: string) {
 
 export async function agentScreenData(userId: string) {
   const [key, used, activity] = await Promise.all([currentKey(userId, "agent"), monthUsage(userId), linkActivity(userId)]);
+  const token = key ? openToken(key.tokenSealed) : null;
   return {
     link: key
       ? {
           masked: mcpUrl(`/u/${maskedKey(key)}`).replace(/^https?:\/\//, ""),
+          // The full links, for Show and Copy; null for links made before we kept them
+          full: token ? { seller: mcpUrl(`/u/${token}`), buyer: mcpUrl(`/buy/${token}`) } : null,
           made: `Made ${day.format(key.createdAt)}`,
           lastUsed: key.lastUsedAt ? ago(key.lastUsedAt) : null,
           scopes: key.scopes,
@@ -116,6 +125,7 @@ const bare = (url: string) => url.replace(/^https?:\/\//, "");
  */
 export async function buyerAgentData(userId: string | null) {
   const [key, shops] = userId ? await Promise.all([currentKey(userId, "agent"), listOwnedShops(userId)]) : [null, []];
+  const token = key ? openToken(key.tokenSealed) : null;
   return {
     signedIn: !!userId,
     signIn: signInHref("/agent"),
@@ -126,6 +136,7 @@ export async function buyerAgentData(userId: string | null) {
     link: key
       ? {
           masked: bare(mcpUrl(`/buy/${maskedKey(key)}`)),
+          full: token ? mcpUrl(`/buy/${token}`) : null,
           made: `Made ${day.format(key.createdAt)}`,
           lastUsed: key.lastUsedAt ? ago(key.lastUsedAt) : null,
         }

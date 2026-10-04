@@ -12,6 +12,12 @@ import { cn } from "@repo/ui/lib/utils";
  * Small pieces shared by the Tools screens (D1–D4).
  */
 
+/** "mcp.resell.store/u/maya-••••••x7Qa": an agent link with its secret hidden. */
+export function maskLink(url: string) {
+  const bare = url.replace(/^https?:\/\//, "");
+  return bare.replace(/([^/]+)$/, (t) => `${t.slice(0, t.indexOf("-") + 1)}${"•".repeat(6)}${t.slice(-4)}`);
+}
+
 /** Card holding a titled group of rows (connections, permissions, apps). */
 export function GroupCard({
   title,

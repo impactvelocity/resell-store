@@ -1,5 +1,5 @@
 import "server-only";
-import { createHash, randomBytes } from "node:crypto";
+import { createCipheriv, createDecipheriv, createHash, randomBytes } from "node:crypto";
 import {
   and,
   apiKey,
@@ -17,10 +17,11 @@ import {
 } from "@repo/db";
 
 /*
- * API keys (D3) and agent links (D2). A token is shown once, when it's made;
- * we keep its SHA-256 hash, the readable start and the last four characters.
- * Each person has at most one live key of each kind: making a new one revokes
- * the old one, which stops working at once.
+ * API keys (D3) and agent links (D2). We look a token up by its SHA-256 hash
+ * and keep it sealed (AES-256-GCM) so its owner can show and copy it again on
+ * D2, D3 and P7 instead of having to make a new one. Each person has at most
+ * one live key of each kind: making a new one revokes the old one, which
+ * stops working at once.
  */
 
 export type ApiKeyRow = typeof apiKey.$inferSelect;
@@ -62,6 +63,35 @@ export function hashToken(token: string) {
   return createHash("sha256").update(token).digest("hex");
 }
 
+/** The sealing key, from the auth secret, so a database copy alone can't read tokens. */
+function sealingKey() {
+  const secret = process.env.BETTER_AUTH_SECRET;
+  if (!secret) throw new Error("BETTER_AUTH_SECRET is needed to seal API keys.");
+  return createHash("sha256").update(`resell api_key v1:${secret}`).digest();
+}
+
+/** "v1.<iv>.<tag>.<ciphertext>", base64url. */
+export function sealToken(token: string) {
+  const iv = randomBytes(12);
+  const cipher = createCipheriv("aes-256-gcm", sealingKey(), iv);
+  const data = Buffer.concat([cipher.update(token, "utf8"), cipher.final()]);
+  return ["v1", iv, cipher.getAuthTag(), data].map((p) => (typeof p === "string" ? p : p.toString("base64url"))).join(".");
+}
+
+/** The token, or null when there's nothing sealed or it can't be opened (e.g. the auth secret changed). */
+export function openToken(sealed: string | null) {
+  if (!sealed) return null;
+  try {
+    const [v, iv, tag, data] = sealed.split(".");
+    if (v !== "v1" || !iv || !tag || !data) return null;
+    const decipher = createDecipheriv("aes-256-gcm", sealingKey(), Buffer.from(iv, "base64url"));
+    decipher.setAuthTag(Buffer.from(tag, "base64url"));
+    return Buffer.concat([decipher.update(Buffer.from(data, "base64url")), decipher.final()]).toString("utf8");
+  } catch {
+    return null;
+  }
+}
+
 /** "rs_live_…" for scripts; "maya-…" (the shop or name, then a secret) for agent links. */
 function mintToken(kind: ApiKeyKind, handle: string) {
   if (kind === "api") {
@@ -83,10 +113,7 @@ export async function currentKey(userId: string, kind: ApiKeyKind) {
   return row ?? null;
 }
 
-/**
- * Makes a new key of this kind and revokes any old one. Returns the row and
- * the token, which is never readable again.
- */
+/** Makes a new key of this kind and revokes any old one. Returns the row and the token. */
 export async function issueKey(input: {
   userId: string;
   kind: ApiKeyKind;
@@ -114,6 +141,7 @@ export async function issueKey(input: {
         kind: input.kind,
         name: input.kind === "api" ? "Secret key" : "Agent link",
         tokenHash: hashToken(token),
+        tokenSealed: sealToken(token),
         start,
         last4: token.slice(-4),
         scopes,

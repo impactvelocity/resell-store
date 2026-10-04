@@ -18,12 +18,13 @@ import { MiniSpinner, TextAction, useCopy } from "../tools/parts";
 import { ConfirmDialog } from "./confirm";
 
 /*
- * D3 API, live: the secret key (shown once, when it's made), this month's
+ * D3 API, live: the secret key (masked, with Show and Copy), this month's
  * requests, a request to try, what you can reach, and webhooks.
  */
 
 export type ApiScreenData = {
-  key: { masked: string; made: string; lastUsed: string | null } | null;
+  /** `token` is the full key, or null for one made before we kept keys to show again. */
+  key: { masked: string; token: string | null; made: string; lastUsed: string | null } | null;
   usage: { used: number; limit: number; resets: string };
   apiBase: string;
   docs: { home: string; groups: { title: string; href: string; blurb: string }[] };
@@ -86,9 +87,12 @@ function FreshSecret({ value, what, onDone }: { value: string; what: string; onD
 
 function KeyCard({ data, onToken }: { data: ApiScreenData; onToken: (token: string | null) => void }) {
   const toast = useToast();
+  const { copy, copied } = useCopy();
   const [fresh, setFresh] = useState<string | null>(null);
+  const [shown, setShown] = useState(false);
   const [busy, setBusy] = useState(false);
   const [confirm, setConfirm] = useState<"new" | "delete" | null>(null);
+  const token = fresh ?? data.key?.token ?? null;
 
   const make = async () => {
     setBusy(true);
@@ -99,6 +103,7 @@ function KeyCard({ data, onToken }: { data: ApiScreenData; onToken: (token: stri
       return;
     }
     setFresh(res.token);
+    setShown(true);
     onToken(res.token);
     toast.add({ title: data.key ? "New key made. The old one stopped working." : "Key made." });
   };
@@ -109,24 +114,35 @@ function KeyCard({ data, onToken }: { data: ApiScreenData; onToken: (token: stri
         <h2 className={title}>Your secret key</h2>
         {data.key && !fresh && <span className="text-sm text-text-muted">{data.key.made}</span>}
       </div>
-      {fresh ? (
-        <FreshSecret value={fresh} what="key" onDone={() => setFresh(null)} />
-      ) : data.key ? (
+      {data.key || fresh ? (
         <>
-          <div className="flex h-[52px] w-full items-center gap-3 rounded-full border-[1.5px] border-border bg-surface px-[18px] desk:h-14 desk:pl-5">
+          <div className="flex h-[52px] w-full items-center gap-2 rounded-full border-[1.5px] border-border bg-surface pr-1.5 pl-[18px] desk:h-14 desk:pl-5">
             <LockIcon size={16} strokeWidth={2.2} className="shrink-0 text-text-muted" />
-            <span className="min-w-0 truncate font-mono text-sm font-medium">{data.key.masked}</span>
+            <span className="min-w-0 flex-1 overflow-x-auto font-mono text-sm font-medium whitespace-nowrap [scrollbar-width:none]">
+              {shown && token ? token : token ? `rs_live_${"•".repeat(16)}${token.slice(-4)}` : data.key?.masked}
+            </span>
+            {token && (
+              <button
+                type="button"
+                onClick={() => copy("key", token, "Key copied.")}
+                className="flex h-9 shrink-0 cursor-pointer items-center rounded-full bg-primary px-3.5 text-sm font-bold text-on-primary transition-colors outline-none hover:bg-lemon-300 focus-visible:outline-2 focus-visible:outline-secondary desk:h-10 desk:px-4"
+              >
+                {copied === "key" ? "Copied" : "Copy"}
+              </button>
+            )}
           </div>
           <p className="text-sm text-text-muted">
-            {data.key.lastUsed ? `Last used ${data.key.lastUsed}. ` : "Not used yet. "}
-            We only keep a fingerprint of it, so it can&apos;t be shown again. Lost it? Make a new one.
+            {fresh ? "Made just now. " : data.key?.lastUsed ? `Last used ${data.key.lastUsed}. ` : "Not used yet. "}
+            {token
+              ? "You can show or copy it here any time."
+              : "This key was made before keys could be shown again. Make a new one to see it here."}
           </p>
         </>
       ) : (
         <div className="flex flex-col gap-3">
           <p className="text-sm text-text-muted">
-            A key lets your own code manage your shops: list things, answer offers, follow sales. It works like a password, so it&apos;s
-            only shown once.
+            A key lets your own code manage your shops: list things, answer offers, follow sales. It works like a password, so keep it
+            private.
           </p>
           <Button size="md" className="w-fit" onClick={make} disabled={busy}>
             {busy && <MiniSpinner />}
@@ -134,10 +150,11 @@ function KeyCard({ data, onToken }: { data: ApiScreenData; onToken: (token: stri
           </Button>
         </div>
       )}
-      {data.key && !fresh && (
+      {(data.key || fresh) && (
         <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-3">
           <p className="text-sm text-text-muted">Anyone who has it can manage your shops.</p>
           <div className="flex gap-5">
+            {token && <TextAction onClick={() => setShown((v) => !v)}>{shown ? "Hide key" : "Show key"}</TextAction>}
             <TextAction tone="danger" onClick={() => setConfirm("delete")}>
               Delete key
             </TextAction>
@@ -163,6 +180,8 @@ function KeyCard({ data, onToken }: { data: ApiScreenData; onToken: (token: stri
         danger
         onConfirm={async () => {
           await deleteApiKey();
+          setFresh(null);
+          setShown(false);
           onToken(null);
           toast.add({ title: "Key deleted. It doesn't work any more." });
         }}
@@ -197,9 +216,10 @@ function UsageCard({ usage }: { usage: ApiScreenData["usage"] }) {
 
 function CodeSample({ data, token }: { data: ApiScreenData; token: string | null }) {
   const { copy, copied } = useCopy();
-  const key = token ?? (data.key ? data.key.masked.replace(/•+/, "...") : "rs_live_...");
+  const masked = data.key ? data.key.masked.replace(/•+/, "...") : "rs_live_...";
   const shop = data.shop ?? "my-shop";
-  const sample = `curl ${data.apiBase}/listings \\
+  // On screen the key stays masked; Copy puts the real one in
+  const sample = (key: string) => `curl ${data.apiBase}/listings \\
   -H "Authorization: Bearer ${key}" \\
   -d shop="${shop}" \\
   -d title="Yellow dutch oven, 5.5 qt" \\
@@ -211,14 +231,14 @@ function CodeSample({ data, token }: { data: ApiScreenData; token: string | null
         <h2 className="min-w-0 flex-1 text-base font-bold text-on-secondary">List something with one request</h2>
         <button
           type="button"
-          onClick={() => copy("curl", sample, token ? "Copied, with your key in it." : "Copied. Swap in your key and run it.")}
+          onClick={() => copy("curl", sample(token ?? masked), token ? "Copied, with your key in it." : "Copied. Swap in your key and run it.")}
           className="flex h-8 shrink-0 cursor-pointer items-center rounded-full bg-on-secondary/14 px-3.5 text-sm font-bold text-on-secondary transition-colors outline-none hover:bg-on-secondary/24 focus-visible:outline-2 focus-visible:outline-primary"
         >
           {copied === "curl" ? "Copied" : "Copy"}
         </button>
       </div>
       <pre className="overflow-x-auto font-mono text-sm leading-6 text-lemon-300 [scrollbar-width:thin]">
-        <code>{sample}</code>
+        <code>{sample(masked)}</code>
       </pre>
       <p className="text-sm text-on-secondary/70">It makes a draft. Add <code className="text-lemon-300">-d publish=true</code> to put it live.</p>
     </section>
@@ -241,6 +261,65 @@ function EndpointsCard({ docs }: { docs: ApiScreenData["docs"] }) {
           <span className="min-w-0 flex-1 text-sm text-text-muted">{g.blurb}</span>
         </a>
       ))}
+    </section>
+  );
+}
+
+function PostmanCard({ apiBase, token }: { apiBase: string; token: string | null }) {
+  const toast = useToast();
+  const { copy, copied } = useCopy();
+  const [busy, setBusy] = useState(false);
+  const link = `${apiBase}/postman.json`;
+
+  const download = async () => {
+    setBusy(true);
+    try {
+      const res = await fetch(link);
+      if (!res.ok) throw new Error();
+      const collection = await res.json();
+      // Put the key in, so Postman works straight away
+      if (token) collection.variable = collection.variable.map((v: { key: string }) => (v.key === "apiKey" ? { ...v, value: token } : v));
+      const url = URL.createObjectURL(new Blob([JSON.stringify(collection, null, 2)], { type: "application/json" }));
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "resell-store.postman_collection.json";
+      a.click();
+      URL.revokeObjectURL(url);
+      toast.add({ title: token ? "Downloaded, with your key in it. Import it in Postman." : "Downloaded. Import it in Postman, then add your key." });
+    } catch {
+      toast.add({ title: "Couldn't get the collection. Try again." });
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  return (
+    <section className={card}>
+      <div className="flex flex-col gap-0.5">
+        <h2 className={title}>Use it in Postman</h2>
+        <p className="text-sm text-text-muted">
+          Every request, ready to send. In Postman, choose Import and drop in the file or paste the link.
+        </p>
+      </div>
+      <div className="flex flex-wrap items-center gap-x-5 gap-y-3">
+        <Button size="md" onClick={download} disabled={busy}>
+          {busy && <MiniSpinner />}
+          Download collection
+        </Button>
+        <TextAction onClick={() => copy("postman", link, "Copied. Paste it into Import in Postman.")}>
+          {copied === "postman" ? "Copied" : "Copy import link"}
+        </TextAction>
+      </div>
+      <p className="text-sm text-text-muted">
+        {token ? (
+          "Your key goes in the download, so it works as soon as it's imported. Keep the file private."
+        ) : (
+          <>
+            Make a key first to have it filled in, or put yours in the collection&apos;s{" "}
+            <code className="font-mono">apiKey</code> variable.
+          </>
+        )}
+      </p>
     </section>
   );
 }
@@ -386,7 +465,7 @@ function WebhooksCard({ data }: { data: ApiScreenData }) {
 }
 
 export function ApiLiveScreen({ data }: { data: ApiScreenData }) {
-  const [token, setToken] = useState<string | null>(null);
+  const [token, setToken] = useState<string | null>(data.key?.token ?? null);
   return (
     <>
       <MobileBackHeader title="API" backHref="/me" />
@@ -406,7 +485,7 @@ export function ApiLiveScreen({ data }: { data: ApiScreenData }) {
             <div className="order-2 desk:order-none">
               <UsageCard usage={data.usage} />
             </div>
-            <div className="order-5 desk:order-none">
+            <div className="order-6 desk:order-none">
               <WebhooksCard data={data} />
             </div>
           </div>
@@ -417,8 +496,11 @@ export function ApiLiveScreen({ data }: { data: ApiScreenData }) {
             <div className="order-4 desk:order-none">
               <EndpointsCard docs={data.docs} />
             </div>
+            <div className="order-5 desk:order-none">
+              <PostmanCard apiBase={data.apiBase} token={token} />
+            </div>
           </div>
-          <div className="order-6 desk:hidden">
+          <div className="order-7 desk:hidden">
             <ReadTheDocs href={data.docs.home} className="h-[52px] w-full" />
           </div>
         </div>

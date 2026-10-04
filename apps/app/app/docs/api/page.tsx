@@ -30,8 +30,8 @@ export default async function ApiIntro() {
       </H2>
       <OL>
         <li>
-          Make a secret key on <A href={siteUrl("/tools/api")}>resell.store/tools/api</A>. It&apos;s shown once, so copy it somewhere
-          safe.
+          Make a secret key on <A href={siteUrl("/tools/api")}>resell.store/tools/api</A>. Copy it from there whenever you need
+          it, and keep it out of public code.
         </li>
         <li>Check it works:</li>
       </OL>
@@ -81,8 +81,9 @@ export default async function ApiIntro() {
 
       <H2 id="reference">Reference</H2>
       <P>
-        Prefer a machine-readable description? <A href={`${api}/openapi.json`}>openapi.json</A> works with Postman, Insomnia and code
-        generators.
+        Prefer a machine-readable description? <A href={`${api}/openapi.json`}>openapi.json</A> works with Insomnia and code generators. For Postman,
+        import <A href={`${api}/postman.json`}>postman.json</A>: every request is ready, and you set your key once in the <C>apiKey</C>{" "}
+        variable.
       </P>
       <CardGrid>
         {apiGroups.map((g) => (

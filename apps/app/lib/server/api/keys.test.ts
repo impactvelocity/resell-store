@@ -15,6 +15,8 @@ import {
   maskedKey,
   monthUsage,
   MONTHLY_LIMIT,
+  openToken,
+  sealToken,
   revokeKey,
   setAgentPermissions,
   touchKey,
@@ -22,8 +24,8 @@ import {
 } from "./keys";
 
 /*
- * API keys and agent links: the token is shown once and only its SHA-256 is
- * stored, one live key per kind, scopes and "Ask me first", revoking, and the
+ * API keys and agent links: looked up by SHA-256, kept sealed so the owner
+ * can see them again, one live key per kind, scopes and "Ask me first", revoking, and the
  * monthly request counter behind the 10k limit.
  */
 
@@ -31,8 +33,35 @@ beforeEach(async () => {
   await resetDb();
 });
 
+describe("sealToken / openToken", () => {
+  it("opens what it sealed, with a fresh IV each time", () => {
+    const a = sealToken("rs_live_abc");
+    const b = sealToken("rs_live_abc");
+    expect(a).not.toBe(b);
+    expect(openToken(a)).toBe("rs_live_abc");
+    expect(openToken(b)).toBe("rs_live_abc");
+  });
+
+  it("gives null for nothing, junk, tampering or a different auth secret", () => {
+    const sealed = sealToken("rs_live_abc");
+    expect(openToken(null)).toBeNull();
+    expect(openToken("nope")).toBeNull();
+    const parts = sealed.split(".");
+    parts[3] = Buffer.from("rs_live_xyz").toString("base64url");
+    expect(openToken(parts.join("."))).toBeNull();
+
+    const before = process.env.BETTER_AUTH_SECRET;
+    process.env.BETTER_AUTH_SECRET = "another-secret-another-secret";
+    try {
+      expect(openToken(sealed)).toBeNull();
+    } finally {
+      process.env.BETTER_AUTH_SECRET = before;
+    }
+  });
+});
+
 describe("issueKey", () => {
-  it("returns an rs_live_ token once and stores only its SHA-256 hash", async () => {
+  it("returns an rs_live_ token and stores its SHA-256 hash and a sealed copy, never the token itself", async () => {
     const maya = await createUser();
     const { row, token } = await issueKey({ userId: maya.id, kind: "api", handle: "maya" });
 
@@ -43,9 +72,10 @@ describe("issueKey", () => {
     expect(row.last4).toBe(token.slice(-4));
     expect(row.name).toBe("Secret key");
 
-    // The token itself is nowhere in the stored row
+    // The token itself is nowhere in the stored row, but the owner's screen can open the sealed copy
     const [stored] = await db.select().from(apiKey).where(eq(apiKey.id, row.id));
     expect(JSON.stringify(stored)).not.toContain(token);
+    expect(openToken(stored!.tokenSealed)).toBe(token);
   });
 
   it("gives a secret key every scope and nothing to ask first", async () => {

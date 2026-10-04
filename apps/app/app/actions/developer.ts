@@ -20,7 +20,8 @@ import { mcpUrl } from "../../lib/urls";
 /*
  * D2 Your agent, P7 For your agent and D3 API: keys, the agent link, what it
  * may do, webhooks.
- * Tokens come back once, from the action that made them, and never again.
+ * The screens can show tokens again (keys.ts keeps them sealed); the action that
+ * makes one also returns it, so it's on screen before the page data refreshes.
  */
 
 type Result<T = object> = ({ ok: true } & T) | { ok: false; error: string };

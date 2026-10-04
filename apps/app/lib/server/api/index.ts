@@ -1,6 +1,7 @@
 import "server-only";
 import { z } from "zod";
 import { apiUrl } from "../../urls";
+import { postmanCollection } from "./postman";
 import { createRouter, route, type RouteDef } from "./router";
 import { accountRoutes } from "./routes/account";
 import { afterSaleRoutes } from "./routes/after-sale";
@@ -29,6 +30,16 @@ const openapiRoute = route({
   handler: async () => openapi(),
 });
 
+const postmanRoute = route({
+  method: "GET",
+  path: "/postman.json",
+  group: "Account",
+  access: "public",
+  summary: "Postman collection",
+  description: "This API as a Postman collection. In Postman, choose Import and paste this address.",
+  handler: async () => postmanCollection(apiRoutes),
+});
+
 export const apiRoutes: RouteDef[] = [
   ...accountRoutes,
   ...shopRoutes,
@@ -42,6 +53,7 @@ export const apiRoutes: RouteDef[] = [
   ...webhookRoutes,
   ...marketRoutes,
   openapiRoute,
+  postmanRoute,
 ];
 
 export const handleApiRequest = createRouter(apiRoutes);

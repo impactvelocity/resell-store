@@ -120,8 +120,9 @@ export default async function ApiInternals() {
 
       <H2 id="keys">Keys and limits</H2>
       <P>
-        Keys live in <C>api_key</C> (<C>lib/server/api/keys.ts</C>). A token is shown once, when it&apos;s made; we keep its SHA-256
-        hash, the readable start and the last four characters. Each person has at most one live key of each kind, and making a new
+        Keys live in <C>api_key</C> (<C>lib/server/api/keys.ts</C>). Requests are matched by the token&apos;s SHA-256 hash. The token
+        itself is kept sealed with AES-256-GCM (<C>token_sealed</C>, keyed from <C>BETTER_AUTH_SECRET</C>) so its owner can show and
+        copy it again; the readable start and last four characters label it. Each person has at most one live key of each kind, and making a new
         one revokes the old one at once.
       </P>
       <Table

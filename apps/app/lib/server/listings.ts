@@ -34,7 +34,8 @@ export function furthestStep(a: ListingStep, b: ListingStep) {
 
 /** A short name for a draft from what the seller typed: "Le Creuset dutch oven". */
 export function draftName(prompt: string) {
-  const first = prompt.split(/[.!?\n]/)[0]!.trim();
+  // A sentence ends at punctuation followed by a space, so "5.5 qt" stays whole.
+  const first = prompt.split(/[.!?](?=\s|$)|\n/)[0]!.trim();
   return first.length > 60 ? `${first.slice(0, 57).trimEnd()}…` : first;
 }
 

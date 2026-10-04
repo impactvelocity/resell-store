@@ -42,7 +42,7 @@ export default async function Authentication() {
         everything you can do in the app, apart from changing where your money goes, which only you can do, signed in.
       </P>
       <UL>
-        <li>We show a key once, when it&apos;s made. We only keep a fingerprint of it, so we can&apos;t show it again.</li>
+        <li>Your key stays on that page, hidden until you choose Show. Copy it from there whenever you need it.</li>
         <li>You have one secret key at a time. Making a new one stops the old one straight away.</li>
         <li>Requests made with it count towards your monthly limit (see <A href={`${base}/api/errors`}>Errors and limits</A>).</li>
       </UL>

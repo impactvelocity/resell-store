@@ -8,6 +8,7 @@ import { cn } from "@repo/ui/lib/utils";
 import { makeAgentLink, setShoppingLimits } from "../../../app/actions/developer";
 import type { BuyerAgentData } from "../../../lib/server/api/screens";
 import { ConfirmDialog } from "../../tools-live/confirm";
+import { maskLink } from "../../tools/parts";
 import { AgentAbilities } from "./abilities";
 import { Mark } from "./assistants";
 import { AgentHero } from "./hero";
@@ -81,17 +82,16 @@ function Connect({
   data,
   fresh,
   onMade,
-  onDone,
 }: {
   data: BuyerAgentData;
   fresh: string | null;
   onMade: (link: string) => void;
-  onDone: () => void;
 }) {
   const toast = useToast();
   const { copy, copied } = useCopyText();
   const [busy, setBusy] = useState(false);
   const [confirm, setConfirm] = useState(false);
+  const [shown, setShown] = useState(false);
 
   const make = async () => {
     setBusy(true);
@@ -102,7 +102,7 @@ function Connect({
       return;
     }
     onMade(res.buyer);
-    toast.add({ title: data.link ? "New link made. The old one stopped working." : "Link made. Copy it now." });
+    toast.add({ title: data.link ? "New link made. The old one stopped working." : "Link made. Copy it into your assistant." });
   };
 
   if (!data.signedIn) {
@@ -128,42 +128,40 @@ function Connect({
     );
   }
 
-  if (fresh) {
-    return (
-      <div className="flex max-w-[620px] flex-col gap-3 pt-2">
-        <p className="rounded-lg bg-lemon-100 px-4 py-3 text-sm font-semibold text-leaf-900">
-          Copy your link now. It&apos;s a key to your account, so it&apos;s only shown once.
-        </p>
-        <div className="flex flex-col gap-2.5 sm:flex-row">
-          <div className="flex h-14 min-w-0 flex-1 items-center rounded-full border border-public-border px-5">
-            <span className="min-w-0 overflow-x-auto font-mono text-sm font-medium whitespace-nowrap [scrollbar-width:none]">{fresh}</span>
-          </div>
-          <button type="button" className={primary} onClick={() => copy("fresh", fresh, "Link copied. Paste it in your assistant.")}>
-            {copied === "fresh" ? <CheckIcon size={18} strokeWidth={2.4} /> : <CopyIcon size={18} strokeWidth={2.2} />}
-            {copied === "fresh" ? "Copied" : "Copy link"}
-          </button>
-        </div>
-        <button type="button" onClick={onDone} className={linkText}>
-          I&apos;ve added it
-        </button>
-      </div>
-    );
-  }
-
-  if (data.link) {
+  if (fresh || data.link) {
+    const link = fresh ?? data.link?.full ?? null;
     return (
       <div className="flex max-w-[620px] flex-col gap-2.5 pt-2">
         <div className="text-sm font-bold text-text">Your shopping link</div>
-        <div className="flex h-14 min-w-0 items-center rounded-full border border-public-border px-5">
-          <span className="min-w-0 truncate font-mono text-sm font-medium">{data.link.masked}</span>
+        <div className="flex flex-col gap-2.5 sm:flex-row">
+          <div className="flex h-14 min-w-0 flex-1 items-center rounded-full border border-public-border px-5">
+            <span className="min-w-0 overflow-x-auto font-mono text-sm font-medium whitespace-nowrap [scrollbar-width:none]">
+              {link ? (shown ? link : maskLink(link)) : data.link?.masked}
+            </span>
+          </div>
+          {link && (
+            <button type="button" className={primary} onClick={() => copy("link", link, "Link copied. Paste it in your assistant.")}>
+              {copied === "link" ? <CheckIcon size={18} strokeWidth={2.4} /> : <CopyIcon size={18} strokeWidth={2.2} />}
+              {copied === "link" ? "Copied" : "Copy link"}
+            </button>
+          )}
         </div>
         <p className="text-sm text-public-text-muted">
-          {data.link.made}. {data.link.lastUsed ? `Last used ${data.link.lastUsed}.` : "Not used yet."} It was only shown once. Need it
-          again? Make a new one.
+          {fresh ? "Made just now." : `${data.link!.made}. ${data.link!.lastUsed ? `Last used ${data.link!.lastUsed}.` : "Not used yet."}`}{" "}
+          {link
+            ? "It works like a password for shopping as you, so only paste it into assistants you trust."
+            : "It was made before links could be shown again. Make a new one to see it here."}
         </p>
-        <button type="button" onClick={() => setConfirm(true)} className={linkText}>
-          Make a new link
-        </button>
+        <div className="flex gap-5">
+          {link && (
+            <button type="button" onClick={() => setShown((v) => !v)} className={linkText}>
+              {shown ? "Hide" : "Show"}
+            </button>
+          )}
+          <button type="button" onClick={() => setConfirm(true)} className={linkText}>
+            Make a new link
+          </button>
+        </div>
         <ConfirmDialog
           open={confirm}
           onOpenChange={setConfirm}
@@ -197,7 +195,8 @@ function Connect({
 
 function Assistants({ data, fresh }: { data: BuyerAgentData; fresh: string | null }) {
   const { copy, copied } = useCopyText();
-  const link = fresh ?? data.browseLink;
+  const own = fresh ?? data.link?.full ?? null;
+  const link = own ?? data.browseLink;
   return (
     <section id="assistants" className="flex scroll-mt-24 flex-col gap-6 pb-14 desk:gap-8 desk:pb-[72px]">
       <div className="flex flex-col gap-2 border-t border-public-border pt-10 sm:flex-row sm:items-baseline sm:justify-between sm:gap-6 desk:pt-14">
@@ -227,8 +226,8 @@ function Assistants({ data, fresh }: { data: BuyerAgentData; fresh: string | nul
       <div className="flex flex-col gap-2">
         <div className="flex items-center justify-between gap-4 rounded-lg bg-public-photo py-4 pr-4 pl-5 desk:gap-6 desk:py-5 desk:pr-5 desk:pl-7">
           <div className="flex min-w-0 flex-col gap-0.5 sm:flex-row sm:items-baseline sm:gap-5">
-            <span className="shrink-0 text-sm font-semibold text-public-text-muted">{fresh ? "Your shopping link" : "Browse-only link"}</span>
-            <span className="truncate text-base font-semibold text-text desk:text-lg">{link.replace(/^https?:\/\//, "")}</span>
+            <span className="shrink-0 text-sm font-semibold text-public-text-muted">{own ? "Your shopping link" : "Browse-only link"}</span>
+            <span className="truncate text-base font-semibold text-text desk:text-lg">{own ? maskLink(own) : link.replace(/^https?:\/\//, "")}</span>
           </div>
           <button
             type="button"
@@ -313,7 +312,7 @@ function Purse({ data, enabled }: { data: BuyerAgentData; enabled: boolean }) {
 }
 
 export function AgentLive({ data }: { data: BuyerAgentData }) {
-  // The new link, for as long as it's on screen; it's never readable again
+  // The new link, until the page data catches up
   const [fresh, setFresh] = useState<string | null>(null);
   const [made, setMade] = useState(false);
   return (
@@ -327,7 +326,6 @@ export function AgentLive({ data }: { data: BuyerAgentData }) {
               setFresh(link);
               setMade(true);
             }}
-            onDone={() => setFresh(null)}
           />
         }
       />

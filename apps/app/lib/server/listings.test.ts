@@ -64,6 +64,7 @@ describe("draftName and createDraft", () => {
   it("names a draft from the first sentence of what the seller typed", () => {
     expect(L.draftName("Le Creuset dutch oven. Barely used!")).toBe("Le Creuset dutch oven");
     expect(L.draftName("  Boots\nsize 9")).toBe("Boots");
+    expect(L.draftName("Yellow dutch oven, 5.5 qt")).toBe("Yellow dutch oven, 5.5 qt");
     const long = L.draftName("a ".repeat(50));
     expect(long.length).toBeLessThanOrEqual(58);
     expect(long.endsWith("…")).toBe(true);
@@ -72,7 +73,7 @@ describe("draftName and createDraft", () => {
   it("creates a draft at the research step", async () => {
     const { shop } = await seller();
     const row = await L.createDraft({ shopId: shop.id, prompt: "Yellow dutch oven, 5.5 qt. Used twice." });
-    expect(row).toMatchObject({ status: "draft", step: "research", name: "Yellow dutch oven, 5", slug: null, visibility: "everyone" });
+    expect(row).toMatchObject({ status: "draft", step: "research", name: "Yellow dutch oven, 5.5 qt", slug: null, visibility: "everyone" });
     expect((await L.createDraft({ shopId: shop.id, prompt: "  " })).name).toBe("New listing");
   });
 });

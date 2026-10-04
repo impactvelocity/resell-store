@@ -458,6 +458,29 @@ describe("checkout link", () => {
   });
 });
 
+describe("/postman.json", () => {
+  it("is served without a key, has a request for every route and sends {{apiKey}} as the bearer", async () => {
+    const res = await api("GET", "/postman.json");
+    expect(res.status).toBe(200);
+    const doc = res.body;
+    expect(doc.info.schema).toBe("https://schema.getpostman.com/json/collection/v2.1.0/collection.json");
+    expect(doc.auth).toEqual({ type: "bearer", bearer: [{ key: "token", value: "{{apiKey}}", type: "string" }] });
+    expect(doc.variable.find((v: { key: string }) => v.key === "baseUrl").value).toMatch(/^https?:\/\/.*\/v1$/);
+
+    const requests = doc.item.flatMap((f: { item: { request: { method: string; url: { path: string[] } } }[] }) => f.item.map((i) => i.request));
+    const seen = new Set(requests.map((r: { method: string; url: { path: string[] } }) => `${r.method} /${r.url.path.join("/")}`));
+    for (const r of apiRoutes) {
+      if (r.path === "/openapi.json" || r.path === "/postman.json") continue;
+      expect(seen.has(`${r.method} ${r.path}`), `${r.method} ${r.path}`).toBe(true);
+    }
+
+    const create = requests.find((r: { method: string; url: { raw: string } }) => r.method === "POST" && r.url.raw === "{{baseUrl}}/listings");
+    expect(JSON.parse(create.body.raw)).toMatchObject({ title: expect.any(String), price: expect.any(Number) });
+    const confirm = requests.find((r: { url: { raw: string } }) => r.url.raw === "{{baseUrl}}/orders/:id/confirm");
+    expect(confirm.url.variable).toEqual([{ key: "id", value: "", description: "The id." }]);
+  });
+});
+
 describe("/openapi.json", () => {
   it("is served without a key and describes every route", async () => {
     const res = await api("GET", "/openapi.json");

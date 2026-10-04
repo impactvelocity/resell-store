@@ -874,8 +874,10 @@ export type ApiScope =
 export type ApiKeyKind = "api" | "agent";
 
 /**
- * Keys are shown once and stored as a SHA-256 hash; `start` and `last4` are
- * kept so the screens can show which key it is. Revoked keys stay for the record.
+ * Keys are looked up by their SHA-256 hash; `start` and `last4` are kept so
+ * the screens can show which key it is, and `tokenSealed` (AES-GCM, see
+ * apps/app lib/server/api/keys.ts) so the owner can see and copy it again.
+ * Revoked keys stay for the record.
  */
 export const apiKey = pgTable(
   "api_key",
@@ -887,6 +889,8 @@ export const apiKey = pgTable(
     kind: text("kind").$type<ApiKeyKind>().notNull(),
     name: text("name").notNull(),
     tokenHash: text("token_hash").notNull(),
+    /** The token, encrypted, so its owner can show it again. Null for keys made before 0017. */
+    tokenSealed: text("token_sealed"),
     /** The readable front of the key: "rs_live_" or "maya-". */
     start: text("start").notNull(),
     last4: text("last4").notNull(),

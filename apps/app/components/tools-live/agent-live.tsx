@@ -14,6 +14,7 @@ import {
   GroupRow,
   LetterTile,
   LockedPill,
+  maskLink,
   MiniSpinner,
   StatusPill,
   StepNumber,
@@ -24,8 +25,8 @@ import {
 import { ConfirmDialog } from "./confirm";
 
 /*
- * D2 Connect your agent, live. The private link is an agent key: shown in
- * full once, when it's made (we keep only a fingerprint), then masked. What it
+ * D2 Connect your agent, live. The private link is an agent key: masked,
+ * with Show and Copy (keys.ts keeps it sealed so it can be shown again). What it
  * may do is saved on the key and enforced by the API; "Ask me first" makes
  * the MCP server check with the owner before consequential actions.
  */
@@ -37,6 +38,8 @@ export type AgentScreenData = {
     lastUsed: string | null;
     scopes: string[];
     askFirst: string[];
+    /** The full links, or null for one made before we kept links to show again. */
+    full: { seller: string; buyer: string } | null;
   } | null;
   publicShopping: string;
   docs: { home: string; connect: string; seller: string; buyer: string };
@@ -74,14 +77,16 @@ function rulesFrom(link: AgentScreenData["link"]): Record<string, Rule> {
   );
 }
 
-function CopyRow({ label, value, copyKey }: { label: string; value: string; copyKey: string }) {
+function CopyRow({ label, value, shown, copyKey }: { label: string; value: string; shown: boolean; copyKey: string }) {
   const { copy, copied } = useCopy();
   return (
     <div className="flex flex-col gap-1.5">
       <div className="text-sm font-bold text-on-secondary">{label}</div>
       <div className="flex w-full flex-col gap-2.5 desk:flex-row desk:gap-2">
         <div className="flex h-14 min-w-0 flex-1 items-center rounded-full bg-surface px-[18px] desk:px-5">
-          <span className="min-w-0 overflow-x-auto font-mono text-sm font-medium whitespace-nowrap [scrollbar-width:none]">{value}</span>
+          <span className="min-w-0 overflow-x-auto font-mono text-sm font-medium whitespace-nowrap [scrollbar-width:none]">
+            {shown ? value : maskLink(value)}
+          </span>
         </div>
         <Button className="w-full gap-2 desk:w-auto desk:px-6" onClick={() => copy(copyKey, value, "Link copied. Paste it in your AI app.")}>
           {copied === copyKey ? <CheckIcon size={18} strokeWidth={2.4} /> : <CopyIcon size={18} strokeWidth={2.2} />}
@@ -92,11 +97,15 @@ function CopyRow({ label, value, copyKey }: { label: string; value: string; copy
   );
 }
 
+const heroLink = "w-fit cursor-pointer text-sm font-bold underline decoration-1 underline-offset-2 hover:decoration-2";
+
 function Hero({ data, onMade }: { data: AgentScreenData; onMade: () => void }) {
   const toast = useToast();
   const [fresh, setFresh] = useState<{ seller: string; buyer: string } | null>(null);
+  const [shown, setShown] = useState(false);
   const [busy, setBusy] = useState(false);
   const [confirm, setConfirm] = useState<"new" | "delete" | null>(null);
+  const links = fresh ?? data.link?.full ?? null;
 
   const make = async () => {
     setBusy(true);
@@ -108,7 +117,7 @@ function Hero({ data, onMade }: { data: AgentScreenData; onMade: () => void }) {
     }
     setFresh({ seller: res.seller, buyer: res.buyer });
     onMade();
-    toast.add({ title: data.link ? "New link made. The old one stopped working." : "Link made. Copy it now." });
+    toast.add({ title: data.link ? "New link made. The old one stopped working." : "Link made. Copy it into your AI app." });
   };
 
   return (
@@ -124,41 +133,38 @@ function Hero({ data, onMade }: { data: AgentScreenData; onMade: () => void }) {
         </p>
       </div>
 
-      {fresh ? (
-        <div className="flex flex-col gap-4">
-          <p className="rounded-lg bg-primary-soft px-4 py-3 text-sm font-bold text-text">
-            Copy your link now. For your safety it&apos;s only shown once; after this you&apos;d make a new one.
-          </p>
-          <CopyRow label="Your shops" value={fresh.seller} copyKey="seller" />
-          <CopyRow label="Shopping, as you" value={fresh.buyer} copyKey="buyer" />
-          <TextAction className="w-fit text-on-secondary" onClick={() => setFresh(null)}>
-            I&apos;ve added it
-          </TextAction>
-        </div>
-      ) : data.link ? (
-        <div className="flex w-full flex-col gap-2.5">
-          <div className="text-sm font-bold text-on-secondary">Your private link</div>
-          <div className="flex h-14 min-w-0 items-center rounded-full bg-surface px-[18px] desk:px-5">
-            <span className="min-w-0 truncate font-mono text-sm font-medium">{data.link.masked}</span>
-          </div>
+      {data.link || fresh ? (
+        <div className="flex w-full flex-col gap-4">
+          {links ? (
+            <>
+              <CopyRow label="Your shops" value={links.seller} shown={shown} copyKey="seller" />
+              <CopyRow label="Shopping, as you" value={links.buyer} shown={shown} copyKey="buyer" />
+            </>
+          ) : (
+            <div className="flex flex-col gap-1.5">
+              <div className="text-sm font-bold text-on-secondary">Your private link</div>
+              <div className="flex h-14 min-w-0 items-center rounded-full bg-surface px-[18px] desk:px-5">
+                <span className="min-w-0 truncate font-mono text-sm font-medium">{data.link?.masked}</span>
+              </div>
+            </div>
+          )}
           <div className="flex flex-col gap-2.5 desk:flex-row desk:items-center desk:justify-between desk:gap-4">
             <p className="text-sm text-leaf-100">
-              {data.link.made}. {data.link.lastUsed ? `Last used ${data.link.lastUsed}.` : "Not used yet."} It&apos;s a key to your
-              account, so it was only shown once. Need it again? Make a new one.
+              {fresh ? "Made just now." : `${data.link!.made}. ${data.link!.lastUsed ? `Last used ${data.link!.lastUsed}.` : "Not used yet."}`}{" "}
+              {links
+                ? "It works like a password for your shop, so only paste it into apps you trust."
+                : "It was made before links could be shown again. Make a new one to see it here."}
             </p>
             <div className="flex shrink-0 gap-5">
-              <button
-                type="button"
-                onClick={() => setConfirm("delete")}
-                className="w-fit cursor-pointer text-sm font-bold text-leaf-100 underline decoration-1 underline-offset-2 hover:decoration-2"
-              >
+              {links && (
+                <button type="button" onClick={() => setShown((v) => !v)} className={cn(heroLink, "text-on-secondary")}>
+                  {shown ? "Hide" : "Show"}
+                </button>
+              )}
+              <button type="button" onClick={() => setConfirm("delete")} className={cn(heroLink, "text-leaf-100")}>
                 Turn off
               </button>
-              <button
-                type="button"
-                onClick={() => setConfirm("new")}
-                className="w-fit cursor-pointer text-sm font-bold text-on-secondary underline decoration-1 underline-offset-2 hover:decoration-2"
-              >
+              <button type="button" onClick={() => setConfirm("new")} className={cn(heroLink, "text-on-secondary")}>
                 Make a new link
               </button>
             </div>
@@ -192,6 +198,7 @@ function Hero({ data, onMade }: { data: AgentScreenData; onMade: () => void }) {
         danger
         onConfirm={async () => {
           await deleteAgentLink();
+          setFresh(null);
           toast.add({ title: "Link turned off. No AI app can use it now." });
         }}
       />
@@ -435,6 +442,7 @@ export function AgentLiveScreen({ data }: { data: AgentScreenData }) {
           lastUsed: null,
           scopes: ["read", "listings", "messages", "offers", "orders", "buying"],
           askFirst: ["offers", "buying"],
+          full: null,
         },
       }
     : data;

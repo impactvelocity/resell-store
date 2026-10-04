@@ -68,9 +68,9 @@ export default async function YourAgent() {
           Shoppers: go to <A href={siteUrl("/agent")}>For your agent</A> and tap <strong>Make my shopping link</strong>.
         </li>
       </UL>
-      <Callout tone="warn" title="It's shown once, and it works like a password">
-        Copy it the moment it appears. We can&apos;t show it again, and anyone who has it can act as you within the rules below.
-        Only you should have it.
+      <Callout tone="warn" title="It works like a password">
+        It stays hidden on the page until you tap Show, and Copy always gives you the whole link. Anyone who has it can act as you
+        within the rules below, so only paste it into apps you trust. Think it got out? Make a new one and the old one stops working.
       </Callout>
       <OL>
         <li>Copy your link.</li>
