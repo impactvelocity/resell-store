@@ -80,6 +80,17 @@ describe("guards", () => {
   });
 });
 
+describe("marketplace during the demo", () => {
+  it("keeps new stores off it, but leaves link-only, private and already-public stores alone", () => {
+    expect(demo.demoPublicBlocked("public")).toBe(demo.demoMessages.public);
+    expect(demo.demoPublicBlocked("public", "link")).toBe(demo.demoMessages.public);
+    expect(demo.demoPublicBlocked("link")).toBeNull();
+    expect(demo.demoPublicBlocked("private", "public")).toBeNull();
+    expect(demo.demoPublicBlocked("public", "public")).toBeNull();
+    expect(demo.demoPublicBlocked(undefined, "link")).toBeNull();
+  });
+});
+
 describe("resetDemo", () => {
   it("removes what the demo added and puts back what it bought", async () => {
     const w = await world();

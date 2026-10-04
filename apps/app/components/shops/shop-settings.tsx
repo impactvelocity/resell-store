@@ -42,6 +42,8 @@ export type ShopSettingsLive = {
   /** The uploaded picture's URL. */
   picture: string | null;
   paused: boolean;
+  /** DEMO=true: no "Everyone" option unless the shop is already on the marketplace. */
+  noPublic?: boolean;
 };
 
 type Settings = {
@@ -320,6 +322,7 @@ export function ShopSettings({ shop, live }: { shop: Shop; live?: ShopSettingsLi
       label="Who can see it"
       value={s.visibility}
       onChange={(v) => set("visibility", v)}
+      noPublic={live?.noPublic && saved.visibility !== "public"}
     />
   );
 

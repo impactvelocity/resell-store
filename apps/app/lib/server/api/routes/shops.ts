@@ -1,6 +1,7 @@
 import "server-only";
 import { z } from "zod";
 import { and, db, eq, shop } from "@repo/db";
+import { demoEnabled, demoPublicBlocked } from "../../demo";
 import { deleteFiles } from "../../files";
 import { checkSlug, getOwnedShop, listOwnedShops, shopFileIds } from "../../shops";
 import { shopMiniStats } from "../../stats";
@@ -98,6 +99,8 @@ export const shopRoutes = [
       response: { ...shopExample, slug: "maya-kitchen", name: "Maya's kitchen", url: "https://maya-kitchen.resell.store" },
     },
     handler: async ({ auth, body }) => {
+      // The default is public, so a client that didn't ask gets link-only during the demo
+      const visibility = demoEnabled && body.visibility === "public" ? "link" : body.visibility;
       const link = await checkSlug(body.slug);
       if (link !== "free") throw new ApiError("invalid_request", slugError[link], "slug");
       try {
@@ -110,7 +113,7 @@ export const shopRoutes = [
             category: body.category || null,
             about: body.about || null,
             tone: body.tone,
-            visibility: body.visibility,
+            visibility,
           })
           .returning();
         return apiShop(row!);
@@ -165,6 +168,8 @@ export const shopRoutes = [
     },
     handler: async ({ auth, params, body }) => {
       const row = await ownedShop(auth!.user.id, params.slug!);
+      const closed = demoPublicBlocked(body.visibility, row.visibility);
+      if (closed) throw new ApiError("invalid_request", closed, "visibility");
       if (body.slug && body.slug !== row.slug) {
         const link = await checkSlug(body.slug, row.id);
         if (link !== "free") throw new ApiError("invalid_request", slugError[link], "slug");

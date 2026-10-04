@@ -1,4 +1,5 @@
 import { CreateShop } from "../../../../components/shops/create-shop";
+import { demoEnabled } from "../../../../lib/server/demo";
 import { requireUser } from "../../../../lib/server/session";
 import { listOwnedShops } from "../../../../lib/server/shops";
 
@@ -14,6 +15,7 @@ export default async function Page() {
         suggestedName: firstShop && firstName ? `${firstName}'s shop` : "",
         firstShop,
         backHref: shops[0] ? `/shops/${shops[0].slug}` : "/home?mode=selling",
+        noPublic: demoEnabled,
       }}
     />
   );

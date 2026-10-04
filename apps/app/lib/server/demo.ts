@@ -83,6 +83,7 @@ export const demoMessages = {
   trade: "The demo account can only shop at the example stores.",
   connect: "The demo account can't connect other accounts. Sign up with your email to connect yours.",
   keys: "The demo account can't make API keys or agent links. Sign up with your email to get your own.",
+  public: "The marketplace is closed to new stores during the demo. Pick “Anyone with the link” and share it yourself.",
 } as const;
 
 export type DemoBlock = keyof typeof demoMessages;
@@ -101,6 +102,15 @@ export class DemoBlockedError extends Error {
 /** Throws a DemoBlockedError for a demo account. */
 export function assertNotDemo(person: { email: string } | null | undefined, what: DemoBlock) {
   if (isDemoUser(person)) throw new DemoBlockedError(what);
+}
+
+/**
+ * While the demo is on, accounts made during it can't put a store on the
+ * marketplace (only the example stores are there). Link-only and private
+ * stores are fine. A store already public stays public.
+ */
+export function demoPublicBlocked(next: string | undefined, current?: string) {
+  return demoEnabled && next === "public" && current !== "public" ? demoMessages.public : null;
 }
 
 /* Baseline ----------------------------------------------------------------- */

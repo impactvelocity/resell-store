@@ -5,7 +5,7 @@ import { redirect } from "next/navigation";
 import { z } from "zod";
 import { and, asc, db, eq, ne, shop } from "@repo/db";
 import { deleteFiles, saveUpload, UploadError } from "../../lib/server/files";
-import { demoBlocked } from "../../lib/server/demo";
+import { demoBlocked, demoPublicBlocked } from "../../lib/server/demo";
 import { requireUser } from "../../lib/server/session";
 import { checkSlug, getOwnedShop, shopFileIds, shopPicture } from "../../lib/server/shops";
 
@@ -62,6 +62,8 @@ export async function createShop(form: FormData): Promise<{ error: string }> {
   const parsed = createSchema.safeParse(Object.fromEntries(form));
   if (!parsed.success) return { error: parsed.error.issues[0]!.message };
   const input = parsed.data;
+  const closed = demoPublicBlocked(input.visibility);
+  if (closed) return { error: closed };
 
   const link = await checkSlug(input.slug);
   if (link !== "free") return { error: linkError[link] };
@@ -122,6 +124,8 @@ export async function updateShop(
   const parsed = settingsSchema.safeParse(Object.fromEntries(form));
   if (!parsed.success) return { error: parsed.error.issues[0]!.message };
   const input = parsed.data;
+  const closed = demoPublicBlocked(input.visibility, row.visibility);
+  if (closed) return { error: closed };
 
   if (input.slug !== row.slug) {
     const link = await checkSlug(input.slug, row.id);

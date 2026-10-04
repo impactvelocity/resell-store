@@ -444,15 +444,21 @@ export function VisibilityPicker({
   onChange,
   variant,
   label,
+  noPublic,
   className,
 }: {
   value: ShopVisibility;
   onChange: (value: ShopVisibility) => void;
   variant: "create" | "settings";
   label: string;
+  /** Leave out "Everyone" (the demo keeps new stores off the marketplace). */
+  noPublic?: boolean;
   className?: string;
 }) {
-  return (
+  const options = noPublic
+    ? visibilityOptions.filter((option) => option.value !== "public")
+    : visibilityOptions;
+  const picker = (
     <div
       role="radiogroup"
       aria-label={label}
@@ -461,7 +467,7 @@ export function VisibilityPicker({
         className,
       )}
     >
-      {visibilityOptions.map((option, i) => {
+      {options.map((option, i) => {
         const checked = value === option.value;
         return (
           <button
@@ -479,20 +485,17 @@ export function VisibilityPicker({
                     : 0;
               if (!step) return;
               event.preventDefault();
-              const next =
-                visibilityOptions[
-                  (i + step + visibilityOptions.length) % visibilityOptions.length
-                ]!;
+              const next = options[(i + step + options.length) % options.length]!;
               onChange(next.value);
               const group = event.currentTarget.parentElement;
               group
                 ?.querySelectorAll<HTMLButtonElement>("[role=radio]")
-                [(i + step + visibilityOptions.length) % visibilityOptions.length]?.focus();
+                [(i + step + options.length) % options.length]?.focus();
             }}
             tabIndex={checked ? 0 : -1}
             className={cn(
               "flex w-full cursor-pointer items-center gap-3 py-3.5 text-left outline-none focus-visible:rounded-sm focus-visible:outline-2 focus-visible:outline-secondary",
-              i < visibilityOptions.length - 1 && "border-b border-border",
+              i < options.length - 1 && "border-b border-border",
             )}
           >
             {variant === "create" && (
@@ -516,6 +519,15 @@ export function VisibilityPicker({
         );
       })}
     </div>
+  );
+  if (!noPublic) return picker;
+  return (
+    <>
+      {picker}
+      <p className="px-1 text-sm text-text-muted">
+        The marketplace is closed to new stores during the demo. Share your link instead.
+      </p>
+    </>
   );
 }
 

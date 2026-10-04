@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
 import { ShopSettings } from "../../../../../components/shops/shop-settings";
+import { demoEnabled } from "../../../../../lib/server/demo";
 import { requireUser } from "../../../../../lib/server/session";
 import { listOwnedShops, shopPicture, toShopCard } from "../../../../../lib/server/shops";
 
@@ -21,6 +22,7 @@ export default async function Page({ params }: { params: Promise<{ slug: string 
         askHold: row.askHold,
         picture: shopPicture(row),
         paused: row.paused,
+        noPublic: demoEnabled,
       }}
     />
   );

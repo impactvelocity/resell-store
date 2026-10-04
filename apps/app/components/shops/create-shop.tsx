@@ -65,6 +65,8 @@ export type CreateShopLive = {
   firstShop: boolean;
   /** Where Back and Cancel go. */
   backHref: string;
+  /** DEMO=true: no "Everyone" option, so new stores stay off the marketplace. */
+  noPublic?: boolean;
 };
 
 export function CreateShop({ live }: { live?: CreateShopLive } = {}) {
@@ -293,6 +295,7 @@ export function CreateShop({ live }: { live?: CreateShopLive } = {}) {
             label="Who can see it?"
             value={visibility}
             onChange={setVisibility}
+            noPublic={live?.noPublic}
           />
         </div>
         <div className="px-4 pt-7 pb-9">
@@ -344,6 +347,7 @@ export function CreateShop({ live }: { live?: CreateShopLive } = {}) {
                 label="Who can see it?"
                 value={visibility}
                 onChange={setVisibility}
+                noPublic={live?.noPublic}
               />
             </div>
             <div className="flex items-center justify-end gap-2">
