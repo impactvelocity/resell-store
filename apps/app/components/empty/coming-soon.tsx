@@ -3,7 +3,6 @@ import { Sticker } from "@repo/ui/sticker";
 import { cn } from "@repo/ui/lib/utils";
 import { MobileBackHeader, Page } from "../shell/page";
 import { EmptyArt, type EmptyArtPreset } from "./art";
-import { CompareWithDesign } from "./parts";
 
 /*
  * Frame for a screen whose feature isn't switched on yet (the Tools, D1–D4):
@@ -154,11 +153,8 @@ export function ComingSoon({
 
         {children}
 
-        <div className="flex flex-col gap-2 rounded-lg border-[1.5px] border-dashed border-border px-5 py-4 desk:flex-row desk:items-center desk:justify-between desk:gap-6 desk:rounded-xl desk:px-6">
+        <div className="rounded-lg border-[1.5px] border-dashed border-border px-5 py-4 desk:rounded-xl desk:px-6">
           <p className="text-sm text-text-muted">{preview}</p>
-          <CompareWithDesign className="shrink-0 text-sm">
-            Compare with the design
-          </CompareWithDesign>
         </div>
       </Page>
     </>

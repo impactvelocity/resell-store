@@ -15,22 +15,18 @@ const nav = [
   { label: "For your agent", href: "/agent" },
 ] as const;
 
-/** Prototype: the buyer counts as signed in on their own pages. */
-const signedInPaths = ["/account", "/messages"];
-
 /**
  * The marketplace header, shared by resell.store and every store subdomain.
  * Desktop: logo, search, nav, account. Under 900px the search drops to its own row.
  *
- * Live layouts pass `signedIn` (and the person's initial) from the session; the
- * prototype under app/mock passes nothing and fakes it from the path.
+ * Layouts pass `signedIn` (and the person's initial) from the session.
  */
 export function MarketHeader({
-  signedIn: signedInProp,
+  signedIn,
   initial,
   unread,
 }: {
-  signedIn?: boolean;
+  signedIn: boolean;
   /** The signed-in person's initial for the account button. */
   initial?: string;
   /** Unread messages, for the dot on the chat button. */
@@ -39,11 +35,7 @@ export function MarketHeader({
   const pathname = usePathname();
   const store = useCurrentStore();
   const inStore = store !== null;
-  const live = signedInProp !== undefined;
-  const signedIn =
-    signedInProp ?? signedInPaths.some((p) => pathname.startsWith(p));
-  // The prototype's buyer is Maya with two unread
-  const unreadCount = live ? (unread ?? 0) : 2;
+  const unreadCount = unread ?? 0;
   const active = inStore ? null : nav.find((n) => pathname.startsWith(n.href));
 
   return (
@@ -102,7 +94,7 @@ export function MarketHeader({
                 aria-label="Your account"
                 className="flex size-11 items-center justify-center rounded-full bg-lemon-400 font-display text-xl font-extrabold"
               >
-                {live ? (initial ?? "?") : "M"}
+                {initial ?? "?"}
               </SiteLink>
             </>
           ) : (

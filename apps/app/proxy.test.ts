@@ -6,7 +6,7 @@ import proxy from "./proxy";
  * Share images under stores: og:image points at the marketplace host
  * (/store/{store}/…/opengraph-image), and the store host's own
  * /opengraph-image reaches the same route. Crawlers have no cookies, so
- * these are never bounced through the session handoff or served from mock.
+ * these are never bounced through the session handoff.
  */
 
 function req(url: string, headers: Record<string, string> = {}) {
@@ -32,16 +32,6 @@ describe("proxy: share images", () => {
     );
     expect(rewrite(proxy(req("http://maya.localhost:5689/linen-wrap-dress/twitter-image")))).toBe(
       "http://maya.localhost:5689/store/maya/linen-wrap-dress/twitter-image",
-    );
-  });
-
-  it("ignores mock mode for share images, not for pages", () => {
-    const cookie = { cookie: "rs_view=1" };
-    expect(rewrite(proxy(req("http://maya.localhost:5689/opengraph-image", cookie)))).toBe(
-      "http://maya.localhost:5689/store/maya/opengraph-image",
-    );
-    expect(rewrite(proxy(req("http://maya.localhost:5689/linen-wrap-dress", cookie)))).toBe(
-      "http://maya.localhost:5689/mock/store/maya/linen-wrap-dress",
     );
   });
 

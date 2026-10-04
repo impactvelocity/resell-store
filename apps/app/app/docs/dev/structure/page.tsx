@@ -20,7 +20,7 @@ export default async function Structure() {
         { id: "actions", title: "Server actions" },
         { id: "server", title: "Server modules" },
         { id: "components", title: "Components" },
-        { id: "live-mock", title: "Live and mock" },
+        { id: "live", title: "Live components" },
         { id: "conventions", title: "Conventions" },
       ]}
     >
@@ -61,9 +61,7 @@ docker-compose.yml          local Postgres 17 + pgvector on port 5433`}
           [<C key="f">(checkout)</C>, "/checkout/[listing] and /offer/[listing]"],
           [<C key="g">store/[store]</C>, "One seller's store. proxy.ts rewrites maya.resell.store/x onto /store/maya/x"],
           [<C key="h">docs</C>, "This site (docs.resell.store, or /docs)"],
-          [<C key="i">mock</C>, "The front-end prototype of every designed screen, served at the real URLs in mock mode"],
           [<C key="j">design-system</C>, "Every foundation and component from @repo/ui on one page"],
-          [<C key="k">screens</C>, "An index of every designed screen with live and mock links"],
           [<C key="l">api/v1</C>, "The public API; the routes themselves are in lib/server/api"],
           [<C key="m">api/mcp</C>, "The hosted MCP servers"],
           [<C key="n">api/auth</C>, "Better Auth's handler"],
@@ -104,7 +102,7 @@ docker-compose.yml          local Postgres 17 + pgvector on port 5433`}
       <P>
         <C>market-logins.ts</C> (signed-in marketplace accounts through Kernel) exists with its table, but nothing calls it yet.
         Outside <C>lib/server</C>: <C>lib/urls.ts</C> builds every cross-zone URL, <C>lib/money.ts</C> converts dollars and cents,{" "}
-        <C>lib/docs</C> holds this site&apos;s nav, and <C>lib/mock*.ts</C> the prototype&apos;s data.
+        <C>lib/docs</C> holds this site&apos;s nav, and <C>lib/mock*.ts</C> the types and sample data from the original prototype.
       </P>
 
       <H2 id="components">Components</H2>
@@ -116,16 +114,12 @@ docker-compose.yml          local Postgres 17 + pgvector on port 5433`}
         pieces belong in <C>@repo/ui</C> instead.
       </P>
 
-      <H2 id="live-mock">Live and mock</H2>
+      <H2 id="live">Live components</H2>
       <P>
-        The mock pages under <C>app/mock</C> and the live pages render the same components. Live pages pass real data and server
-        actions as props; mock pages pass nothing and the component falls back to the prototype&apos;s behaviour and the data in{" "}
-        <C>lib/mock*.ts</C>. So when you change a shared component, keep its live props optional and check both versions.
-      </P>
-      <P>
-        Where the live version needed a different shape, it has its own folder next to the original: <C>listing-live</C> beside{" "}
-        <C>listing-later</C>, <C>inbox-live</C> beside <C>inbox</C>, <C>tools-live</C> beside <C>tools</C>, and{" "}
-        <C>seller-live</C> for sales and offers. <C>lib/mock-mode.ts</C> lists which paths have a mock.
+        Many screens were first built as a front-end prototype. Pages pass real data and server actions as props to those
+        components. Where the live version needed a different shape, it has its own folder next to the original:{" "}
+        <C>listing-live</C> beside <C>listing-later</C>, <C>inbox-live</C> beside <C>inbox</C>, <C>tools-live</C> beside{" "}
+        <C>tools</C>, and <C>seller-live</C> for sales and offers.
       </P>
 
       <H2 id="conventions">Conventions</H2>

@@ -17,12 +17,6 @@ The main Next.js app: marketing site, seller app and public marketplace in one.
 - The docs site is `app/docs` (docs.resell.store via `proxy.ts`, or `/docs`). The API reference pages render straight from the route definitions, and `/api/v1/openapi.json` is generated from them too, so adding a route documents it.
 - The MCP servers come from `@repo/mcp` and are hosted at `app/api/mcp/[[...path]]` (`/u/{token}` for your shops, `/buy` and `/buy/{token}` for shopping). Their tools call the API in-process with the link's token, so permissions and limits are the API's.
 
-## Live and mock
-
-Every screen from the Paper file "Resell.Store" was first built as a front-end-only prototype. Those versions live on under `app/mock/**`, reusing the same components with their mock data (`lib/mock*.ts`), so each live screen can be compared with its design. In dev, the tab on the right edge flips any designed URL between live and mock (it sets the `rs_view` cookie; `?view=mock` and `?view=live` do the same). `/screens` lists every screen with both links.
-
-Components shared by both keep working without live props: live pages pass real data and actions, mock pages pass nothing and get the prototype's behaviour.
-
 ## Auth
 
 [Better Auth](https://better-auth.com) with the Drizzle adapter (`lib/server/auth.ts`, handler at `/api/auth/*`). Sign-in is an email link; without `RESEND_API_KEY`, local dev shows the link on the welcome page instead of sending it.

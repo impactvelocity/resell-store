@@ -52,25 +52,20 @@ export default async function Routing() {
           <strong>Service hosts.</strong> On <C>api.</C>, <C>docs.</C> or <C>mcp.</C> it rewrites the path (above) and stops.
         </li>
         <li>
-          <strong>View switch.</strong> <C>?view=mock</C> sets the <C>rs_view</C> cookie, <C>?view=live</C> clears it, then it
-          redirects to the same URL without the parameter.
-        </li>
-        <li>
-          <strong>Pass-through.</strong> Anything under <C>/api/</C> or <C>/mock/</C> is left alone, on every host. That&apos;s why
+          <strong>Pass-through.</strong> Anything under <C>/api/</C> is left alone, on every host. That&apos;s why
           the session routes and API calls work on store subdomains too.
         </li>
         <li>
           <strong>Marketplace host.</strong> <C>/store/maya/dutch-oven</C> redirects to <C>maya.resell.store/dutch-oven</C>, so
           store links can stay relative. Share images (<C>opengraph-image</C>, <C>twitter-image</C>) are served in place, because
-          that&apos;s where <C>og:image</C> points. In mock mode, designed paths are rewritten to <C>/mock/…</C>.
+          that&apos;s where <C>og:image</C> points.
         </li>
         <li>
           <strong>Store host, dev only.</strong> On a full page load with no session cookie and no recent attempt, it starts the
           session handoff (below).
         </li>
         <li>
-          <strong>Store host.</strong> Everything else is rewritten to <C>/store/{"{store}"}{"{path}"}</C> (or{" "}
-          <C>/mock/store/…</C> in mock mode). The browser never sees <C>/store/</C>.
+          <strong>Store host.</strong> Everything else is rewritten to <C>/store/{"{store}"}{"{path}"}</C>. The browser never sees <C>/store/</C>.
         </li>
       </OL>
       <P>

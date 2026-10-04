@@ -23,7 +23,7 @@ export default defineConfig({
   test: {
     environment: "node",
     include: ["**/*.test.ts", "**/*.test.tsx"],
-    exclude: ["node_modules/**", ".next/**", "app/mock/**"],
+    exclude: ["node_modules/**", ".next/**"],
     globalSetup: [here("./test/global-setup.ts")],
     setupFiles: [here("./test/setup.ts")],
     fileParallelism: false,

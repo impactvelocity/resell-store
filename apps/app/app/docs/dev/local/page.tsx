@@ -20,7 +20,6 @@ export default async function RunLocally() {
         { id: "keys", title: "Which keys you need" },
         { id: "sign-in", title: "Signing in" },
         { id: "sweeps", title: "Running the timed jobs" },
-        { id: "mock", title: "Live and mock screens" },
         { id: "email", title: "Email previews" },
         { id: "paypal", title: "PayPal sandbox" },
         { id: "gotchas", title: "Gotchas" },
@@ -64,7 +63,6 @@ pnpm dev            # http://localhost:5689`}
           [<C key="d">http://localhost:5689/api/v1</C>, "The public API (api.resell.store/v1 in production)"],
           [<C key="e">http://localhost:5689/api/mcp</C>, "The hosted MCP servers"],
           [<C key="f">http://localhost:5689/design-system</C>, "Every design system component"],
-          [<C key="g">http://localhost:5689/screens</C>, "Every designed screen, with live and mock links"],
         ]}
       />
       <P>
@@ -129,14 +127,6 @@ render workflows tasks start offerSweep --local`}
       <P>
         To watch a payout happen without waiting days, set <C>PAYOUT_DEMO_MINUTES_PER_DAY=1</C> so every &quot;day&quot; in the money
         timers is a minute. See <A href={`${base}/dev/jobs`}>Background jobs</A>.
-      </P>
-
-      <H2 id="mock">Live and mock screens</H2>
-      <P>
-        Every designed screen was first built as a front-end prototype, and those versions still live under <C>app/mock</C>. In
-        development a tab on the right edge flips the current URL between the live screen and its mock. <C>?view=mock</C> and{" "}
-        <C>?view=live</C> do the same (they set or clear the <C>rs_view</C> cookie). <C>/screens</C> lists every screen with both
-        links; signed in, the live links point at your own shop and listings.
       </P>
 
       <H2 id="email">Email previews</H2>

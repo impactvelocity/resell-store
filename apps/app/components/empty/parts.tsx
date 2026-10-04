@@ -1,6 +1,5 @@
 import Link from "next/link";
 import type { ComponentProps, ReactNode } from "react";
-import { ArrowUpRightIcon } from "@repo/ui/icons";
 import { cn } from "@repo/ui/lib/utils";
 
 /*
@@ -33,32 +32,7 @@ export function ActionLink({
   );
 }
 
-/**
- * "See the design" link. A plain <a> on purpose: ?view=mock goes through the
- * proxy, which sets the mock cookie and reloads the same URL from app/mock.
- */
-export function CompareWithDesign({
-  className,
-  children = "See the design",
-}: {
-  className?: string;
-  children?: ReactNode;
-}) {
-  return (
-    <a
-      href="?view=mock"
-      className={cn(
-        "inline-flex items-center gap-1 rounded-sm font-bold text-secondary outline-none hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-secondary",
-        className,
-      )}
-    >
-      {children}
-      <ArrowUpRightIcon size={16} strokeWidth={2.4} />
-    </a>
-  );
-}
-
-/** Section heading used across the empty screens, matching the mock cards. */
+/** Section heading used across the empty screens, matching the other cards. */
 export function SectionTitle({ className, ...props }: ComponentProps<"h2">) {
   return (
     <h2

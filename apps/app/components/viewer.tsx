@@ -1,12 +1,11 @@
 "use client";
 
 import { createContext, useContext, type ReactNode } from "react";
-import { inboxCount, me, shops, type Shop } from "../lib/mock";
+import type { Shop } from "../lib/mock";
 
 /*
  * Who is looking, and their shops, for the client components in the app shell.
- * Live layouts provide the signed-in person; without a provider (the mock
- * screens under app/mock) it falls back to Maya from the prototype.
+ * The (app) layout provides the signed-in person.
  */
 
 export type Viewer = {
@@ -21,16 +20,16 @@ export type Viewer = {
   inboxCount: number;
 };
 
-export const mockViewer: Viewer = { id: "maya", ...me, shops, inboxCount };
-
-const ViewerContext = createContext<Viewer>(mockViewer);
+const ViewerContext = createContext<Viewer | null>(null);
 
 export function ViewerProvider({ viewer, children }: { viewer: Viewer; children: ReactNode }) {
   return <ViewerContext.Provider value={viewer}>{children}</ViewerContext.Provider>;
 }
 
 export function useViewer() {
-  return useContext(ViewerContext);
+  const viewer = useContext(ViewerContext);
+  if (!viewer) throw new Error("useViewer needs a ViewerProvider");
+  return viewer;
 }
 
 /** Where "Shops" in the nav goes: the first shop, or making one. */

@@ -120,7 +120,6 @@ pnpm email        # preview the email templates at http://localhost:5690
 ### Apps and packages
 
 - `apps/app`: the main Next.js app: marketing site, the seller app (`app/(app)`, `app/(workspace)`), and the public marketplace (`app/(market)`, store subdomains in `app/store/[store]`)
-  - `app/mock/**` keeps the front-end prototype of every designed screen. In dev, the tab on the right edge (or `?view=mock` / `?view=live`) flips any URL between the live screen and its mock
 - `@repo/db`: Drizzle schema, migrations and client for Postgres (with pgvector)
 - `@repo/ui`: the resell.store design system (from the Paper file "Resell.Store"), built on [Base UI](https://base-ui.com) and Tailwind CSS v4
   - tokens live in `packages/ui/src/styles.css`; import it after `@import "tailwindcss";` in an app's CSS

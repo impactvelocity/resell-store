@@ -1,13 +1,9 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { needsSessionHandoff, serviceFromHost, storeFromHost, storeUrl } from "./lib/urls";
-import { isMockPath, MOCK_COOKIE } from "./lib/mock-mode";
 
 /*
  * Store subdomains are rewritten onto /store/{store}, so maya.resell.store/linen-wrap-dress
  * renders app/store/[store]/[listing]. Auth is checked in each layout, not here.
- *
- * Mock mode: with the rs_view=mock cookie (or ?view=mock), designed screens are served
- * from the front-end prototype under app/mock, at the same URLs.
  *
  * Session handoff (dev on localhost only, see needsSessionHandoff): a store host can't
  * read the marketplace's cookie, so the first page load on a store without a session
@@ -60,21 +56,9 @@ export default function proxy(req: NextRequest) {
   const url = req.nextUrl.clone();
   const store = storeFromHost(req.headers.get("host"));
 
-  // ?view=mock / ?view=live flips the cookie, then reloads without the param
-  const view = url.searchParams.get("view");
-  if (view === "mock" || view === "live") {
-    url.searchParams.delete("view");
-    const res = NextResponse.redirect(url);
-    if (view === "mock") res.cookies.set(MOCK_COOKIE, "1", { path: "/", sameSite: "lax" });
-    else res.cookies.delete(MOCK_COOKIE);
-    return res;
-  }
+  if (url.pathname.startsWith("/api/")) return;
 
-  if (url.pathname.startsWith("/api/") || url.pathname.startsWith("/mock/")) return;
-
-  const mock = req.cookies.get(MOCK_COOKIE)?.value === "1";
-
-  // Crawlers fetch share images without cookies: never bounce or mock them
+  // Crawlers fetch share images without cookies: never bounce them
   const shareImage = SHARE_IMAGE.test(url.pathname);
 
   if (!store) {
@@ -83,14 +67,10 @@ export default function proxy(req: NextRequest) {
     // /store/maya/x on the marketplace host → maya.resell.store/x, so store links stay relative
     const match = url.pathname.match(/^\/store\/([^/]+)(\/.*)?$/);
     if (match) return NextResponse.redirect(storeUrl(match[1]!, (match[2] ?? "/") + url.search));
-    if (mock && isMockPath(url.pathname)) {
-      url.pathname = `/mock${url.pathname}`;
-      return NextResponse.rewrite(url);
-    }
     return;
   }
 
-  if (!mock && !shareImage && wantsSessionHandoff(req)) {
+  if (!shareImage && wantsSessionHandoff(req)) {
     // To this store's own handoff route, which forwards to the marketplace's. Next would
     // relativize a redirect to localhost:5689 from here (dev's request URL has that
     // origin), so the browser would stay on the store host anyway.
@@ -102,8 +82,7 @@ export default function proxy(req: NextRequest) {
     return res;
   }
 
-  const inner = `/store/${store}${url.pathname === "/" ? "" : url.pathname}`;
-  url.pathname = mock && !shareImage ? `/mock${inner}` : inner;
+  url.pathname = `/store/${store}${url.pathname === "/" ? "" : url.pathname}`;
   return NextResponse.rewrite(url);
 }
 

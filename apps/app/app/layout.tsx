@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import { Bricolage_Grotesque, Figtree, JetBrains_Mono } from "next/font/google";
 import { ToastProvider } from "@repo/ui/toast";
 import { TooltipProvider } from "@repo/ui/tooltip";
-import { ViewSwitch } from "../components/view-switch";
 import { rootMetadata } from "../lib/og";
 import "./globals.css";
 
@@ -41,7 +40,6 @@ export default function RootLayout({
             <ToastProvider>{children}</ToastProvider>
           </TooltipProvider>
         </div>
-        {process.env.NODE_ENV !== "production" && <ViewSwitch />}
       </body>
     </html>
   );
