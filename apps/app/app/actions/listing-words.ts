@@ -2,7 +2,7 @@
 
 import { z } from "zod";
 import { and, db, desc, eq, listingCopy, user as userTable } from "@repo/db";
-import { refreshEmbedding, requireOwnedListing, updateListing } from "../../lib/server/listings";
+import { refreshEmbedding, requireEditableListing, updateListing } from "../../lib/server/listings";
 import {
   applyCopy,
   clip,
@@ -26,13 +26,13 @@ export async function writeWords(
   listingId: string,
   input: { tone: string; instruction?: string; fromCopyId?: string | null },
 ): Promise<WordsResult> {
-  const { user, listing } = await requireOwnedListing(z.string().min(1).max(64).parse(listingId));
+  const { user, listing } = await requireEditableListing(z.string().min(1).max(64).parse(listingId));
   return generateWords(listing, user.writingStyle, input);
 }
 
 /** Stepping between versions: the one on screen becomes the listing's words. */
 export async function chooseWords(listingId: string, copyId: string) {
-  const { listing } = await requireOwnedListing(z.string().min(1).max(64).parse(listingId));
+  const { listing } = await requireEditableListing(z.string().min(1).max(64).parse(listingId));
   const [row] = await db
     .select()
     .from(listingCopy)
@@ -47,7 +47,7 @@ export async function editWords(
   listingId: string,
   input: { part: "title" | "oneLiner" | "description"; value: string; copyId?: string | null },
 ) {
-  const { listing } = await requireOwnedListing(z.string().min(1).max(64).parse(listingId));
+  const { listing } = await requireEditableListing(z.string().min(1).max(64).parse(listingId));
   const { part, value, copyId } = z
     .object({
       part: z.enum(["title", "oneLiner", "description"]),
@@ -69,7 +69,7 @@ export async function editWords(
 
 /** "Save as my usual style": a short note the agent reads next time. */
 export async function saveWritingStyle(listingId: string, tone: string) {
-  const { user, listing } = await requireOwnedListing(z.string().min(1).max(64).parse(listingId));
+  const { user, listing } = await requireEditableListing(z.string().min(1).max(64).parse(listingId));
   const picked = z.enum(tones).parse(tone);
   // Note how long the descriptions they kept tend to be
   const [latest] = await db

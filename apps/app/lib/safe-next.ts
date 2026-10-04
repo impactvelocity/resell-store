@@ -1,5 +1,14 @@
 import { needsSessionHandoff, siteUrl, storeFromHost, zoneUrl } from "./urls";
 
+/**
+ * /welcome as the magic link's callbackURL, carrying on to `next`. Better Auth's verify
+ * endpoint decodes callbackURL once more after reading the query, so `next` is encoded
+ * twice to keep its own ?a=1&b=2 intact (safeNext also accepts it encoded one level too
+ * deep, which is how PayPal's redirect leaves it).
+ */
+export const welcomeReturnTo = (next?: string | null) =>
+  next ? `/welcome?next=${encodeURIComponent(encodeURIComponent(next))}` : "/welcome";
+
 /** A same-origin path (e.g. `/checkout/x?y=1`), or null if it isn't one. */
 export function safePath(raw: string | null | undefined) {
   if (!raw || !raw.startsWith("/") || raw.startsWith("//") || raw.includes("\\")) return null;

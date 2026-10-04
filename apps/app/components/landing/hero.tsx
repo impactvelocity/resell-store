@@ -3,11 +3,10 @@ import { Button } from "@repo/ui/button";
 import { ArrowUpRightIcon, CheckIcon } from "@repo/ui/icons";
 import { FlowerMark } from "@repo/ui/whimsy";
 import { cn } from "@repo/ui/lib/utils";
-import { mcpUrl } from "../../lib/urls";
 import { AddToAgent } from "./add-to-agent";
 import { HeroPhone } from "./hero-phone";
 import { Float, Pop, Reveal } from "./motion";
-import { bigButton, Container, hackathonUrl } from "./parts";
+import { authorUrl, bigButton, Container, hackathonUrl } from "./parts";
 import { PayPalLogo } from "./paypal-logo";
 
 function HeroVisual() {
@@ -81,7 +80,7 @@ export function Hero({ signedIn }: { signedIn: boolean }) {
           </div>
         </Reveal>
         <Reveal delay={0.24}>
-          <AddToAgent mcpUrl={mcpUrl("/buy")} />
+          <AddToAgent signedIn={signedIn} />
         </Reveal>
         <Reveal delay={0.32}>
           <div className="mt-3 flex w-fit flex-col gap-3 rounded-2xl border border-border bg-surface px-6 py-5 shadow-[0_10px_30px_-18px_rgb(0_41_145/0.45)] sm:flex-row sm:items-center sm:gap-6">
@@ -102,6 +101,15 @@ export function Hero({ signedIn }: { signedIn: boolean }) {
               </a>
             </div>
           </div>
+          <a
+            href={authorUrl}
+            target="_blank"
+            rel="noreferrer"
+            className="mt-3 ml-1 inline-flex items-center gap-1 text-sm text-text-muted hover:text-text hover:underline"
+          >
+            Built by Dylan Jones
+            <ArrowUpRightIcon size={14} strokeWidth={2.6} />
+          </a>
         </Reveal>
       </div>
       <HeroVisual />

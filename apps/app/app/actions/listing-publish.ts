@@ -6,6 +6,7 @@ import {
   requireOwnedListing,
   updateListing,
 } from "../../lib/server/listings";
+import { demoBlocked, demoListingBlocked } from "../../lib/server/demo";
 import { storeUrl } from "../../lib/urls";
 
 /*
@@ -26,13 +27,17 @@ function missing(row: { title: string | null; priceCents: number | null }) {
 }
 
 export async function setListingVisibility(listingId: string, value: "everyone" | "link") {
-  const { listing } = await requireOwnedListing(id.parse(listingId));
+  const { user, listing } = await requireOwnedListing(id.parse(listingId));
+  const demo = await demoListingBlocked(user, listing);
+  if (demo) return { ok: false as const, message: demo };
   await updateListing(listing.id, { visibility: visibility.parse(value) });
   return { ok: true as const };
 }
 
 export async function publish(listingId: string, value: "everyone" | "link") {
-  const { listing, shop } = await requireOwnedListing(id.parse(listingId));
+  const { user, listing, shop } = await requireOwnedListing(id.parse(listingId));
+  const demo = demoBlocked(user, "publish");
+  if (demo) return { ok: false as const, message: demo };
   const problem = missing(listing);
   if (problem) return { ok: false as const, message: problem };
   const row = await updateListing(listing.id, { visibility: visibility.parse(value) });
@@ -41,7 +46,9 @@ export async function publish(listingId: string, value: "everyone" | "link") {
 }
 
 export async function markSold(listingId: string) {
-  const { listing } = await requireOwnedListing(id.parse(listingId));
+  const { user, listing } = await requireOwnedListing(id.parse(listingId));
+  const demo = await demoListingBlocked(user, listing);
+  if (demo) return { ok: false as const, message: demo };
   if (listing.status !== "live") return { ok: false as const, message: "Only a live listing can be sold." };
   await updateListing(listing.id, { status: "sold", soldAt: new Date() });
   return { ok: true as const };
@@ -49,7 +56,9 @@ export async function markSold(listingId: string) {
 
 /** Sold, or back from a draft: live again at the same link. */
 export async function relist(listingId: string) {
-  const { listing } = await requireOwnedListing(id.parse(listingId));
+  const { user, listing } = await requireOwnedListing(id.parse(listingId));
+  const demo = demoBlocked(user, "publish");
+  if (demo) return { ok: false as const, message: demo };
   const problem = missing(listing);
   if (problem) return { ok: false as const, message: problem };
   const row =
@@ -60,7 +69,9 @@ export async function relist(listingId: string) {
 
 /** Takes it down. It keeps its link for when it goes back up. */
 export async function unpublish(listingId: string) {
-  const { listing } = await requireOwnedListing(id.parse(listingId));
+  const { user, listing } = await requireOwnedListing(id.parse(listingId));
+  const demo = await demoListingBlocked(user, listing);
+  if (demo) return { ok: false as const, message: demo };
   await updateListing(listing.id, { status: "draft", soldAt: null, publishedAt: null });
   return { ok: true as const };
 }

@@ -23,7 +23,7 @@ export default async function Channel3() {
       path="/dev/stack/channel3"
       eyebrow="Built with"
       title="Channel3"
-      lead="Channel3 is a product catalog across retailers. resell.store uses it to work out exactly what an item is, what it costs new, what it's going for second hand, and to borrow the maker's photos."
+      lead="Channel3 is a product catalog across retailers. resell.store sends it the seller's photo and the name the AI model gave the item, and gets back the matching product, what it costs new, any second-hand offers, and the maker's photos."
       toc={[
         { id: "what", title: "What it does here" },
         { id: "call", title: "The call" },

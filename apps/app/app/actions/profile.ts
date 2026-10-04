@@ -6,6 +6,7 @@ import { z } from "zod";
 import { db, eq, user as userTable } from "@repo/db";
 import { auth } from "../../lib/server/auth";
 import { deleteFiles, fileIdsOwnedBy, saveUpload, UploadError } from "../../lib/server/files";
+import { assertNotDemo, demoBlocked } from "../../lib/server/demo";
 import { requireUser } from "../../lib/server/session";
 
 /* A6 Me and A7 Edit profile. */
@@ -31,6 +32,8 @@ export type ProfileInput = z.input<typeof profileSchema>;
  */
 export async function saveProfile(input: ProfileInput): Promise<{ error: string } | { ok: true }> {
   const user = await requireUser();
+  const demo = demoBlocked(user, "account");
+  if (demo) return { error: demo };
   const parsed = profileSchema.safeParse(input);
   if (!parsed.success) return { error: parsed.error.issues[0]!.message };
   const p = parsed.data;
@@ -59,6 +62,8 @@ export async function saveProfile(input: ProfileInput): Promise<{ error: string 
 /** A new profile photo. Saved straight away; returns its URL. */
 export async function uploadAvatar(form: FormData): Promise<{ error: string } | { url: string }> {
   const user = await requireUser();
+  const demo = demoBlocked(user, "account");
+  if (demo) return { error: demo };
   const photo = form.get("photo");
   if (!(photo instanceof File) || photo.size === 0) return { error: "Pick a photo first." };
   if (!photo.type.startsWith("image/")) return { error: "That isn't a photo." };
@@ -76,6 +81,7 @@ export async function uploadAvatar(form: FormData): Promise<{ error: string } | 
 /** Deletes the person and everything they own (shops, listings, files cascade). */
 export async function deleteAccount(): Promise<{ ok: true }> {
   const user = await requireUser({ onboarded: false });
+  assertNotDemo(user, "account");
   // End the session first so the cookies are cleared on this response
   await auth.api.signOut({ headers: await headers() }).catch(() => {});
   // Clear their uploads from object storage too; the rows would only cascade

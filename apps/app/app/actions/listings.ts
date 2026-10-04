@@ -7,10 +7,11 @@ import { db, listingPhoto } from "@repo/db";
 import { saveUpload, UploadError } from "../../lib/server/files";
 import {
   createDraft,
-  requireOwnedListing,
+  requireEditableListing,
   setField,
   updateListing,
 } from "../../lib/server/listings";
+import { demoDraftsBlocked } from "../../lib/server/demo";
 import { runResearch, startResearch } from "../../lib/server/research";
 import { requireUser } from "../../lib/server/session";
 import { getOwnedShop } from "../../lib/server/shops";
@@ -33,6 +34,8 @@ export async function startListing(_prev: { error?: string } | null, form: FormD
 
   const shop = await getOwnedShop(user.id, shopSlug);
   if (!shop) return { error: "Pick one of your shops first." };
+  const demo = await demoDraftsBlocked(user);
+  if (demo) return { error: demo };
 
   const draft = await createDraft({ shopId: shop.id, prompt });
   if (hasPhoto) {
@@ -49,7 +52,7 @@ export async function startListing(_prev: { error?: string } | null, form: FormD
 }
 
 export async function rerunResearch(listingId: string) {
-  await requireOwnedListing(listingId);
+  await requireEditableListing(listingId);
   await research(listingId);
 }
 
@@ -61,7 +64,7 @@ const fieldInput = z.object({
 
 /** A row edited by hand, or a question answered (C3/C4). */
 export async function saveField(listingId: string, input: z.input<typeof fieldInput>) {
-  const { listing } = await requireOwnedListing(listingId);
+  const { listing } = await requireEditableListing(listingId);
   const { key, label, value } = fieldInput.parse(input);
   await updateListing(listing.id, { fields: setField(listing.fields, key, value, label) });
 }
@@ -74,7 +77,7 @@ const pricingInput = z.object({
 
 /** C4 price card: price, the private floor, and whether the agent takes offers. */
 export async function savePricing(listingId: string, input: z.input<typeof pricingInput>) {
-  const { listing } = await requireOwnedListing(listingId);
+  const { listing } = await requireEditableListing(listingId);
   const { price, lowest, takeOffers } = pricingInput.parse(input);
   const priceCents = price != null ? toCents(price) : listing.priceCents;
   let lowestCents = lowest != null ? toCents(lowest) : listing.lowestCents;

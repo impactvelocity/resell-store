@@ -171,12 +171,12 @@ PAYMENT.REFERENCED-PAYOUT-ITEM.FAILED`}
       <P>
         To fill a fresh deploy with the ten demo stores, run the seed from your machine against the database&apos;s{" "}
         <strong>External Database URL</strong> (on the database&apos;s page in Render). It refuses a remote database unless you say{" "}
-        <C>--remote</C>:
+        <C>--remote</C>. Render only accepts encrypted connections from outside, which <C>PGSSLMODE=require</C> turns on:
       </P>
       <CodeBlock
         title="Terminal"
         code={`cd apps/app
-DATABASE_URL="postgres://resell:...@....render.com/resell" pnpm seed --remote`}
+PGSSLMODE=require DATABASE_URL="postgres://resell:...@....render.com/resell" pnpm seed --remote`}
       />
       <P>
         It uses the rest of your local <C>.env.local</C>: with R2 keys set there, the photos go to that bucket (use the same one as

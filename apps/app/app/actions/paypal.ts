@@ -10,15 +10,21 @@ import {
   unlinkPayPalAccount,
 } from "../../lib/server/paypal-sellers";
 import { paypalEnabled } from "../../lib/server/paypal";
+import { demoBlocked } from "../../lib/server/demo";
 import { getCurrentUser } from "../../lib/server/session";
 
 /* D1: a seller connecting their PayPal to get paid. */
 
 type Result<T = object> = ({ ok: true } & T) | { ok: false; error: string };
 
-async function run<T extends object>(fn: (userId: string) => Promise<T>): Promise<Result<T>> {
+async function run<T extends object>(
+  fn: (userId: string) => Promise<T>,
+  { allowDemo = false }: { allowDemo?: boolean } = {},
+): Promise<Result<T>> {
   const user = await getCurrentUser();
   if (!user) return { ok: false, error: "Sign in first." };
+  const blocked = allowDemo ? null : demoBlocked(user, "connect");
+  if (blocked) return { ok: false, error: blocked };
   if (!paypalEnabled()) return { ok: false, error: "PayPal isn't set up on this server yet." };
   try {
     const out = await fn(user.id);
@@ -41,7 +47,7 @@ export async function connectPayPal() {
 
 /** Re-reads the account from PayPal, e.g. after the seller confirms their email. */
 export async function refreshPayPal() {
-  return run(async (userId) => ({ connected: !!(await syncPayPalAccount(userId)) }));
+  return run(async (userId) => ({ connected: !!(await syncPayPalAccount(userId)) }), { allowDemo: true });
 }
 
 /** Sandbox: links the shared demo seller instead of connecting their own PayPal. */

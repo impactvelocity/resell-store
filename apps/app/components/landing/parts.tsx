@@ -6,6 +6,7 @@ import { cn } from "@repo/ui/lib/utils";
 
 export const githubUrl = "https://github.com/impactvelocity/resell-store";
 export const hackathonUrl = "https://paypalaihackathon.devpost.com/";
+export const authorUrl = "https://hidylanjones.com";
 
 /** 1440 artboard, 96px gutters on desktop. */
 export function Container({ className, ...props }: ComponentProps<"div">) {

@@ -12,6 +12,7 @@ import { z } from "zod";
 import { and, db, eq, listingMessage, type ListingStep } from "@repo/db";
 import { aiConfigured, aiModel } from "../../../../../lib/server/ai";
 import { getOwnedListing, setField, updateListing, type ListingRow } from "../../../../../lib/server/listings";
+import { demoListingBlocked } from "../../../../../lib/server/demo";
 import { getSession } from "../../../../../lib/server/session";
 
 /*
@@ -29,6 +30,8 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
   if (!session) return NextResponse.json({ error: "Sign in" }, { status: 401 });
   const owned = await getOwnedListing(session.user.id, (await params).id);
   if (!owned) return NextResponse.json({ error: "Not found" }, { status: 404 });
+  const demo = await demoListingBlocked(session.user, owned.listing);
+  if (demo) return NextResponse.json({ error: demo }, { status: 403 });
   if (!aiConfigured)
     return NextResponse.json(
       { error: "The agent needs ANTHROPIC_API_KEY in apps/app/.env.local." },

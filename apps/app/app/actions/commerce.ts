@@ -21,7 +21,8 @@ import {
   notifyShipped,
   notifySold,
 } from "../../lib/server/notify";
-import { getCurrentUser } from "../../lib/server/session";
+import { getCurrentUser, type CurrentUser } from "../../lib/server/session";
+import { assertDemoMayTrade, DemoBlockedError } from "../../lib/server/demo";
 import { paidOut } from "../../lib/server/sweeps";
 import { notifyOrderPlaced } from "../../lib/server/notify-after-sale";
 import { toCents } from "../../lib/money";
@@ -34,16 +35,16 @@ import { toCents } from "../../lib/money";
 
 type Result<T = object> = ({ ok: true } & T) | { ok: false; error: string; signin?: boolean };
 
-async function run<T extends object>(fn: (userId: string) => Promise<T>): Promise<Result<T>> {
+async function run<T extends object>(fn: (userId: string, user: CurrentUser) => Promise<T>): Promise<Result<T>> {
   const user = await getCurrentUser();
   if (!user) return { ok: false, error: "Sign in first.", signin: true };
   try {
-    const out = await fn(user.id);
+    const out = await fn(user.id, user);
     // Both sides' lists change: account, inbox, sales, the listing and store pages
     revalidatePath("/", "layout");
     return { ok: true, ...out };
   } catch (error) {
-    if (error instanceof CommerceError) return { ok: false, error: error.message };
+    if (error instanceof CommerceError || error instanceof DemoBlockedError) return { ok: false, error: error.message };
     if (error instanceof z.ZodError) return { ok: false, error: "Something in there doesn't look right." };
     console.error("Commerce action failed", error);
     return { ok: false, error: "Something went wrong. Try again?" };
@@ -73,8 +74,9 @@ const buyInput = z.object({
 export async function buyListing(
   input: z.input<typeof buyInput>,
 ): Promise<Result<{ redirect?: string; orderId?: string; totalCents?: number }>> {
-  return run(async (buyerId) => {
+  return run(async (buyerId, user) => {
     const parsed = buyInput.parse(input);
+    await assertDemoMayTrade(user, { listingId: parsed.listingId });
     if (paypalEnabled()) {
       const { approveUrl } = await startCheckout({
         buyerId,
@@ -102,8 +104,9 @@ const offerInput = z.object({
 
 /** P5: make an offer. */
 export async function sendOffer(input: z.input<typeof offerInput>) {
-  return run(async (buyerId) => {
+  return run(async (buyerId, user) => {
     const parsed = offerInput.parse(input);
+    await assertDemoMayTrade(user, { listingId: parsed.listingId });
     const created = await makeOffer({
       buyerId,
       listingId: parsed.listingId,

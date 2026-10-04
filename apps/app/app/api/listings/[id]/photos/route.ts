@@ -1,3 +1,4 @@
+import { demoListingBlocked } from "../../../../../lib/server/demo";
 import { deleteFiles, saveUpload, UploadError } from "../../../../../lib/server/files";
 import {
   addPhotoRows,
@@ -23,6 +24,8 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
   if (!user) return fail("Sign in to add photos.", 401);
   const owned = await getOwnedListing(user.id, (await params).id);
   if (!owned) return fail("We couldn't find that listing.", 404);
+  const demo = await demoListingBlocked(user, owned.listing);
+  if (demo) return fail(demo, 403);
 
   let form: FormData;
   try {

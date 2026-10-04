@@ -54,16 +54,16 @@ const live: Sponsor[] = [
   {
     name: "Channel3",
     logo: { src: "/sponsors/channel3.png", width: 582, height: 112, size: 27 },
-    use: "Works out exactly what you photographed, what it costs new and what it's going for second hand, and borrows the maker's own photos.",
+    use: "Takes your photo and the item's name and finds the product in a catalog of over 100 million, then pulls what it costs new, any second-hand offers from resale shops, and the maker's own photos.",
     benefit:
-      "Listings start with the right name, the specs and a fair price, with nothing to look up.",
+      "Listings start with the right product, the new price to anchor against and clean photos, with nothing to look up.",
     docs: "https://docs.trychannel3.com/",
     notes: "/dev/stack/channel3",
   },
   {
     name: "Kernel",
     logo: { src: "/sponsors/kernel.png", width: 400, height: 84, size: 24 },
-    use: "Cloud browsers that check what the same item is listed for on the big resale sites, side by side, and read any product link you paste into the shopping sidekick.",
+    use: "Cloud browsers that search eBay, Poshmark and Depop side by side for the same item and read what each one is listed for, plus any product link you paste into the shopping sidekick.",
     benefit:
       "Prices come from what's for sale today, not a guess, and one slow site never holds up the rest.",
     docs: "https://www.kernel.sh/docs",
@@ -79,6 +79,9 @@ const live: Sponsor[] = [
     notes: "/dev/stack/render",
   },
 ];
+
+/** Hidden for now; flip to bring the build list back. */
+const showNext = false;
 
 const next: Sponsor[] = [
   {
@@ -211,7 +214,7 @@ export function Sponsors() {
         <SectionIntro
           className="pb-6"
           title="Made in a hackathon, built on good company"
-          aside="Resell.store was built for the PayPal AI Hackathon, on tools its sponsors put on the table. Here is what each one does for it, and what's next."
+          aside="Resell.store was built for the PayPal AI Hackathon, on tools its sponsors put on the table. Here is what each one does for it."
         />
       </Reveal>
 
@@ -281,42 +284,46 @@ export function Sponsors() {
         ))}
       </ul>
 
-      <GroupHeading>Next on the build list</GroupHeading>
-      <Reveal
-        y={24}
-        className="rounded-[24px] border border-border bg-surface px-6 md:px-8"
-      >
-        <ul className="divide-y divide-border">
-          {next.map((s) => (
-            <li
-              key={s.name}
-              className="flex flex-col gap-3 py-6 md:grid md:grid-cols-[200px_minmax(0,1fr)_150px] md:items-center md:gap-8"
-            >
-              <h4 className="flex h-9 items-center">
-                <SponsorLogo name={s.name} logo={s.logo} />
-              </h4>
-              <div className="flex flex-col gap-1">
-                <p className="text-base font-semibold">{s.use}</p>
-                <p className="text-base text-text-muted">{s.benefit}</p>
-              </div>
-              <OutLink
-                href={s.docs}
-                className="self-start text-sm text-secondary md:self-center md:justify-self-end"
-              >
-                {s.name} docs
-              </OutLink>
-            </li>
-          ))}
-        </ul>
-      </Reveal>
+      {showNext && (
+        <>
+          <GroupHeading>Next on the build list</GroupHeading>
+          <Reveal
+            y={24}
+            className="rounded-[24px] border border-border bg-surface px-6 md:px-8"
+          >
+            <ul className="divide-y divide-border">
+              {next.map((s) => (
+                <li
+                  key={s.name}
+                  className="flex flex-col gap-3 py-6 md:grid md:grid-cols-[200px_minmax(0,1fr)_150px] md:items-center md:gap-8"
+                >
+                  <h4 className="flex h-9 items-center">
+                    <SponsorLogo name={s.name} logo={s.logo} />
+                  </h4>
+                  <div className="flex flex-col gap-1">
+                    <p className="text-base font-semibold">{s.use}</p>
+                    <p className="text-base text-text-muted">{s.benefit}</p>
+                  </div>
+                  <OutLink
+                    href={s.docs}
+                    className="self-start text-sm text-secondary md:self-center md:justify-self-end"
+                  >
+                    {s.name} docs
+                  </OutLink>
+                </li>
+              ))}
+            </ul>
+          </Reveal>
+        </>
+      )}
 
       <Reveal
         y={24}
         className="mt-4 flex flex-col items-start gap-5 rounded-[24px] bg-surface-muted px-6 py-7 md:flex-row md:items-center md:justify-between md:px-8"
       >
         <p className="max-w-[640px] text-lg font-medium">
-          There's more to the PayPal AI Hackathon than us. See every sponsor
-          and what other teams built with them.
+          There's more to the PayPal AI Hackathon than us. See every sponsor and
+          what other teams built with them.
         </p>
         <Button
           variant="secondary"

@@ -1,14 +1,20 @@
 import { redirect } from "next/navigation";
 import { db, eq, user as userTable } from "@repo/db";
 import { SignUpScreen } from "../../../components/welcome/sign-up";
+import { paypalSignInEnabled } from "../../../lib/server/auth";
+import { demoAccounts, demoResetMinutes } from "../../../lib/server/demo";
 import { devLinksEnabled } from "../../../lib/server/dev-links";
 import { getCurrentUser } from "../../../lib/server/session";
 import { afterSignIn, safeNext } from "../../../lib/safe-next";
 
-/** Better Auth sends people back with ?error= when a sign-in link fails. */
+/** Better Auth sends people back with ?error= when a sign-in link or PayPal sign-in fails. */
 const notices: Record<string, string> = {
   INVALID_TOKEN: "That sign-in link has already been used or ran out. Send yourself a new one.",
   EXPIRED_TOKEN: "That sign-in link ran out. Send yourself a new one.",
+  email_not_found: "PayPal didn't share your email, so we couldn't sign you in. Use your email instead.",
+  access_denied: "PayPal sign-in was cancelled.",
+  demo_off: "The demo accounts aren't on here. Sign in with your email.",
+  demo_missing: "That demo account isn't set up here yet. Sign in with your email.",
 };
 
 // A1. Signed in already: on to A2, or Home once that's done. With ?next= (signing
@@ -39,5 +45,16 @@ export default async function Page({
     : next
       ? "Sign in to carry on. We'll bring you right back."
       : undefined;
-  return <SignUpScreen auth={{ devLinks: devLinksEnabled, notice, next }} />;
+  const demo = await demoAccounts();
+  return (
+    <SignUpScreen
+      auth={{
+        devLinks: devLinksEnabled,
+        paypal: paypalSignInEnabled,
+        notice,
+        next,
+        demo: demo.length ? { accounts: demo, resetMinutes: demoResetMinutes } : undefined,
+      }}
+    />
+  );
 }

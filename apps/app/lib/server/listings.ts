@@ -15,6 +15,7 @@ import {
   type ListingField,
   type ListingStep,
 } from "@repo/db";
+import { DemoBlockedError, demoListingBlocked } from "./demo";
 import { embed, embeddingsConfigured, listingPassage } from "./embeddings";
 import { fileUrl } from "./files";
 import { requireUser } from "./session";
@@ -67,6 +68,13 @@ export async function requireOwnedListing(id: string) {
   const row = await getOwnedListing(user.id, id);
   if (!row) notFound();
   return { user, ...row };
+}
+
+/** For actions that change a listing: the owner's, and not locked for the demo (lib/server/demo.ts). */
+export async function requireEditableListing(id: string) {
+  const owned = await requireOwnedListing(id);
+  if (await demoListingBlocked(owned.user, owned.listing)) throw new DemoBlockedError("listing");
+  return owned;
 }
 
 export async function updateListing(id: string, patch: Partial<typeof listing.$inferInsert>) {

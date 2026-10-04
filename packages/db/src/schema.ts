@@ -1083,3 +1083,13 @@ export const marketLogin = pgTable(
   },
   (t) => [primaryKey({ columns: [t.userId, t.site] })],
 );
+
+/*
+ * The shared demo accounts (DEMO=true): "baseline" is when the demo started from
+ * the seed, "reset" the last time it was put back. Everything the demo accounts
+ * add after the baseline is removed on reset.
+ */
+export const demoState = pgTable("demo_state", {
+  key: text("key").$type<"baseline" | "reset">().primaryKey(),
+  at: timestamp("at").notNull(),
+});

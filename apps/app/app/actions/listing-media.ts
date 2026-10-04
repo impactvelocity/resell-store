@@ -9,7 +9,7 @@ import {
   listPhotoRows,
   listPhotos,
   maxPhotos,
-  requireOwnedListing,
+  requireEditableListing,
   savePhotoOrder,
   webSuggestions,
 } from "../../lib/server/listings";
@@ -23,7 +23,7 @@ import {
 const id = z.string().min(1).max(64);
 
 export async function removePhoto(listingId: string, photoId: string) {
-  const { listing } = await requireOwnedListing(id.parse(listingId));
+  const { listing } = await requireEditableListing(id.parse(listingId));
   const [photo] = await db
     .select()
     .from(listingPhoto)
@@ -38,7 +38,7 @@ export async function removePhoto(listingId: string, photoId: string) {
 }
 
 export async function reorderPhotos(listingId: string, photoIds: string[]) {
-  const { listing } = await requireOwnedListing(id.parse(listingId));
+  const { listing } = await requireEditableListing(id.parse(listingId));
   const ids = z.array(id).max(20).parse(photoIds);
   const rows = await listPhotoRows(listing.id);
   const byId = new Map(rows.map((p) => [p.id, p]));
@@ -59,7 +59,7 @@ export async function reorderPhotos(listingId: string, photoIds: string[]) {
 
 /** Adds one of the maker or retail pictures research found, credited to its site. */
 export async function addWebPhoto(listingId: string, url: string) {
-  const { listing } = await requireOwnedListing(id.parse(listingId));
+  const { listing } = await requireEditableListing(id.parse(listingId));
   const pick = webSuggestions(listing).find((s) => s.url === url);
   if (!pick) return { photos: await listPhotos(listing.id), error: "That picture isn't available any more." };
   const rows = await listPhotoRows(listing.id);

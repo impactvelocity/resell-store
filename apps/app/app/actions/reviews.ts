@@ -7,7 +7,8 @@ import { db, eq, shop } from "@repo/db";
 import { CommerceError } from "../../lib/server/commerce";
 import { notifyNewReview } from "../../lib/server/notify-after-sale";
 import * as reviews from "../../lib/server/reviews";
-import { getCurrentUser } from "../../lib/server/session";
+import { getCurrentUser, type CurrentUser } from "../../lib/server/session";
+import { assertNotDemo, DemoBlockedError } from "../../lib/server/demo";
 
 /*
  * Reviews (lib/server/reviews.ts): the buyer leaves or changes one, the
@@ -18,15 +19,15 @@ import { getCurrentUser } from "../../lib/server/session";
 
 type Result<T = object> = ({ ok: true } & T) | { ok: false; error: string; signin?: boolean };
 
-async function run<T extends object>(fn: (userId: string) => Promise<T>): Promise<Result<T>> {
+async function run<T extends object>(fn: (userId: string, user: CurrentUser) => Promise<T>): Promise<Result<T>> {
   const user = await getCurrentUser();
   if (!user) return { ok: false, error: "Sign in first.", signin: true };
   try {
-    const out = await fn(user.id);
+    const out = await fn(user.id, user);
     revalidatePath("/", "layout");
     return { ok: true, ...out };
   } catch (error) {
-    if (error instanceof CommerceError) return { ok: false, error: error.message };
+    if (error instanceof CommerceError || error instanceof DemoBlockedError) return { ok: false, error: error.message };
     if (error instanceof z.ZodError) return { ok: false, error: "Something in there doesn't look right." };
     console.error("Review action failed", error);
     return { ok: false, error: "Something went wrong. Try again?" };
@@ -47,7 +48,8 @@ const leaveInput = z.object({
 
 /** Buyer: stars and a few words on an order that's done. */
 export async function leaveReview(input: z.input<typeof leaveInput>) {
-  return run(async (buyerId) => {
+  return run(async (buyerId, user) => {
+    assertNotDemo(user, "review");
     const parsed = leaveInput.parse(input);
     const r = await reviews.leaveReview({ buyerId, ...parsed });
     after(() => notifyNewReview(r.id));
@@ -64,7 +66,8 @@ const editInput = z.object({
 
 /** Buyer: change the stars, the words or who sees it (for 30 days). */
 export async function editReview(input: z.input<typeof editInput>) {
-  return run(async (buyerId) => {
+  return run(async (buyerId, user) => {
+    assertNotDemo(user, "review");
     const parsed = editInput.parse(input);
     await reviews.editReview({ buyerId, ...parsed });
     return {};
@@ -73,7 +76,8 @@ export async function editReview(input: z.input<typeof editInput>) {
 
 /** Seller: answer a review on one of your shops (or change your answer). */
 export async function replyToReview(input: { reviewId: string; body: string }) {
-  return run(async (sellerId) => {
+  return run(async (sellerId, user) => {
+    assertNotDemo(user, "review");
     const parsed = z.object({ reviewId: id, body: words }).parse(input);
     await reviews.replyToReview({ sellerId, ...parsed });
     return {};

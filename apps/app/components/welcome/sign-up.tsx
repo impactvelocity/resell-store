@@ -13,20 +13,13 @@ import { DressIllustration, SweaterIllustration } from "@repo/ui/whimsy";
 import { useToast } from "@repo/ui/toast";
 import { cn } from "@repo/ui/lib/utils";
 import { signIn } from "../../lib/auth-client";
+import { welcomeReturnTo } from "../../lib/safe-next";
 
 /*
- * A1 Sign up. With `auth` it signs in for real with an email link (shown on the
- * page in local dev, where no email is sent).
+ * A1 Sign up. With `auth` it signs in for real with PayPal or an email link (the
+ * link is shown on the page in local dev, where no email is sent).
  * Without it (the mock screen) every way in just moves on to A2.
  */
-
-/**
- * The magic link's callbackURL. Better Auth's verify endpoint decodes callbackURL once
- * more after reading the query, so `next` is encoded twice to keep its own ?a=1&b=2
- * intact (/welcome also accepts it encoded one level too deep, in case that changes).
- */
-const magicLinkReturnTo = (next?: string | null) =>
-  next ? `/welcome?next=${encodeURIComponent(encodeURIComponent(next))}` : "/welcome";
 
 export type SignUpAuth = {
   /** Why they're back here, e.g. an email link that was used or ran out. */
@@ -35,6 +28,17 @@ export type SignUpAuth = {
   next?: string | null;
   /** Local dev without an email provider: offer the link on the page. */
   devLinks: boolean;
+  /** The server has PayPal keys, so "Continue with PayPal" signs in for real. */
+  paypal?: boolean;
+  /** DEMO=true: the shared demo accounts to sign straight in as. */
+  demo?: {
+    accounts: {
+      role: "seller" | "buyer";
+      name: string;
+      shopName: string | null;
+    }[];
+    resetMinutes: number;
+  };
 };
 
 const NEXT = "/welcome/start";
@@ -51,6 +55,49 @@ export function WelcomeWordmark({ className }: { className?: string }) {
   );
 }
 
+/** DEMO=true: sign straight in as the shared seller or buyer (app/api/demo/sign-in). */
+function DemoPicker({
+  demo,
+  next,
+}: {
+  demo: NonNullable<SignUpAuth["demo"]>;
+  next?: string | null;
+}) {
+  const seller = demo.accounts.find((a) => a.role === "seller");
+  return (
+    <form
+      method="post"
+      action="/api/demo/sign-in"
+      className="flex flex-col gap-3 rounded-xl border-[1.5px] border-border bg-surface p-4"
+    >
+      {next && <input type="hidden" name="next" value={next} />}
+      <div className="flex flex-col gap-0.5">
+        <span className="text-base font-bold">Try the demo, no sign-up</span>
+        <span className="text-sm text-text-muted">
+          {seller?.shopName ? `${seller.name} runs ${seller.shopName}. ` : ""}
+          These accounts are shared, nothing you make goes live, and they reset
+          every {demo.resetMinutes} minutes.
+        </span>
+      </div>
+      <div className="flex flex-wrap gap-2">
+        {demo.accounts.map((a) => (
+          <Button
+            key={a.role}
+            type="submit"
+            name="as"
+            value={a.role}
+            variant="soft"
+            size="md"
+            className="min-w-[140px] flex-1"
+          >
+            {a.role === "seller" ? `Sell as ${a.name}` : `Shop as ${a.name}`}
+          </Button>
+        ))}
+      </div>
+    </form>
+  );
+}
+
 function SignUpForm({
   inputClassName,
   auth,
@@ -62,7 +109,10 @@ function SignUpForm({
   const toast = useToast();
   const [email, setEmail] = useState("");
   const [state, setState] = useState<
-    { kind: "idle" } | { kind: "sending" } | { kind: "sent"; devLink?: string | null }
+    | { kind: "idle" }
+    | { kind: "sending" }
+    | { kind: "paypal" }
+    | { kind: "sent"; devLink?: string | null }
   >({ kind: "idle" });
   const next = () => router.push(NEXT);
 
@@ -74,35 +124,67 @@ function SignUpForm({
       return;
     }
     setState({ kind: "sending" });
-    const { error } = await signIn.magicLink({ email: address, callbackURL: magicLinkReturnTo(auth.next) });
+    const { error } = await signIn.magicLink({
+      email: address,
+      callbackURL: welcomeReturnTo(auth.next),
+    });
     if (error) {
       setState({ kind: "idle" });
-      toast.add({ title: error.message ?? "Couldn't send the link. Try again?" });
+      toast.add({
+        title: error.message ?? "Couldn't send the link. Try again?",
+      });
       return;
     }
     let devLink: string | null = null;
     if (auth.devLinks) {
-      const res = await fetch(`/api/dev/magic-link?email=${encodeURIComponent(address)}`);
+      const res = await fetch(
+        `/api/dev/magic-link?email=${encodeURIComponent(address)}`,
+      );
       if (res.ok) devLink = ((await res.json()) as { url: string | null }).url;
     }
     setState({ kind: "sent", devLink });
   }
 
-  function paypal() {
+  async function paypal() {
     if (!auth) return next();
-    toast.add({ title: "PayPal sign-in is coming. Use your email for now." });
+    if (!auth.paypal) {
+      toast.add({
+        title: "PayPal sign-in isn't set up here. Use your email for now.",
+      });
+      return;
+    }
+    setState({ kind: "paypal" });
+    // Sends the browser to PayPal; it comes back through /api/auth/callback/paypal
+    const { error } = await signIn.social({
+      provider: "paypal",
+      callbackURL: welcomeReturnTo(auth.next),
+      errorCallbackURL: "/welcome",
+    });
+    if (error) {
+      setState({ kind: "idle" });
+      toast.add({
+        title: error.message ?? "Couldn't reach PayPal. Try again?",
+      });
+    }
   }
 
   if (state.kind === "sent") {
     return (
       <div className="flex w-full flex-col gap-3 rounded-xl border-[1.5px] border-border bg-surface p-6">
-        <span className="font-display text-2xl font-extrabold tracking-tight">Check your email</span>
+        <span className="font-display text-2xl font-extrabold tracking-tight">
+          Check your email
+        </span>
         <p className="text-base text-text-muted">
-          We sent a sign-in link to <span className="font-semibold text-text">{email.trim()}</span>.
-          It works once and runs out in 15 minutes.
+          We sent a sign-in link to{" "}
+          <span className="font-semibold text-text">{email.trim()}</span>. It
+          works once and runs out in 15 minutes.
         </p>
         {state.devLink && (
-          <Button render={<a href={state.devLink} />} nativeButton={false} className="w-full">
+          <Button
+            render={<a href={state.devLink} />}
+            nativeButton={false}
+            className="w-full"
+          >
             Open the sign-in link
           </Button>
         )}
@@ -111,7 +193,11 @@ function SignUpForm({
             Local dev: no email is sent, so the link is right here.
           </p>
         )}
-        <Button variant="soft" className="w-full" onClick={() => setState({ kind: "idle" })}>
+        <Button
+          variant="soft"
+          className="w-full"
+          onClick={() => setState({ kind: "idle" })}
+        >
           Use a different email
         </Button>
       </div>
@@ -119,51 +205,68 @@ function SignUpForm({
   }
 
   return (
-    <form
-      className="flex w-full flex-col gap-3"
-      onSubmit={(event: FormEvent) => {
-        event.preventDefault();
-        void emailLink();
-      }}
-    >
-      {auth?.notice && (
-        <p role="alert" className="rounded-lg bg-accent-soft px-4 py-3 text-sm font-semibold text-accent-text">
-          {auth.notice}
-        </p>
-      )}
-      <Button type="button" className="w-full" onClick={paypal}>
-        Continue with PayPal
-      </Button>
-      <div className="flex w-full items-center gap-3 py-1">
-        <span className="h-px flex-1 bg-border" />
-        <span className="text-sm font-medium text-text-muted">
-          or use your email
-        </span>
-        <span className="h-px flex-1 bg-border" />
-      </div>
-      <Input
-        type="email"
-        name="email"
-        autoComplete="email"
-        aria-label="Email"
-        placeholder="you@example.com"
-        value={email}
-        onChange={(event) => setEmail(event.currentTarget.value)}
-        className={cn("h-14 px-[22px]", inputClassName)}
-      />
-      <Button
-        type="submit"
-        variant="secondary"
-        className="w-full"
-        disabled={state.kind === "sending"}
+    <div className="flex w-full flex-col gap-5">
+      {auth?.demo && <DemoPicker demo={auth.demo} next={auth.next} />}
+      <form
+        className="flex w-full flex-col gap-3"
+        onSubmit={(event: FormEvent) => {
+          event.preventDefault();
+          void emailLink();
+        }}
       >
-        {state.kind === "sending" ? "Sending…" : "Email me a sign-in link"}
-      </Button>
-    </form>
+        {auth?.notice && (
+          <p
+            role="alert"
+            className="rounded-lg bg-accent-soft px-4 py-3 text-sm font-semibold text-accent-text"
+          >
+            {auth.notice}
+          </p>
+        )}
+        <Button
+          type="button"
+          className="w-full"
+          onClick={() => void paypal()}
+          disabled={state.kind === "paypal"}
+        >
+          {state.kind === "paypal" ? "Opening PayPal…" : "Continue with PayPal"}
+        </Button>
+        <div className="flex w-full items-center gap-3 py-1">
+          <span className="h-px flex-1 bg-border" />
+          <span className="text-sm font-medium text-text-muted">
+            or use your email
+          </span>
+          <span className="h-px flex-1 bg-border" />
+        </div>
+        <Input
+          type="email"
+          name="email"
+          autoComplete="email"
+          aria-label="Email"
+          placeholder="you@example.com"
+          value={email}
+          onChange={(event) => setEmail(event.currentTarget.value)}
+          className={cn("h-14 px-[22px]", inputClassName)}
+        />
+        <Button
+          type="submit"
+          variant="secondary"
+          className="w-full"
+          disabled={state.kind === "sending" || state.kind === "paypal"}
+        >
+          {state.kind === "sending" ? "Sending…" : "Email me a sign-in link"}
+        </Button>
+      </form>
+    </div>
   );
 }
 
-function LogInLine({ className, live }: { className?: string; live?: boolean }) {
+function LogInLine({
+  className,
+  live,
+}: {
+  className?: string;
+  live?: boolean;
+}) {
   if (live) {
     return (
       <p className={cn("text-base font-medium text-text-muted", className)}>
@@ -265,7 +368,11 @@ export function SignUpScreen({ auth }: { auth?: SignUpAuth }) {
           <p className="text-lg leading-7 text-text-muted">{pitch}</p>
         </div>
         <div aria-hidden className="flex items-center gap-2.5 px-6 pt-7">
-          <Sticker size="lg" rotate={-5} className="px-[18px] py-2 leading-[34px]">
+          <Sticker
+            size="lg"
+            rotate={-5}
+            className="px-[18px] py-2 leading-[34px]"
+          >
             $24
           </Sticker>
           <Sticker tone="secondary" rotate={4}>

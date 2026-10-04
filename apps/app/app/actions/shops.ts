@@ -5,6 +5,7 @@ import { redirect } from "next/navigation";
 import { z } from "zod";
 import { and, asc, db, eq, ne, shop } from "@repo/db";
 import { deleteFiles, saveUpload, UploadError } from "../../lib/server/files";
+import { demoBlocked } from "../../lib/server/demo";
 import { requireUser } from "../../lib/server/session";
 import { checkSlug, getOwnedShop, shopFileIds, shopPicture } from "../../lib/server/shops";
 
@@ -56,6 +57,8 @@ const createSchema = z.object({
 /** B1: open the shop and go to it. Returns an error to show, or redirects. */
 export async function createShop(form: FormData): Promise<{ error: string }> {
   const user = await requireUser();
+  const demo = demoBlocked(user, "shop");
+  if (demo) return { error: demo };
   const parsed = createSchema.safeParse(Object.fromEntries(form));
   if (!parsed.success) return { error: parsed.error.issues[0]!.message };
   const input = parsed.data;
@@ -111,6 +114,8 @@ export async function updateShop(
   form: FormData,
 ): Promise<{ error: string } | { ok: true; shop: SavedShop }> {
   const user = await requireUser();
+  const demo = demoBlocked(user, "shop");
+  if (demo) return { error: demo };
   const row = await getOwnedShop(user.id, currentSlug);
   if (!row) return { error: "That shop isn't yours, or it's gone." };
 
@@ -163,6 +168,8 @@ export async function updateShop(
 /** B3: pause hides the shop and keeps everything. */
 export async function setShopPaused(slug: string, paused: boolean) {
   const user = await requireUser();
+  const demo = demoBlocked(user, "shop");
+  if (demo) return { error: demo };
   const [row] = await db
     .update(shop)
     .set({ paused })
@@ -176,6 +183,8 @@ export async function setShopPaused(slug: string, paused: boolean) {
 /** B3: delete the shop and its listings. Returns where to go next. */
 export async function deleteShop(slug: string): Promise<{ error: string } | { next: string }> {
   const user = await requireUser();
+  const demo = demoBlocked(user, "shop");
+  if (demo) return { error: demo };
   const owned = await getOwnedShop(user.id, slug);
   // Photos and the picture outlive the rows in object storage unless cleared
   const files = owned ? await shopFileIds(owned.id) : [];
