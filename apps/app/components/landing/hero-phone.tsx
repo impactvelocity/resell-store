@@ -3,11 +3,16 @@
 import { ModeSwitch } from "../home/parts";
 import { SellingPhone } from "../home/selling";
 import { MobileTopBar } from "../shell/page";
+import { ViewerProvider, type Viewer } from "../viewer";
+import { inboxCount, me, shops } from "../../lib/mock";
 
 /*
  * The real A3 Home (selling) screen, frozen inside a phone for the L1 hero.
  * `inert` keeps its links and buttons out of the tab order and unclickable.
+ * It shows the sample seller, never whoever is signed in.
  */
+
+const sampleViewer: Viewer = { id: "sample", ...me, shops, inboxCount };
 
 function StatusBar() {
   return (
@@ -43,19 +48,21 @@ function StatusBar() {
 export function HeroPhone({ className }: { className?: string }) {
   return (
     <div inert aria-hidden className={className}>
-      <div className="h-full w-[390px] overflow-hidden bg-background">
-        <StatusBar />
-        <MobileTopBar className="pt-1 desk:flex" />
-        <div className="px-4 pt-5">
-          <ModeSwitch
-            mode="selling"
-            onModeChange={() => {}}
-            className="w-full"
-            tabClassName="h-11"
-          />
+      <ViewerProvider viewer={sampleViewer}>
+        <div className="h-full w-[390px] overflow-hidden bg-background">
+          <StatusBar />
+          <MobileTopBar className="pt-1 desk:flex" />
+          <div className="px-4 pt-5">
+            <ModeSwitch
+              mode="selling"
+              onModeChange={() => {}}
+              className="w-full"
+              tabClassName="h-11"
+            />
+          </div>
+          <SellingPhone offerAccepted={false} onAcceptOffer={() => {}} />
         </div>
-        <SellingPhone offerAccepted={false} onAcceptOffer={() => {}} />
-      </div>
+      </ViewerProvider>
     </div>
   );
 }
