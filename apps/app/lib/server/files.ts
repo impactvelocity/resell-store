@@ -63,11 +63,15 @@ export async function saveUpload(upload: File, ownerId: string) {
   if (r2) {
     const ext = extensions[upload.type] ?? upload.type.split("/")[1]?.replace(/[^a-z0-9]/g, "") ?? "bin";
     storageKey = `uploads/${ownerId}/${id}.${ext}`;
-    const res = await r2.client.fetch(objectUrl(storageKey), {
+    // Sign, then send the bytes ourselves: aws4fetch's own fetch passes a Request,
+    // which Next's patched fetch rebuilds from its body stream, so it goes out
+    // chunked without Content-Length and R2 rejects it (411).
+    const signed = await r2.client.sign(objectUrl(storageKey), {
       method: "PUT",
       body: bytes,
       headers: { "Content-Type": upload.type, "Cache-Control": "public, max-age=31536000, immutable" },
     });
+    const res = await fetch(signed.url, { method: "PUT", headers: signed.headers, body: bytes });
     if (!res.ok) throw new Error(`R2 upload failed: ${res.status} ${await res.text()}`);
   }
 
