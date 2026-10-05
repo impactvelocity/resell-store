@@ -24,6 +24,7 @@ import { buyListing } from "../../../app/actions/commerce";
 import type { SandboxLogin as Login } from "../../../lib/server/paypal";
 import { SandboxLogin } from "../../sandbox-login";
 import { SiteLink } from "../links";
+import { PaymentMarks } from "../payment-marks";
 import { RadioCard, Sparkle } from "./controls";
 import { OrderItem, OrderSummary, StepList, SummaryLines, type SummaryLine } from "./order-summary";
 
@@ -428,6 +429,8 @@ export function CheckoutForm({
                   />
                   )}
                 </div>
+                {/* Phone: the pay bar is pinned, so the marks sit under the choices */}
+                <PaymentMarks className="justify-start desk:hidden" />
               </section>
 
               {/* Phone: the escrow note and totals sit in the flow */}
@@ -472,6 +475,7 @@ export function CheckoutForm({
                 <Button type="submit" disabled={pending} className="h-[60px] w-full text-lg text-leaf-900">
                   {pending ? (test ? "Paying..." : "Opening PayPal...") : payLabel}
                 </Button>
+                <PaymentMarks />
                 <p className="text-center text-sm text-public-text-muted">{payNote}</p>
               </div>
 

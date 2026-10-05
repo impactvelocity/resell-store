@@ -9,6 +9,7 @@ import type { PublicListing, PublicStore } from "../../../lib/mock-market";
 import { formatPrice } from "../../../lib/mock-market";
 import { trackShare } from "../../../lib/track";
 import { SiteLink, StoreLink } from "../links";
+import { PaymentMarks } from "../payment-marks";
 import { StoreAvatar } from "../parts";
 import { StarIcon } from "../../reviews/review-parts";
 import { arrivesPhrase, deliveryNote, deliveryTitle, sellerLine, shippingLine } from "./copy";
@@ -260,6 +261,7 @@ export function BuyBox({
             {iconActions}
           </div>
         )}
+        {!listing.sold && !viewer?.own && <PaymentMarks className="pt-1" />}
         {/* Pay Later comes with PayPal checkout; live stores don't have it yet */}
         {!store.live && (
           <p className="text-center text-sm text-public-text-muted">
