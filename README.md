@@ -6,6 +6,7 @@
   <a href="https://resell.store"><img src="https://img.shields.io/badge/Live-resell.store-ffd934?style=for-the-badge&labelColor=14261d" alt="Live site"></a>
   <a href="https://www.youtube.com/watch?v=Nus5lpO5wL0"><img src="https://img.shields.io/badge/Watch-the_demo-ff5fa8?style=for-the-badge&logo=youtube&logoColor=white&labelColor=14261d" alt="Demo video"></a>
   <a href="https://paypalaihackathon.devpost.com/"><img src="https://img.shields.io/badge/PayPal-AI_Hackathon-002991?style=for-the-badge&logo=paypal&logoColor=white&labelColor=14261d" alt="PayPal AI Hackathon"></a>
+  <a href="https://render.com/deploy?repo=https://github.com/impactvelocity/resell-store"><img src="https://img.shields.io/badge/Deploy_to-Render-8a05ff?style=for-the-badge&logo=render&logoColor=white&labelColor=14261d" alt="Deploy to Render"></a>
   <a href="https://docs.resell.store"><img src="https://img.shields.io/badge/Read-the_docs-256b4c?style=for-the-badge&labelColor=14261d" alt="Docs"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-fffdf2?style=for-the-badge&labelColor=14261d" alt="MIT license"></a>
 </p>
@@ -144,7 +145,9 @@ pnpm email        # preview the email templates at http://localhost:5690
 
 ### Deploying to Render
 
-`render.yaml` is a Render Blueprint for the web service and its Postgres database. In Render, choose **New → Blueprint**, pick the repo, then fill in the keys marked `sync: false`. The full guide is at `/docs/dev/deploy`.
+[![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https://github.com/impactvelocity/resell-store)
+
+`render.yaml` is a Render Blueprint for the web service and its Postgres database. Click the button above (or in Render, choose **New → Blueprint** and pick the repo), then fill in the keys marked `sync: false`. The full guide is at `/docs/dev/deploy`.
 
 On every deploy, Render runs:
 
