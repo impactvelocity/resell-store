@@ -6,7 +6,13 @@ import { cn } from "@repo/ui/lib/utils";
 import { AddToAgent } from "./add-to-agent";
 import { HeroPhone } from "./hero-phone";
 import { Float, Pop, Reveal } from "./motion";
-import { authorUrl, bigButton, Container, hackathonUrl } from "./parts";
+import {
+  authorUrl,
+  bigButton,
+  Container,
+  hackathonUrl,
+  renderDeployUrl,
+} from "./parts";
 import { PayPalLogo } from "./paypal-logo";
 
 function HeroVisual() {
@@ -101,15 +107,31 @@ export function Hero({ signedIn }: { signedIn: boolean }) {
               </a>
             </div>
           </div>
-          <a
-            href={authorUrl}
-            target="_blank"
-            rel="noreferrer"
-            className="mt-3 ml-1 inline-flex items-center gap-1 text-sm text-text-muted hover:text-text hover:underline"
-          >
-            Built by Dylan Jones
-            <ArrowUpRightIcon size={14} strokeWidth={2.6} />
-          </a>
+          <div className="mt-4 ml-1 flex flex-wrap items-center gap-x-5 gap-y-3">
+            <a
+              href={renderDeployUrl}
+              target="_blank"
+              rel="noreferrer"
+              className="shrink-0 transition-opacity hover:opacity-85"
+            >
+              {/* Render's official button artwork */}
+              <img
+                src="https://render.com/images/deploy-to-render-button.svg"
+                alt="Deploy to Render"
+                width={153}
+                height={40}
+              />
+            </a>
+            <a
+              href={authorUrl}
+              target="_blank"
+              rel="noreferrer"
+              className="inline-flex items-center gap-1 text-sm text-text-muted hover:text-text hover:underline"
+            >
+              Built by Dylan Jones
+              <ArrowUpRightIcon size={14} strokeWidth={2.6} />
+            </a>
+          </div>
         </Reveal>
       </div>
       <HeroVisual />

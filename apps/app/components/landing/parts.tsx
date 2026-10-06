@@ -7,6 +7,8 @@ import { cn } from "@repo/ui/lib/utils";
 export const githubUrl = "https://github.com/impactvelocity/resell-store";
 export const hackathonUrl = "https://paypalaihackathon.devpost.com/";
 export const authorUrl = "https://hidylanjones.com";
+/** Render reads render.yaml from the repo root and provisions the app + Postgres. */
+export const renderDeployUrl = `https://render.com/deploy?repo=${githubUrl}`;
 
 /** 1440 artboard, 96px gutters on desktop. */
 export function Container({ className, ...props }: ComponentProps<"div">) {
