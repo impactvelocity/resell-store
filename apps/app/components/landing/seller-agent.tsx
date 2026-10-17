@@ -9,7 +9,6 @@ import { SparkleMark } from "@repo/ui/whimsy";
 import { cn } from "@repo/ui/lib/utils";
 import { Pill } from "../home/parts";
 import { PotIllustration } from "../listing/pot-illustration";
-import { Pop, Reveal } from "./motion";
 import { CheckDot, Container, Point, SectionIntro } from "./parts";
 
 /* The seller agent section: research, haggling, the link page, and four promises. */
@@ -91,16 +90,12 @@ function ResearchDemo() {
   return (
     <div className="flex w-full max-w-[438px] shrink-0 flex-col gap-4 rounded-xl bg-surface-muted p-5 sm:p-10">
       <div className="flex flex-col items-end gap-2">
-        <Pop rotate={-20} delay={0.2}>
-          <span className="flex size-28 items-center justify-center rounded-lg bg-leaf-100">
-            <PotIllustration />
-          </span>
-        </Pop>
-        <Pop rotate={6} delay={0.4} className="origin-bottom-right">
-          <p className="max-w-[290px] rounded-t-lg rounded-br-[6px] rounded-bl-lg bg-text px-4 py-3 text-base font-medium text-background">
-            Le Creuset dutch oven, the yellow one. It was a wedding gift.
-          </p>
-        </Pop>
+        <span className="flex size-28 items-center justify-center rounded-lg bg-leaf-100">
+          <PotIllustration />
+        </span>
+        <p className="max-w-[290px] rounded-t-lg rounded-br-[6px] rounded-bl-lg bg-text px-4 py-3 text-base font-medium text-background">
+          Le Creuset dutch oven, the yellow one. It was a wedding gift.
+        </p>
       </div>
       <ul className="flex flex-col rounded-lg border border-border bg-surface px-4 py-1">
         {researchSteps.map((step) => (
@@ -275,7 +270,7 @@ function LinkPageDemo() {
   return (
     <div aria-hidden className="flex flex-col gap-3">
       {linkRows.map((row, i) => (
-        <Reveal key={row.label} delay={0.2 + i * 0.1} y={18}>
+        <div key={row.label}>
           <div
             className={cn(
               "flex h-[68px] items-center gap-3.5 rounded-full pr-5 pl-3.5",
@@ -304,7 +299,7 @@ function LinkPageDemo() {
               className={i === 0 ? undefined : "text-text-muted"}
             />
           </div>
-        </Reveal>
+        </div>
       ))}
     </div>
   );
@@ -333,29 +328,23 @@ export function SellerAgent() {
   return (
     <section id="seller-agent" className="scroll-mt-6">
       <Container className="flex flex-col gap-6 pt-24 md:pt-32">
-        <Reveal>
-          <SectionIntro
-            className="pb-8"
-            title="More money for your stuff, less of your evening"
-            aside="Pricing, writing, answering, haggling. Your agent handles the parts that made you give up on selling last time."
-          />
-        </Reveal>
-        <Reveal y={48}>
-          <ResearchFeature />
-        </Reveal>
+        <SectionIntro
+          className="pb-8"
+          title="More money for your stuff, less of your evening"
+          aside="Pricing, writing, answering, haggling. Your agent handles the parts that made you give up on selling last time."
+        />
+        <ResearchFeature />
         <div className="flex flex-col gap-6 lg:flex-row">
-          <Reveal y={48} className="flex min-w-0 flex-1">
+          <div className="flex min-w-0 flex-1">
             <FeatureCard
               title="It does the haggling"
               body="Tell it your lowest price once. It answers questions at 2am, takes a deposit from buyers who mean it, and only taps you for the final yes."
               className="bg-secondary-soft"
             >
-              <Pop rotate={-5} delay={0.3}>
-                <OfferDemo />
-              </Pop>
+              <OfferDemo />
             </FeatureCard>
-          </Reveal>
-          <Reveal y={48} delay={0.12} className="flex min-w-0 flex-1">
+          </div>
+          <div className="flex min-w-0 flex-1">
             <FeatureCard
               title="One link sells to everyone"
               body="Your shop gets its own page for your bio. People can browse it, and so can their ChatGPT or Claude. Your agent can post it to the other places you sell."
@@ -363,13 +352,13 @@ export function SellerAgent() {
             >
               <LinkPageDemo />
             </FeatureCard>
-          </Reveal>
+          </div>
         </div>
         <div className="grid gap-8 px-2 pt-10 sm:grid-cols-2 lg:grid-cols-4 lg:gap-10">
           {promises.map((p, i) => (
-            <Reveal key={p.title} delay={i * 0.08}>
+            <div key={p.title}>
               <Point title={p.title}>{p.body}</Point>
-            </Reveal>
+            </div>
           ))}
         </div>
       </Container>

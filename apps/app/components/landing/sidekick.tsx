@@ -1,7 +1,7 @@
 import { PhotoCameraIcon } from "@repo/ui/icons";
 import { WedgeMark } from "@repo/ui/whimsy";
 import { cn } from "@repo/ui/lib/utils";
-import { Float, Pop, Reveal } from "./motion";
+import { Pop } from "./motion";
 import { Container, Headline, Tag } from "./parts";
 
 const dresses = [
@@ -117,9 +117,7 @@ function ComparisonDemo() {
         Same price in the shop. $45 apart in the end.
       </p>
       <Pop className="absolute -top-[22px] right-9" rotate={120} delay={0.5}>
-        <Float tilt={-10} duration={5.5}>
-          <WedgeMark size={72} />
-        </Float>
+        <WedgeMark size={72} />
       </Pop>
     </div>
   );
@@ -129,26 +127,22 @@ export function Sidekick() {
   return (
     <section id="sidekick" className="scroll-mt-6">
       <Container className="flex flex-col-reverse items-center gap-16 py-24 md:py-32 xl:flex-row xl:gap-[88px]">
-        <Reveal
-          y={48}
-          scale={0.96}
-          className="flex w-full max-w-[520px] shrink-0 justify-center"
-        >
+        <div className="flex w-full max-w-[520px] shrink-0 justify-center">
           <ComparisonDemo />
-        </Reveal>
+        </div>
         <div className="flex min-w-0 flex-1 flex-col gap-7">
-          <Reveal className="flex flex-col gap-7">
+          <div className="flex flex-col gap-7">
             <Headline>Know what it's worth before you buy it</Headline>
             <p className="text-lg text-text-muted md:text-xl md:leading-[30px]">
               About to buy a dress you'll wear twice? Show your sidekick the tag
               or paste the link. It tells you what that exact thing sells on
               for, so you pick the one that costs you less in the end.
             </p>
-          </Reveal>
+          </div>
           <ol className="flex flex-col gap-[18px] pt-1">
             {steps.map((step, i) => (
               <li key={step.title}>
-                <Reveal delay={0.1 + i * 0.1} y={16} className="flex gap-4">
+                <div className="flex gap-4">
                   <span className="flex size-8 shrink-0 items-center justify-center rounded-full bg-primary font-display text-base font-extrabold text-on-primary">
                     {i + 1}
                   </span>
@@ -158,7 +152,7 @@ export function Sidekick() {
                       {step.body}
                     </span>
                   </span>
-                </Reveal>
+                </div>
               </li>
             ))}
           </ol>
@@ -167,9 +161,7 @@ export function Sidekick() {
               Made for the rarely used
             </span>
             {goodFor.map((item, i) => (
-              <Pop key={item} delay={0.3 + i * 0.06} rotate={i % 2 ? 8 : -8}>
-                <Tag>{item}</Tag>
-              </Pop>
+              <Tag key={item}>{item}</Tag>
             ))}
           </div>
         </div>

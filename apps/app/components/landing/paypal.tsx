@@ -1,5 +1,5 @@
 import { DressIllustration } from "@repo/ui/whimsy";
-import { Pop, Reveal } from "./motion";
+import { Pop } from "./motion";
 import { CheckDot, Container, Headline } from "./parts";
 
 const perks = [
@@ -55,17 +55,15 @@ function PayoutCard() {
           </li>
         ))}
       </ol>
-      <Pop rotate={3} delay={0.45}>
-        <div className="flex items-center justify-between gap-4 rounded-lg bg-primary px-[22px] py-[18px] text-on-primary">
-          <div className="flex flex-col">
-            <span className="text-base font-bold">Paid out to your PayPal</span>
-            <span className="text-sm">Thursday, 4:12 pm</span>
-          </div>
-          <span className="font-display text-3xl font-extrabold tracking-tight">
-            +$24
-          </span>
+      <div className="flex items-center justify-between gap-4 rounded-lg bg-primary px-[22px] py-[18px] text-on-primary">
+        <div className="flex flex-col">
+          <span className="text-base font-bold">Paid out to your PayPal</span>
+          <span className="text-sm">Thursday, 4:12 pm</span>
         </div>
-      </Pop>
+        <span className="font-display text-3xl font-extrabold tracking-tight">
+          +$24
+        </span>
+      </div>
       <Pop className="absolute -top-[18px] right-8" rotate={-40} delay={0.6}>
         <span
           className="block rounded-full bg-accent px-4 py-[5px] font-display text-base font-extrabold text-leaf-900"
@@ -84,7 +82,7 @@ export function PayPal() {
       <div className="bg-leaf-900 text-white">
         <Container className="flex flex-col items-center gap-16 py-20 xl:flex-row xl:gap-20 xl:py-28">
           <div className="flex min-w-0 flex-1 flex-col gap-12">
-            <Reveal className="flex flex-col gap-5">
+            <div className="flex flex-col gap-5">
               <Headline className="text-white">
                 You get paid and nobody gets burned
               </Headline>
@@ -92,25 +90,21 @@ export function PayPal() {
                 Buyers trust the checkout because it's PayPal. You get the money
                 without chasing anyone or meeting a stranger in a parking lot.
               </p>
-            </Reveal>
+            </div>
             <div className="grid gap-8 sm:grid-cols-2 sm:gap-x-10">
               {perks.map((perk, i) => (
-                <Reveal
-                  key={perk.title}
-                  delay={i * 0.08}
-                  className="flex flex-col gap-2"
-                >
+                <div key={perk.title} className="flex flex-col gap-2">
                   <h3 className="font-display text-xl font-extrabold tracking-tight text-lemon-400">
                     {perk.title}
                   </h3>
                   <p className="text-base">{perk.body}</p>
-                </Reveal>
+                </div>
               ))}
             </div>
           </div>
-          <Reveal y={48} delay={0.1} className="w-full max-w-[480px] shrink-0">
+          <div className="w-full max-w-[480px] shrink-0">
             <PayoutCard />
-          </Reveal>
+          </div>
         </Container>
       </div>
     </section>

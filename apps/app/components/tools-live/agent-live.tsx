@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useState, type ReactNode } from "react";
+import { useState } from "react";
 import { Button } from "@repo/ui/button";
 import { ArrowUpRightIcon, CheckIcon, CopyIcon } from "@repo/ui/icons";
 import { useToast } from "@repo/ui/toast";
@@ -17,7 +17,6 @@ import {
   maskLink,
   MiniSpinner,
   StatusPill,
-  StepNumber,
   Switch,
   TextAction,
   useCopy,
@@ -202,44 +201,6 @@ function Hero({ data, onMade }: { data: AgentScreenData; onMade: () => void }) {
           toast.add({ title: "Link turned off. No AI app can use it now." });
         }}
       />
-    </section>
-  );
-}
-
-function Step({ n, title, children }: { n: number; title: string; children: ReactNode }) {
-  return (
-    <div className="flex items-start gap-3 desk:flex-1 desk:flex-col desk:gap-2.5">
-      <StepNumber>{n}</StepNumber>
-      <div className="flex min-w-0 flex-1 flex-col gap-1.5 desk:gap-2.5">
-        <div className="text-base font-bold">{title}</div>
-        {children}
-      </div>
-    </div>
-  );
-}
-
-function Steps() {
-  const { copy } = useCopy();
-  return (
-    <section className="flex w-full flex-col gap-4 rounded-lg border border-border bg-surface p-5 desk:gap-5 desk:rounded-xl desk:p-7">
-      <h2 className="font-display text-xl font-extrabold tracking-tight">Three steps, about a minute</h2>
-      <div className="flex flex-col gap-4 desk:flex-row desk:gap-5">
-        <Step n={1} title="Copy your private link">
-          <p className="-mt-1.5 text-sm text-text-muted desk:mt-0">It&apos;s the one above. Only you should have it.</p>
-        </Step>
-        <Step n={2} title="Add it in your AI app">
-          <p className="-mt-1.5 text-sm text-text-muted desk:mt-0">Look for Connectors or MCP servers in its settings and paste the link.</p>
-        </Step>
-        <Step n={3} title="Ask it something">
-          <button
-            type="button"
-            onClick={() => copy("ask", "What needs me today?", "Copied. Ask it in your AI app.")}
-            className="flex h-8 w-fit cursor-pointer items-center rounded-full bg-surface-muted px-3 text-sm font-medium transition-colors outline-none hover:bg-border focus-visible:outline-2 focus-visible:outline-secondary"
-          >
-            &quot;What needs me today?&quot;
-          </button>
-        </Step>
-      </div>
     </section>
   );
 }
@@ -454,9 +415,6 @@ export function AgentLiveScreen({ data }: { data: AgentScreenData }) {
         {/* Columns are `contents` on phones so the cards can interleave by order, as in the design */}
         <div className="flex flex-col gap-4 desk:flex-row desk:items-start desk:gap-6">
           <div className="contents desk:flex desk:min-w-0 desk:flex-[1.15] desk:flex-col desk:gap-6">
-            <div className="order-1 desk:order-none">
-              <Steps />
-            </div>
             <div className="order-2 desk:order-none">
               <WorksWith data={data} />
             </div>

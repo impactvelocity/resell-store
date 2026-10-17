@@ -4,7 +4,7 @@ import { CodeIcon } from "@repo/ui/icons";
 import { Wordmark } from "@repo/ui/logo";
 import { BerriesMark, SliceMark } from "@repo/ui/whimsy";
 import { cn } from "@repo/ui/lib/utils";
-import { Float, Pop, Reveal } from "./motion";
+import { Pop } from "./motion";
 import { bigButton, Container, githubUrl, hackathonUrl } from "./parts";
 
 /* The closing lemon panel and the dark footer. */
@@ -12,11 +12,7 @@ import { bigButton, Container, githubUrl, hackathonUrl } from "./parts";
 export function FinalCta({ signedIn }: { signedIn: boolean }) {
   return (
     <section className="mx-auto w-full max-w-[1440px] px-4 pb-12 md:px-12">
-      <Reveal
-        y={48}
-        scale={0.97}
-        className="relative flex flex-col items-center gap-8 overflow-hidden rounded-[32px] bg-primary px-6 pt-24 pb-24 text-center text-on-primary md:rounded-[40px] md:px-12 md:pt-28 md:pb-[120px]"
-      >
+      <div className="relative flex flex-col items-center gap-8 overflow-hidden rounded-[32px] bg-primary px-6 pt-24 pb-24 text-center text-on-primary md:rounded-[40px] md:px-12 md:pt-28 md:pb-[120px]">
         <h2 className="max-w-[920px] font-display text-5xl font-extrabold tracking-[-0.035em] md:text-[88px] md:leading-[86px]">
           Your closet is worth more than you think
         </h2>
@@ -49,20 +45,16 @@ export function FinalCta({ signedIn }: { signedIn: boolean }) {
           delay={0.4}
           className="absolute top-6 left-4 hidden sm:block md:top-[72px] md:left-[120px]"
         >
-          <Float tilt={20} duration={6}>
-            <SliceMark size={96} className="-rotate-12" />
-          </Float>
+          <SliceMark size={96} className="-rotate-12" />
         </Pop>
         <Pop
           rotate={30}
           delay={0.55}
           className="absolute right-6 bottom-6 hidden sm:block md:right-[140px] md:bottom-[84px]"
         >
-          <Float tilt={-12} distance={10} duration={4} delay={0.8}>
-            <BerriesMark size={88} />
-          </Float>
+          <BerriesMark size={88} />
         </Pop>
-      </Reveal>
+      </div>
     </section>
   );
 }

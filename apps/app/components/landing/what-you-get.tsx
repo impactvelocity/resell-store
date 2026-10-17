@@ -1,4 +1,3 @@
-import { Pop, Reveal } from "./motion";
 import { Container, Point, Tag } from "./parts";
 
 const features = [
@@ -41,11 +40,9 @@ const worksWith = ["ChatGPT", "Claude", "Grok", "Any MCP client", "API"];
 function SellerCard() {
   return (
     <div className="flex w-full max-w-[400px] flex-col gap-5 rounded-xl border border-border bg-surface p-6">
-      <Pop rotate={-25} delay={0.25} className="w-fit">
-        <span className="flex size-[72px] items-center justify-center rounded-full bg-primary font-display text-3xl font-extrabold tracking-tight text-on-primary">
-          M
-        </span>
-      </Pop>
+      <span className="flex size-[72px] items-center justify-center rounded-full bg-primary font-display text-3xl font-extrabold tracking-tight text-on-primary">
+        M
+      </span>
       <div className="flex flex-col gap-1">
         <span className="font-display text-2xl font-extrabold tracking-tight">
           Maya's closet
@@ -79,7 +76,7 @@ function SellerCard() {
 export function WhatYouGet() {
   return (
     <Container className="flex flex-col items-start gap-16 pb-24 md:pb-32 xl:flex-row xl:gap-[88px]">
-      <Reveal className="flex w-full flex-col gap-7 xl:w-[400px] xl:shrink-0">
+      <div className="flex w-full flex-col gap-7 xl:w-[400px] xl:shrink-0">
         <h2 className="font-display text-4xl font-extrabold tracking-tight md:text-[56px] md:leading-[58px]">
           A whole shop, not just a listing
         </h2>
@@ -87,18 +84,18 @@ export function WhatYouGet() {
           Everything a proper little store needs, set up the moment you open.
         </p>
         <SellerCard />
-      </Reveal>
+      </div>
       <div className="flex w-full min-w-0 flex-1 flex-col">
         <div className="grid border-t border-border sm:grid-cols-2 sm:gap-x-12">
           {features.map((f, i) => (
-            <Reveal key={f.title} delay={(i % 2) * 0.08} y={20}>
+            <div key={f.title}>
               <Point
                 title={f.title}
                 className="h-full border-b border-border py-7"
               >
                 {f.body}
               </Point>
-            </Reveal>
+            </div>
           ))}
         </div>
         <div className="flex flex-wrap items-center gap-2.5 pt-7">
@@ -106,9 +103,7 @@ export function WhatYouGet() {
             Works with
           </span>
           {worksWith.map((name, i) => (
-            <Pop key={name} delay={0.1 + i * 0.06} rotate={i % 2 ? 8 : -8}>
-              <Tag className="h-9 px-4 font-bold">{name}</Tag>
-            </Pop>
+            <Tag key={name} className="h-9 px-4 font-bold">{name}</Tag>
           ))}
         </div>
       </div>

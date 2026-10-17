@@ -5,7 +5,6 @@ import { likedListingIds } from "../../lib/server/likes";
 import { publicViewer, searchListings } from "../../lib/server/market";
 import { LikesProvider } from "../market/likes";
 import { ListingCard } from "../market/parts";
-import { Reveal } from "./motion";
 import { bigButton, Container, Headline } from "./parts";
 
 /* The newest real listings, so the landing page shows what's actually for sale. */
@@ -24,7 +23,9 @@ function OpenSlot({ signedIn }: { signedIn: boolean }) {
           +
         </span>
         <span className="text-base font-bold">Your thing here</span>
-        <span className="text-sm text-public-text-muted">List something and it shows up for everyone</span>
+        <span className="text-sm text-public-text-muted">
+          List something and it shows up for everyone
+        </span>
       </span>
     </Link>
   );
@@ -41,7 +42,7 @@ export async function ForBuyers() {
   return (
     <section className="border-y border-border bg-public-background">
       <Container className="flex flex-col gap-14 py-20 md:py-28">
-        <Reveal className="flex flex-col gap-8 lg:flex-row lg:items-end lg:justify-between lg:gap-16">
+        <div className="flex flex-col gap-8 lg:flex-row lg:items-end lg:justify-between lg:gap-16">
           <div className="flex max-w-[720px] flex-col gap-5">
             <Headline>Good things, fair prices, real closets</Headline>
             <p className="max-w-[620px] text-lg text-public-text-muted md:text-xl md:leading-[30px]">
@@ -71,18 +72,18 @@ export async function ForBuyers() {
               Connect your agent
             </Button>
           </div>
-        </Reveal>
+        </div>
         <LikesProvider liked={liked}>
           <div className="grid grid-cols-2 gap-x-3 gap-y-8 md:gap-6 lg:grid-cols-4">
             {listings.map((listing, i) => (
-              <Reveal key={listing.id ?? listing.slug} delay={i * 0.08} y={36}>
+              <div key={listing.id ?? listing.slug}>
                 <ListingCard listing={listing} />
-              </Reveal>
+              </div>
             ))}
             {Array.from({ length: open }, (_, i) => (
-              <Reveal key={`open-${i}`} delay={(listings.length + i) * 0.08} y={36}>
+              <div key={`open-${i}`}>
                 <OpenSlot signedIn={!!viewer} />
-              </Reveal>
+              </div>
             ))}
           </div>
         </LikesProvider>
@@ -91,7 +92,8 @@ export async function ForBuyers() {
             href="/discover"
             className="w-fit self-center text-base font-bold text-secondary hover:underline"
           >
-            See all {total} things from {stores} {stores === 1 ? "shop" : "shops"}
+            See all {total} things from {stores}{" "}
+            {stores === 1 ? "shop" : "shops"}
           </Link>
         )}
       </Container>

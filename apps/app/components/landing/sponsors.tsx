@@ -3,7 +3,6 @@ import { Button } from "@repo/ui/button";
 import { ArrowUpRightIcon, CheckIcon } from "@repo/ui/icons";
 import { cn } from "@repo/ui/lib/utils";
 import { docsUrl } from "../../lib/urls";
-import { Pop, Reveal } from "./motion";
 import { CheckDot, Container, hackathonUrl, SectionIntro } from "./parts";
 import { PayPalLogo } from "./paypal-logo";
 
@@ -224,18 +223,13 @@ export function Sponsors() {
       id="sponsors"
       className="flex scroll-mt-6 flex-col gap-6 py-24 md:py-32"
     >
-      <Reveal>
-        <SectionIntro
-          className="pb-6"
-          title="Made in a hackathon, built on good company"
-          aside="Resell.store was built for the PayPal AI Hackathon, on tools its sponsors put on the table. Here is what each one does for it."
-        />
-      </Reveal>
+      <SectionIntro
+        className="pb-6"
+        title="Made in a hackathon, built on good company"
+        aside="Resell.store was built for the PayPal AI Hackathon, on tools its sponsors put on the table. Here is what each one does for it."
+      />
 
-      <Reveal
-        y={48}
-        className="flex flex-col gap-8 rounded-[32px] bg-secondary px-6 py-10 text-white md:rounded-[40px] md:px-14 md:py-12 lg:flex-row lg:gap-16"
-      >
+      <div className="flex flex-col gap-8 rounded-[32px] bg-secondary px-6 py-10 text-white md:rounded-[40px] md:px-14 md:py-12 lg:flex-row lg:gap-16">
         <div className="flex flex-col gap-4 lg:w-[300px] lg:shrink-0">
           <p className="text-base font-semibold text-lemon-300">Lead sponsor</p>
           <h3>
@@ -255,13 +249,9 @@ export function Sponsors() {
           <ul className="flex flex-wrap gap-2">
             {paypal.uses.map((use, i) => (
               <li key={use}>
-                <Pop
-                  delay={0.25 + i * 0.07}
-                  rotate={i % 2 ? 10 : -10}
-                  className="flex h-8 items-center rounded-full bg-leaf-900 px-3.5 text-sm font-semibold"
-                >
+                <div className="flex h-8 items-center rounded-full bg-leaf-900 px-3.5 text-sm font-semibold">
                   {use}
-                </Pop>
+                </div>
               </li>
             ))}
           </ul>
@@ -270,7 +260,7 @@ export function Sponsors() {
             <NotesLink path={paypal.notes} />
           </div>
         </div>
-      </Reveal>
+      </div>
 
       <GroupHeading>Working in the app today</GroupHeading>
       <ul className="grid gap-3 md:grid-cols-6 md:gap-4">
@@ -280,11 +270,7 @@ export function Sponsors() {
             key={s.name}
             className={i < 3 ? "md:col-span-2" : "md:col-span-3"}
           >
-            <Reveal
-              delay={i * 0.06}
-              y={24}
-              className="flex h-full flex-col gap-5 rounded-[24px] border border-border bg-surface px-6 py-7 md:px-7 md:py-8"
-            >
+            <div className="flex h-full flex-col gap-5 rounded-[24px] border border-border bg-surface px-6 py-7 md:px-7 md:py-8">
               <h4 className="flex h-9 items-center">
                 <SponsorLogo name={s.name} logo={s.logo} />
               </h4>
@@ -297,7 +283,7 @@ export function Sponsors() {
                 <OutLink href={s.docs}>{s.name} docs</OutLink>
                 {s.notes && <NotesLink path={s.notes} label={s.notesLabel} />}
               </div>
-            </Reveal>
+            </div>
           </li>
         ))}
       </ul>
@@ -305,10 +291,7 @@ export function Sponsors() {
       {showNext && (
         <>
           <GroupHeading>Next on the build list</GroupHeading>
-          <Reveal
-            y={24}
-            className="rounded-[24px] border border-border bg-surface px-6 md:px-8"
-          >
+          <div className="rounded-[24px] border border-border bg-surface px-6 md:px-8">
             <ul className="divide-y divide-border">
               {next.map((s) => (
                 <li
@@ -331,14 +314,11 @@ export function Sponsors() {
                 </li>
               ))}
             </ul>
-          </Reveal>
+          </div>
         </>
       )}
 
-      <Reveal
-        y={24}
-        className="mt-4 flex flex-col items-start gap-5 rounded-[24px] bg-surface-muted px-6 py-7 md:flex-row md:items-center md:justify-between md:px-8"
-      >
+      <div className="mt-4 flex flex-col items-start gap-5 rounded-[24px] bg-surface-muted px-6 py-7 md:flex-row md:items-center md:justify-between md:px-8">
         <p className="max-w-[640px] text-lg font-medium">
           There's more to the PayPal AI Hackathon than us. See every sponsor and
           what other teams built with them.
@@ -354,7 +334,7 @@ export function Sponsors() {
           <ArrowUpRightIcon size={18} aria-hidden />
           <span className="sr-only"> (opens in a new tab)</span>
         </Button>
-      </Reveal>
+      </div>
     </Container>
   );
 }

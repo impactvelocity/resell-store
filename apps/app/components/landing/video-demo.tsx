@@ -4,7 +4,6 @@ import { useState } from "react";
 import { ArrowUpRightIcon, CodeIcon } from "@repo/ui/icons";
 import { cn } from "@repo/ui/lib/utils";
 import { docsUrl } from "../../lib/urls";
-import { Reveal } from "./motion";
 import { Container, githubUrl, hackathonUrl } from "./parts";
 
 /*
@@ -105,7 +104,7 @@ export function VideoDemo() {
       id="demo"
       className="flex scroll-mt-6 flex-col items-center gap-10 pb-20 md:gap-12 md:pb-28"
     >
-      <Reveal className="flex max-w-[720px] flex-col items-center gap-4 text-center">
+      <div className="flex max-w-[720px] flex-col items-center gap-4 text-center">
         <h2 className="font-display text-4xl font-extrabold tracking-tight md:text-[56px] md:leading-[58px]">
           Watch your agent sell something
         </h2>
@@ -113,48 +112,41 @@ export function VideoDemo() {
           One photo in, a paid order out. PayPal holds the money until it
           arrives.
         </p>
-      </Reveal>
-      <Reveal
-        delay={0.1}
-        y={40}
-        scale={0.94}
-        className="aspect-video w-full max-w-[1120px] overflow-hidden rounded-[24px] border-4 border-leaf-900 bg-leaf-900 md:rounded-[40px]"
-      >
+      </div>
+      <div className="aspect-video w-full max-w-[1120px] overflow-hidden rounded-[24px] border-4 border-leaf-900 bg-leaf-900 md:rounded-[40px]">
         <Player />
-      </Reveal>
-      <Reveal delay={0.15} y={20}>
-        <ul className="flex flex-wrap items-center justify-center gap-3">
-          <li>
-            <a
-              href={githubUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className={cn(pill, "bg-leaf-900 text-white hover:bg-secondary")}
-            >
-              <CodeIcon size={18} strokeWidth={2.2} />
-              See the code on GitHub
-              <span className="sr-only"> (opens in a new tab)</span>
-            </a>
-          </li>
-          <li>
-            <a href={docsUrl("/")} className={cn(pill, softPill)}>
-              Read the docs
-            </a>
-          </li>
-          <li>
-            <a
-              href={hackathonUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className={cn(pill, softPill)}
-            >
-              PayPal AI Hackathon
-              <ArrowUpRightIcon size={16} strokeWidth={2.6} />
-              <span className="sr-only"> (opens in a new tab)</span>
-            </a>
-          </li>
-        </ul>
-      </Reveal>
+      </div>
+      <ul className="flex flex-wrap items-center justify-center gap-3">
+        <li>
+          <a
+            href={githubUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className={cn(pill, "bg-leaf-900 text-white hover:bg-secondary")}
+          >
+            <CodeIcon size={18} strokeWidth={2.2} />
+            See the code on GitHub
+            <span className="sr-only"> (opens in a new tab)</span>
+          </a>
+        </li>
+        <li>
+          <a href={docsUrl("/")} className={cn(pill, softPill)}>
+            Read the docs
+          </a>
+        </li>
+        <li>
+          <a
+            href={hackathonUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className={cn(pill, softPill)}
+          >
+            PayPal AI Hackathon
+            <ArrowUpRightIcon size={16} strokeWidth={2.6} />
+            <span className="sr-only"> (opens in a new tab)</span>
+          </a>
+        </li>
+      </ul>
     </Container>
   );
 }
