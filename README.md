@@ -15,6 +15,8 @@
 
 **Sell your stuff without doing the selling.**
 
+> **Open source:** resell.store is released under the [MIT License](LICENSE). You're free to use, copy, modify and redistribute it.
+
 Snap a photo. An AI agent works out a fair price, writes the listing, puts it live in your own shop, answers buyers and haggles with their agents. PayPal holds the money until the item arrives. You just say yes.
 
 The average home is full of things nobody uses. They stay in the cupboard because selling is a chore: pricing, photos, listing copy, "is this still available?" twenty times, lowballers, scams. resell.store hands all of it to an agent and keeps you in charge.
